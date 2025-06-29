@@ -9,11 +9,14 @@ public class StickThrower : MonoBehaviour
     [SerializeField] Text stickNumberText;
 
     [Header("Stick Images (named 1, 2, 3, 4, 5)")]
-    [SerializeField] Sprite[] stickSprites; // Add 5 images with names 1 to 5 in the Inspector
+    [SerializeField] Sprite[] stickSprites;
+    
+    [SerializeField] Material highlightMaterial;
 
     void Start()
     {
         throwButton.onClick.AddListener(ThrowStick);
+        PieceMover.highlightMaterial = highlightMaterial;
         ResetUI();
     }
 
@@ -45,6 +48,9 @@ public class StickThrower : MonoBehaviour
         {
             throwButton.gameObject.SetActive(false); // End turn
         }
+        PieceMover.lastStickValue = stickNumber;
+        PieceMover.moveInProgress = false;
+
     }
 
     public void ResetUI()
