@@ -78,23 +78,48 @@ public class PieceMover : MonoBehaviour
     {
         moveInProgress = true;
 
-        float yPos = transform.position.y;
-        Vector3 start = transform.position;
-        Vector3 end = new Vector3(targetTile.position.x, yPos, targetTile.position.z);
+        int currentIndex = GetCurrentTileIndex();
+        int targetIndex = -1;
 
-        float moveSpeed = 5f;
-        while (Vector3.Distance(transform.position, end) > 0.01f)
+        for (int i = 0; i < totalTiles; i++)
         {
-            transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
-            yield return null;
+            if (boardTransform.GetChild(i) == targetTile)
+            {
+                targetIndex = i;
+                break;
+            }
         }
 
-        // Snap and reparent
-        transform.position = end;
+        if (targetIndex == -1 || currentIndex == -1)
+        {
+            moveInProgress = false;
+            yield break;
+        }
+
+        float moveSpeed = 5f;
+        float yPos = transform.position.y;
+
+        for (int i = currentIndex + 1; i <= targetIndex; i++)
+        {
+            Transform nextTile = boardTransform.GetChild(i);
+            Vector3 end = new Vector3(nextTile.position.x, yPos, nextTile.position.z);
+
+            // Move to next tile
+            while (Vector3.Distance(transform.position, end) > 0.01f)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
+                yield return null;
+            }
+
+            // Snap to center of tile after each step
+            transform.position = end;
+        }
+
+        // Set final parent to the last tile
         transform.SetParent(targetTile);
         transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
 
-        // Reset selection and highlight
+        // Reset visuals and state
         highlightedTile.GetComponent<TileMarker>()?.Unhighlight();
         highlightedTile = null;
         selectedPiece = null;
@@ -102,6 +127,7 @@ public class PieceMover : MonoBehaviour
         lastStickValue = 0;
         moveInProgress = false;
     }
+
 
     int GetCurrentTileIndex()
     {
