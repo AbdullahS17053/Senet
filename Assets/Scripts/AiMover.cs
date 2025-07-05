@@ -19,12 +19,13 @@ public class AiMover : MonoBehaviour
 
     private IEnumerator ThrowSticksAndPlay()
     {
-        yield return new WaitForSeconds(1f); // Optional delay before stick throw
+        yield return new WaitForSeconds(1f); // Optional delay
 
         StickThrower stickThrower = FindObjectOfType<StickThrower>();
         if (stickThrower != null)
         {
             int stickValue = stickThrower.ThrowStickAndShowUI();
+            PieceMover.lastStickValue = stickValue;
             Debug.Log("AI Stick Value: " + stickValue);
         }
         else
@@ -33,59 +34,57 @@ public class AiMover : MonoBehaviour
             yield break;
         }
 
-        yield return new WaitForSeconds(1f); // Delay before movement
+        yield return new WaitForSeconds(1f); // Delay to simulate thinking
+
+        if (!PieceMover.HasAnyValidMove(true))
+        {
+            Debug.Log("AI has no valid moves. Passing turn...");
+            PieceMover.PassTurnImmediately();
+            yield break;
+        }
 
         StartCoroutine(ExecuteAiTurn());
     }
 
     public static void StartAITurn()
     {
-        StartStickThrow(); // Instead of moving immediately, throw sticks first
+        StartStickThrow();
     }
 
     private IEnumerator ExecuteAiTurn()
     {
         aiPieces = FindObjectsOfType<PieceMover>();
+
         int chosenIndex = -1;
-        int targetIndex = -1;
+        Transform validatedTarget = null;
 
         for (int i = 0; i < aiPieces.Length; i++)
         {
-            if (!aiPieces[i].isAI) continue;
+            PieceMover piece = aiPieces[i];
+            if (!piece.isAI) continue;
 
-            int currentIndex = aiPieces[i].GetCurrentTileIndex();
+            int currentIndex = piece.GetCurrentTileIndex();
             if (currentIndex == -1) continue;
 
             int proposedIndex = currentIndex + PieceMover.lastStickValue;
             if (proposedIndex >= 30) continue;
 
-            Transform tile = aiPieces[i].transform.parent.parent.GetChild(proposedIndex);
-            PieceMover occupying = tile.GetComponentInChildren<PieceMover>();
-
-            // Can move if tile is empty or has player piece (replace)
-            if (occupying == null || occupying.isAI == false)
+            if (PieceMover.IsValidMove(piece, proposedIndex, out validatedTarget))
             {
                 chosenIndex = i;
-                targetIndex = proposedIndex;
                 break;
             }
         }
 
-        if (chosenIndex != -1)
+        if (chosenIndex != -1 && validatedTarget != null)
         {
-            Transform targetTile = aiPieces[chosenIndex].transform.parent.parent.GetChild(targetIndex);
-            yield return aiPieces[chosenIndex].StartCoroutine(aiPieces[chosenIndex].MoveToTile(targetTile));
+            yield return aiPieces[chosenIndex].StartCoroutine(aiPieces[chosenIndex].MoveToTile(validatedTarget));
         }
         else
         {
-            // No valid move found — switch turn back to player
+            Debug.LogWarning("AI found no valid move during execution. Passing turn...");
             yield return new WaitForSeconds(0.5f);
-            PieceMover.currentTurn = TurnType.Player;
-
-            // Optional: update throw button if handled in PieceMover
-            GameObject throwBtn = GameObject.FindWithTag("ThrowButton");
-            if (throwBtn != null)
-                throwBtn.SetActive(true);
+            PieceMover.PassTurnImmediately();
         }
     }
 }

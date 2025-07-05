@@ -320,12 +320,12 @@ GameObject:
   - component: {fileID: 366018841}
   - component: {fileID: 366018840}
   m_Layer: 5
-  m_Name: ThowBtn
+  m_Name: ThrowBtn
   m_TagString: ThrowButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &366018839
 RectTransform:
   m_ObjectHideFlags: 0
