@@ -69,11 +69,66 @@ public class PieceMover : MonoBehaviour
         int targetIndex = currentIndex + lastStickValue;
         if (targetIndex >= totalTiles) return;
 
+        // Scan forward from currentIndex + 1 to detect consecutive opponent pieces
+        int consecutiveOpponents = 0;
+        bool blockSwap = false;
+        bool blockMove = false;
+        int checkLimit = targetIndex + 3;
+        for (int i = currentIndex + 1; i < checkLimit; i++)
+        {
+            if (checkLimit > 30)
+            {
+                Debug.Log(i.ToString());
+                break;
+            }
+            Transform tile = boardTransform.GetChild(i);
+            PieceMover occupying = tile.GetComponentInChildren<PieceMover>();
+
+            if (occupying != null && occupying.isAI != piece.isAI)
+            {
+                consecutiveOpponents++;
+
+                if (consecutiveOpponents == 2)
+                {
+                    if (i == targetIndex)
+                    {
+                        blockSwap = true; // Target is second in a 2-piece chain
+                    }
+                    else if (i > targetIndex)
+                    {
+                        // Only block swap if target is occupied opponent
+                        Transform targetTileCheck = boardTransform.GetChild(targetIndex);
+                        PieceMover targetOccupying = targetTileCheck.GetComponentInChildren<PieceMover>();
+
+                        if (targetOccupying != null && targetOccupying.isAI != piece.isAI)
+                            blockSwap = true;
+                    }
+                }
+
+
+                if (consecutiveOpponents >= 3)
+                {
+                    blockMove = true;
+                    break;
+                }
+            }
+            else
+            {
+                consecutiveOpponents = 0; // Reset if gap found
+            }
+        }
+
+        if (blockMove || (blockSwap && targetIndex < totalTiles))
+        {
+            return; // Blocked by opponent line
+        }
+
         Transform targetTile = boardTransform.GetChild(targetIndex);
 
-        // Allow landing if tile is empty or has an opponent piece
+        // Final check: can land if empty or contains opponent and not blocked
         PieceMover occupyingPiece = targetTile.GetComponentInChildren<PieceMover>();
         bool canReplace = occupyingPiece != null && occupyingPiece.isAI != piece.isAI;
+
         if (!canReplace && targetTile.childCount > 0) return;
 
         // Unhighlight previous
@@ -86,6 +141,8 @@ public class PieceMover : MonoBehaviour
         selectedPiece = piece;
         highlightedTile = targetTile;
     }
+
+
 
     public IEnumerator MoveToTile(Transform targetTile)
     {

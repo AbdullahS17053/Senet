@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3bbdb48d53bf44746b46307747b23dc0, type: 2}
+  - {fileID: 2100000, guid: 426dc0d136b746a44b21af7c937e0667, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -133,6 +133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d77e28881bc459b4dbef227b9dd54f9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  throwButton: {fileID: 0}
+  isAI: 0
 --- !u!136 &3310113087175317000
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -220,7 +222,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8cf859f1b2027024f8ee2c4e36a15314, type: 2}
+  - {fileID: 2100000, guid: b945cc85db8bee54eb2cfa209a9b4247, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
