@@ -1355,7 +1355,7 @@ GameObject:
   - component: {fileID: 1395797007}
   - component: {fileID: 1395797006}
   m_Layer: 0
-  m_Name: Square
+  m_Name: BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3872,6 +3872,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972223658320
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3930,6 +3932,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972312563890
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3988,6 +3992,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972401212908
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4046,6 +4052,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972556927637
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4104,6 +4112,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972590827288
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4162,6 +4172,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972591104292
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4220,6 +4232,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972603535646
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4278,6 +4292,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972638378773
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4336,6 +4352,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972712202546
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4394,6 +4412,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627972922046330
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4452,6 +4472,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973064343183
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4510,6 +4532,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973090226987
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4568,6 +4592,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973137703503
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4626,6 +4652,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973139782553
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4684,6 +4712,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973155776179
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4742,6 +4772,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973165763546
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4800,6 +4832,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973240759940
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4858,6 +4892,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973491391312
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4916,6 +4952,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973545008513
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4974,6 +5012,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973592155244
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5032,6 +5072,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973626159286
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5090,6 +5132,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973722141068
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5148,6 +5192,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973752833709
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5206,6 +5252,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973823381064
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5264,6 +5312,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973903441423
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5322,6 +5372,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627973991135366
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5380,6 +5432,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627974031878189
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5438,6 +5492,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627974125418210
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5496,6 +5552,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!23 &7952627974293216086
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5554,6 +5612,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+  triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isTriggerTile: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -112,14 +112,6 @@ public class PieceMover : MonoBehaviour
 
         return false;
     }
-    public static void CheckPlayerCanMove()
-    {
-        if (!HasAnyValidMove(false))
-        {
-            Debug.Log("Player has no valid moves. Passing turn...");
-            PassTurnImmediately();
-        }
-    }
     public static void PassTurnImmediately()
     {
         if (currentTurn == TurnType.AI)
@@ -332,15 +324,6 @@ public class PieceMover : MonoBehaviour
         }
 
         return false;
-    }
-
-
-
-    public void MoveToStart()
-    {
-        Transform startTile = boardTransform.GetChild(0);
-        transform.SetParent(startTile);
-        transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
     }
 
     public int GetCurrentTileIndex()
