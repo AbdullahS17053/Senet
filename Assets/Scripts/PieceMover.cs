@@ -21,6 +21,7 @@ public class PieceMover : MonoBehaviour
     public static TurnType currentTurn = TurnType.Player;
     public static PieceMover Instance;
     public bool isAI = false;
+    
 
     void Start()
     {
