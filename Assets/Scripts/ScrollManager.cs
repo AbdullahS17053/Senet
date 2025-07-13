@@ -7,16 +7,19 @@ public class ScrollManager : MonoBehaviour
     [SerializeField] private Button[] scrollButtons;
     [SerializeField] private Text[] scrollButtonTexts;
     [SerializeField] private Image[] scrollButtonImages;
+    [SerializeField] private GameObject cancelButton;
 
     [Header("Scroll Data")]
     [SerializeField] private ScrollData scrollData;  // Reference to the ScriptableObject
 
     private int[] selectedScrollIndices = new int[3];
+    private bool[] usedScrollFlags = new bool[3]; // Track used scrolls
 
     void Start()
     {
         LoadSelectedScrolls();
         SetupScrollButtons();
+        SetScrollsInteractable(false);
     }
 
     void Update()
@@ -36,13 +39,17 @@ public class ScrollManager : MonoBehaviour
                 if (count < 3)
                 {
                     selectedScrollIndices[count] = i;
+                    usedScrollFlags[count] = false; // initialize as unused
                     count++;
                 }
             }
         }
 
         for (int i = count; i < 3; i++)
+        {
             selectedScrollIndices[i] = -1;
+            usedScrollFlags[i] = true; // invalid index means unusable
+        }
     }
 
     private void SetupScrollButtons()
@@ -67,8 +74,8 @@ public class ScrollManager : MonoBehaviour
             }
 
             scrollButtons[i].onClick.RemoveAllListeners();
-            int capturedIndex = scrollIndex;
-            if (capturedIndex >= 0)
+            int capturedIndex = i;
+            if (scrollIndex >= 0 && !usedScrollFlags[capturedIndex])
             {
                 scrollButtons[i].onClick.AddListener(() => OnScrollUsed(capturedIndex));
                 scrollButtons[i].interactable = true;
@@ -80,17 +87,75 @@ public class ScrollManager : MonoBehaviour
         }
     }
 
-    private void OnScrollUsed(int scrollIndex)
+    private void OnScrollUsed(int scrollSlotIndex)
     {
+        int scrollIndex = selectedScrollIndices[scrollSlotIndex];
         Debug.Log($"Scroll {scrollIndex} used!");
 
+        // Mark this scroll as used
+        usedScrollFlags[scrollSlotIndex] = true;
+        scrollButtons[scrollSlotIndex].interactable = false;
+
+        // Your scroll effect logic can go here...
+
+        SetScrollsInteractable(false); // Hide scrolls and cancel button after use
+
+        // --- Handle turn change or rethrow ---
+        if (PieceMover.lastMoveWasRethrow)
+        {
+            // Player gets another throw
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+        }
+        else
+        {
+            // Turn goes to AI
+            PieceMover.currentTurn = TurnType.AI;
+            PieceMover.ResetTurn(); // Clear selection
+            AiMover.StartStickThrow();
+        }
+
+        // Reset flag after processing
+        PieceMover.lastMoveWasRethrow = false;
+    }
+
+
+    public void SetScrollsInteractable(bool state)
+    {
         for (int i = 0; i < scrollButtons.Length; i++)
         {
-            if (selectedScrollIndices[i] == scrollIndex)
-            {
+            if (selectedScrollIndices[i] >= 0 && !usedScrollFlags[i])
+                scrollButtons[i].interactable = state;
+            else
                 scrollButtons[i].interactable = false;
-                break;
-            }
         }
+
+        if (cancelButton != null)
+            cancelButton.SetActive(state);
+        
+        // Disable throw button when showing scrolls
+        if (PieceMover.Instance != null && PieceMover.Instance.throwButton != null)
+            PieceMover.Instance.throwButton.SetActive(!state);
     }
+
+    public void OnCancelButtonPressed()
+    {
+        SetScrollsInteractable(false); // Hide scrolls and cancel button
+
+        if (PieceMover.lastMoveWasRethrow)
+        {
+            // Player gets another throw
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+        }
+        else
+        {
+            // Turn goes to AI
+            PieceMover.currentTurn = TurnType.AI;
+            PieceMover.ResetTurn(); // Clear selection
+            AiMover.StartStickThrow();
+        }
+
+        // Reset this after handling
+        PieceMover.lastMoveWasRethrow = false;
+    }
+    
 }

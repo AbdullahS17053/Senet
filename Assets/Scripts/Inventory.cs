@@ -6,13 +6,15 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     [Header("Scroll Data")]
-    [SerializeField] private ScrollData scrollData;               // ScriptableObject reference
+    [SerializeField] private ScrollData scrollData;
 
     [Header("UI References")]
     [SerializeField] private Text[] buttonTexts;
     [SerializeField] private Image[] scrollButtonImages;
+    [SerializeField] private Text[] scrollNameTexts;              // New: Display scroll names
     [SerializeField] private Text scrollText;
-    [SerializeField] private Button[] scrollButtons;
+    [SerializeField] private Button[] selectButtons;              // New: Separate select/unselect buttons
+    [SerializeField] private Button[] scrollButtons;              // New: Separate scroll image buttons
 
     [Header("Toaster Settings")]
     [SerializeField] private GameObject toasterPrefab;
@@ -23,14 +25,29 @@ public class Inventory : MonoBehaviour
 
     private const int maxSelectableScrolls = 3;
     private List<int> selectedScrollIndices = new List<int>();
+    private bool[] isScrollBackVisible;
     private GameObject currentToaster;
 
     void Start()
     {
+        isScrollBackVisible = new bool[scrollData.scrollSprites.Length];
+
         InitializeDefaultScrolls();
         LoadSelectedScrolls();
         UpdateInventoryUI();
         UpdateScrollText();
+
+        for (int i = 0; i < scrollButtons.Length; i++)
+        {
+            int capturedIndex = i;
+            scrollButtons[i].onClick.AddListener(() => ToggleScrollFrontBack(capturedIndex));
+        }
+
+        for (int i = 0; i < selectButtons.Length; i++)
+        {
+            int capturedIndex = i;
+            selectButtons[i].onClick.AddListener(() => ToggleSelectScroll(capturedIndex));
+        }
     }
 
     private void InitializeDefaultScrolls()
@@ -151,8 +168,13 @@ public class Inventory : MonoBehaviour
 
             if (i < scrollButtonImages.Length)
             {
-                scrollButtonImages[i].sprite = scrollData.scrollSprites[i];
+                scrollButtonImages[i].sprite = isScrollBackVisible[i] ? scrollData.scrollBacks[i] : scrollData.scrollSprites[i];
                 scrollButtonImages[i].preserveAspect = true;
+            }
+
+            if (i < scrollNameTexts.Length && scrollData.scrollNames.Length > i)
+            {
+                scrollNameTexts[i].text = scrollData.scrollNames[i];
             }
         }
     }
@@ -163,6 +185,14 @@ public class Inventory : MonoBehaviour
         {
             scrollText.text = $"Selected: {selectedScrollIndices.Count}/3";
         }
+    }
+
+    private void ToggleScrollFrontBack(int index)
+    {
+        if (index < 0 || index >= isScrollBackVisible.Length) return;
+
+        isScrollBackVisible[index] = !isScrollBackVisible[index];
+        UpdateInventoryUI();
     }
 
     private void ShowToaster(string message)

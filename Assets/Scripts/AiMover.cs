@@ -1,14 +1,37 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AiMover : MonoBehaviour
 {
     public static AiMover Instance;
     private PieceMover[] aiPieces;
+    private bool[] aiScrollUsed = new bool[3];
+    private int[] aiScrollIndices = new int[3]; // same as player's selectedScrollIndices
+    
+    [SerializeField] ScrollData scrollData;
+
 
     private void Awake()
     {
         Instance = this;
+    }
+    void Start()
+    {
+        // Copy player's scroll indices from PlayerPrefs
+        int count = 0;
+        for (int i = 0; i < 20; i++)
+        {
+            if (PlayerPrefs.GetInt($"scroll_{i}_selected", 0) == 1)
+            {
+                if (count < 3)
+                {
+                    aiScrollIndices[count] = i;
+                    aiScrollUsed[count] = false;
+                    count++;
+                }
+            }
+        }
     }
 
     public static void StartStickThrow()
@@ -24,9 +47,9 @@ public class AiMover : MonoBehaviour
         StickThrower stickThrower = FindObjectOfType<StickThrower>();
         if (stickThrower != null)
         {
-            int stickValue = stickThrower.ThrowStickAndShowUI();
-            PieceMover.lastStickValue = stickValue;
-            Debug.Log("AI Stick Value: " + stickValue);
+            yield return stickThrower.StartCoroutine(stickThrower.ThrowSticksRoutine()); // run actual flipping
+            Debug.Log("AI Stick Value: " + PieceMover.lastStickValue);
+
         }
         else
         {
@@ -87,4 +110,44 @@ public class AiMover : MonoBehaviour
             PieceMover.PassTurnImmediately();
         }
     }
+    public void UseRandomAiScroll()
+    {
+        // Collect unused scroll indices
+        List<int> unusedIndices = new List<int>();
+        for (int i = 0; i < aiScrollUsed.Length; i++)
+        {
+            if (!aiScrollUsed[i])
+                unusedIndices.Add(i);
+        }
+
+        if (unusedIndices.Count == 0) return;
+
+        int randomChoice = unusedIndices[Random.Range(0, unusedIndices.Count)];
+        int scrollIndex = aiScrollIndices[randomChoice];
+        string scrollName = scrollData.scrollNames[scrollIndex];
+
+        aiScrollUsed[randomChoice] = true;
+
+        Debug.Log($"AI used scroll {scrollIndex}");
+
+        // Apply the scroll's effect here, if needed
+
+        // --- Handle turn switching or rethrow logic ---
+        bool getsAnotherTurn = PieceMover.lastMoveWasRethrow;
+
+        if (getsAnotherTurn)
+        {
+            AiMover.StartStickThrow(); // AI rethrows
+        }
+        else
+        {
+            PieceMover.currentTurn = TurnType.Player;
+            PieceMover.ResetTurn();
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+        }
+
+        PieceMover.lastMoveWasRethrow = false; // Reset after use
+    }
+
+
 }

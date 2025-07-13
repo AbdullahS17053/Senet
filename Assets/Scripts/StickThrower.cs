@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,17 +7,17 @@ public class StickThrower : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] public Button throwButton;
-    [SerializeField] Image stickImageDisplay;
     [SerializeField] Text stickNumberText;
 
-    [Header("Stick Images (named 1, 2, 3, 4, 5)")]
-    [SerializeField] Sprite[] stickSprites;
+    [Header("Stick References")]
+    [SerializeField] List<Stick> stickObjects;
 
     [SerializeField] Material highlightMaterial;
+    [SerializeField] float throwDuration = 1f;
 
     void Start()
     {
-        throwButton.onClick.AddListener(ThrowStick);
+        throwButton.onClick.AddListener(() => StartCoroutine(ThrowSticksRoutine()));
         PieceMover.highlightMaterial = highlightMaterial;
         ResetUI();
         UpdateThrowButtonState();
@@ -26,51 +28,55 @@ public class StickThrower : MonoBehaviour
         UpdateThrowButtonState();
     }
 
-    void ThrowStick()
+    public IEnumerator ThrowSticksRoutine()
     {
-        int stickNumber = ThrowStickAndShowUI();
-
-        // Disable throw button for now (player must move or auto-pass)
         throwButton.gameObject.SetActive(false);
 
-        // ✅ Now check if player has valid moves
-        if (!PieceMover.HasAnyValidMove(false)) // false = player
+        // Start flipping animation
+        foreach (Stick stick in stickObjects)
         {
-            Debug.Log("Player has no valid moves. Passing turn...");
+            stick.StartFlip();
+        }
+
+        yield return new WaitForSeconds(throwDuration);
+
+        // Snap stick rotations first BEFORE checking IsFaceUp
+        foreach (Stick stick in stickObjects)
+        {
+            stick.StopAndSnapRotation();  // Must run BEFORE IsFaceUp
+        }
+
+        // Now check how many are face up
+        int actualFaceUpCount = 0;
+        foreach (Stick stick in stickObjects)
+        {
+            if (stick.IsFaceUp())  // Must reflect snapped rotation
+                actualFaceUpCount++;
+        }
+
+        // Game logic value: treat 0 as 5
+        int throwValue = (actualFaceUpCount == 0) ? 5 : actualFaceUpCount;
+
+        // Display and store result
+        stickNumberText.text = throwValue.ToString();
+        PieceMover.lastStickValue = throwValue;
+        PieceMover.moveInProgress = false;
+
+        Debug.Log($"Stick result: {actualFaceUpCount} face-up → throwValue = {throwValue}");
+
+        // Handle turn flow
+        if (!PieceMover.HasAnyValidMove(false))
+        {
+            Debug.Log("No valid move — passing turn.");
             PieceMover.PassTurnImmediately();
         }
     }
 
-    public int ThrowStickAndShowUI()
-    {
-        // Randomly pick one stick (1 to 5)
-        int randomIndex = Random.Range(0, stickSprites.Length);
-        Sprite selectedSprite = stickSprites[randomIndex];
-
-        int stickNumber;
-        if (!int.TryParse(selectedSprite.name, out stickNumber))
-        {
-            Debug.LogError("Stick image name is not a number!");
-            return 0;
-        }
-
-        // Show sprite and number
-        stickImageDisplay.enabled = true;
-        stickImageDisplay.sprite = selectedSprite;
-        stickNumberText.text = stickNumber.ToString();
-
-        // Set global stick value
-        PieceMover.lastStickValue = stickNumber;
-        PieceMover.moveInProgress = false;
-
-        return stickNumber;
-    }
 
     public void UpdateThrowButtonState()
     {
         if (PieceMover.currentTurn == TurnType.Player)
         {
-            // Enable throw button only if not already thrown and move not in progress
             bool canThrow = PieceMover.lastStickValue == 0 && !PieceMover.moveInProgress;
             throwButton.gameObject.SetActive(canThrow);
         }
@@ -82,8 +88,6 @@ public class StickThrower : MonoBehaviour
 
     public void ResetUI()
     {
-        stickImageDisplay.sprite = null;
-        stickImageDisplay.enabled = false;
         stickNumberText.text = "";
         throwButton.interactable = true;
     }

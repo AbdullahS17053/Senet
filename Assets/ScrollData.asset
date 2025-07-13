@@ -23,3 +23,56 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b31358803b656f44cbb9528fea8ccb62, type: 3}
   - {fileID: 21300000, guid: 6398a13e106f95e44a512aebbfeff223, type: 3}
   - {fileID: 21300000, guid: a613a9a16a486aa4dab4748f1b8a9414, type: 3}
+  - {fileID: 21300000, guid: ca8f5ecc5c687134397741e95f96827e, type: 3}
+  - {fileID: 21300000, guid: f4472f41d1de63f4eae33da6088662a7, type: 3}
+  - {fileID: 21300000, guid: b6fe3307a6546834b986a82cea972972, type: 3}
+  - {fileID: 21300000, guid: 49ab406a86729824085ffaed78793db3, type: 3}
+  - {fileID: 21300000, guid: f7776e12d116dba4599bc4568664114e, type: 3}
+  - {fileID: 21300000, guid: 23d279aecb860054282df7998a2edfe0, type: 3}
+  - {fileID: 21300000, guid: 4319158da63c21e4d9433027832a682a, type: 3}
+  - {fileID: 21300000, guid: 74b6ac6e6244fd849888b1128f33d027, type: 3}
+  - {fileID: 21300000, guid: 64705cd2a2ff9804d8bcf32241a61491, type: 3}
+  - {fileID: 21300000, guid: 3d29b1cc0bff1af4c9a5059105026dc1, type: 3}
+  scrollBacks:
+  - {fileID: 21300000, guid: 471982be242b8504fb2d73c3fd3ca1c8, type: 3}
+  - {fileID: 21300000, guid: ee0ad29fe48f647459471e6c91bb680d, type: 3}
+  - {fileID: 21300000, guid: 7f1da0be5946cb642841010da7b7e295, type: 3}
+  - {fileID: 21300000, guid: d94fad2eb40992c4d9240ba767cc1229, type: 3}
+  - {fileID: 21300000, guid: b4ccc0118f78b194e960eb45130ce1f3, type: 3}
+  - {fileID: 21300000, guid: a6426fd7cb9594d40b55d1f2786f1a2c, type: 3}
+  - {fileID: 21300000, guid: 34799ec7311b44e4dbfc1155f93dc0fa, type: 3}
+  - {fileID: 21300000, guid: f849c350110c352419322ac5d763b123, type: 3}
+  - {fileID: 21300000, guid: 502c4c4ee78bd46448ca17154d070a6f, type: 3}
+  - {fileID: 21300000, guid: 28d06bbcb4a702e45889b86e6e474794, type: 3}
+  - {fileID: 21300000, guid: e28c6efe461ed364ab951682da07e749, type: 3}
+  - {fileID: 21300000, guid: eefb546d5f0e5084fb8efdd854a1bc05, type: 3}
+  - {fileID: 21300000, guid: dd6da05154fe5f847a5393147ec4702a, type: 3}
+  - {fileID: 21300000, guid: d9b883ddcaf961b4c8722de701a83b49, type: 3}
+  - {fileID: 21300000, guid: 227fce9f9192ce84f8f455168d44e5d6, type: 3}
+  - {fileID: 21300000, guid: 96b14a77d7fc56647bf17523d46cd6b9, type: 3}
+  - {fileID: 21300000, guid: 78954f19e8c19074c98f7a95b91023b3, type: 3}
+  - {fileID: 21300000, guid: dc2ba880eb10655469cbbae850625144, type: 3}
+  - {fileID: 21300000, guid: 246fe28da2695cb46a839dbc941813a6, type: 3}
+  - {fileID: 21300000, guid: 3a7a2d63894b47f48807a2e2f818aa79, type: 3}
+  scrollNames:
+  - "Earthbound\u2019s Step"
+  - Sylvan Shield
+  - Senusret Path
+  - Skyspark Swap
+  - Gift of Jahi
+  - "Obsidian\u2019s Burden"
+  - Horus Retreat
+  - "Anippe\u2019s Grace"
+  - Vault of Shadows
+  - "Heka\u2019s Blessing"
+  - Oath of Isfet
+  - Grasp of the Scarab
+  - Path of Aaru
+  - "Apep\u2019s Trick"
+  - Dominion of Kamo
+  - Mirror of Merneith
+  - "Mena\u2019s Grasp"
+  - Binding of Aegis
+  - Echo of the Twin
+  - Sands of Esna
+  scrollEffectKeys: []

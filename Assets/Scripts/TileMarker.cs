@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class TileMarker : MonoBehaviour
 {
-    [SerializeField] Material defaultMaterial;
-    [SerializeField] Material triggerMaterial;
+    [SerializeField] private Material defaultMaterial;
+    [SerializeField] private Material triggerMaterial;
 
     private Renderer rend;
 
@@ -13,26 +13,44 @@ public class TileMarker : MonoBehaviour
     private static List<TileMarker> allTiles = new List<TileMarker>();
     public static List<TileMarker> triggerTiles = new List<TileMarker>();
 
-    void Awake()
+    private void Awake()
     {
         rend = GetComponent<Renderer>();
-        allTiles.Add(this);
     }
 
-    void Start()
+    public static void InitializeFromBoard(GameObject board)
     {
-        if (triggerTiles.Count == 0 && allTiles.Count >= 30)
+        allTiles.Clear();
+        triggerTiles.Clear();
+
+        foreach (Transform child in board.transform)
+        {
+            TileMarker tile = child.GetComponent<TileMarker>();
+            if (tile != null)
+            {
+                allTiles.Add(tile);
+                tile.isTriggerTile = false;
+                tile.Unhighlight(); // Reset material
+            }
+        }
+
+        if (allTiles.Count >= 30)
         {
             SelectTriggerTiles();
         }
+        else
+        {
+            Debug.LogWarning("Not enough tiles (need at least 30). Found: " + allTiles.Count);
+        }
     }
 
-    private void SelectTriggerTiles()
+    private static void SelectTriggerTiles()
     {
         List<int> candidateIndices = new List<int>();
 
-        // Only allow indices from 10 to 29 (last 20 tiles, excluding the first 10)
-        for (int i = 10; i < allTiles.Count; i++)
+        // Only from last 20 tiles
+        int startIndex = allTiles.Count - 20;
+        for (int i = startIndex; i < allTiles.Count; i++)
         {
             candidateIndices.Add(i);
         }
@@ -41,28 +59,32 @@ public class TileMarker : MonoBehaviour
         while (triggerTiles.Count < 5 && tries < 100)
         {
             tries++;
-            int index = candidateIndices[Random.Range(0, candidateIndices.Count)];
-            bool isConsecutive = false;
+            int randIdx = candidateIndices[Random.Range(0, candidateIndices.Count)];
 
-            foreach (TileMarker tile in triggerTiles)
+            bool isConsecutive = false;
+            foreach (TileMarker t in triggerTiles)
             {
-                int existingIndex = allTiles.IndexOf(tile);
-                if (Mathf.Abs(existingIndex - index) == 1)
+                int existingIndex = allTiles.IndexOf(t);
+                if (Mathf.Abs(existingIndex - randIdx) == 1)
                 {
                     isConsecutive = true;
                     break;
                 }
             }
 
-            if (!isConsecutive && !triggerTiles.Contains(allTiles[index]))
+            if (!isConsecutive)
             {
-                TileMarker tile = allTiles[index];
-                tile.isTriggerTile = true;
-                tile.defaultMaterial = triggerMaterial;
-                tile.Highlight(triggerMaterial);
-                triggerTiles.Add(tile);
+                TileMarker tile = allTiles[randIdx];
+                if (!triggerTiles.Contains(tile))
+                {
+                    tile.isTriggerTile = true;
+                    tile.Highlight(tile.triggerMaterial);
+                    triggerTiles.Add(tile);
+                }
             }
         }
+
+        Debug.Log($"Trigger tiles selected: {triggerTiles.Count}");
     }
 
     public void Highlight(Material highlightMat)

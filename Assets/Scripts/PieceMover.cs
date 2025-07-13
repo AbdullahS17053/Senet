@@ -21,6 +21,10 @@ public class PieceMover : MonoBehaviour
     public static TurnType currentTurn = TurnType.Player;
     public static PieceMover Instance;
     public bool isAI = false;
+    public static bool lastMoveWasRethrow = false;
+
+    private ScrollManager scrollManager;
+
     
 
     void Start()
@@ -36,6 +40,9 @@ public class PieceMover : MonoBehaviour
 
         if (throwButton == null)
             throwButton = GameObject.FindWithTag("ThrowButton"); // Optional fallback
+        
+        scrollManager = GameObject.FindObjectOfType<ScrollManager>();
+
 
         UpdateThrowButtonState();
     }
@@ -268,22 +275,42 @@ public class PieceMover : MonoBehaviour
     highlightedTile = null;
     selectedPiece = null;
 
-    int lastUsedStick = lastStickValue;
+    // Rethrow logic
+    lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 4);
     lastStickValue = 0;
+
     moveInProgress = false;
 
-    // If piece reached the last tile (index 29)
+    // Win condition
     if (targetIndex == totalTiles - 1)
     {
-        Destroy(gameObject); // Remove this piece
-
-        // Check win condition
-        if (CheckWinCondition())
-            yield break; // Stop further turn switching if game ended
+        Destroy(gameObject);
+        if (CheckWinCondition()) yield break;
     }
 
-    bool getsAnotherTurn = (lastUsedStick == 1 || lastUsedStick == 4);
-    if (!getsAnotherTurn)
+    // ---- Scroll Trigger Logic ----
+    TileMarker tileMarker = targetTile.GetComponent<TileMarker>();
+    if (tileMarker != null && tileMarker.isTriggerTile)
+    {
+        if (isAI)
+        {
+            // AI uses random scroll from its own pool
+            AiMover.Instance.UseRandomAiScroll();
+            // Continue with turn switching logic
+        }
+        else
+        {
+            // Player enables scrolls
+            ScrollManager scrollManager = GameObject.FindObjectOfType<ScrollManager>();
+            if (scrollManager != null)
+                scrollManager.SetScrollsInteractable(true);
+
+            yield break; // Stop here until player uses scroll or presses cancel
+        }
+    }
+
+    // ---- Turn Switching ----
+    if (!lastMoveWasRethrow)
     {
         currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
     }
@@ -292,12 +319,14 @@ public class PieceMover : MonoBehaviour
 
     if (currentTurn == TurnType.AI)
     {
-        if (getsAnotherTurn)
+        if (lastMoveWasRethrow)
             AiMover.StartStickThrow();
         else
             AiMover.StartAITurn();
     }
 }
+
+
     private bool CheckWinCondition()
     {
         PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
@@ -355,4 +384,5 @@ public class PieceMover : MonoBehaviour
         if (throwButton != null)
             throwButton.SetActive(currentTurn == TurnType.Player);
     }
+    
 }
