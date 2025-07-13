@@ -3,35 +3,54 @@ using UnityEngine;
 public class Stick : MonoBehaviour
 {
     private bool isFlipping = false;
+    private bool shouldBeFaceUp = false; // Desired state after flip
 
+    /// <summary>
+    /// Called by StickThrower to prepare final orientation.
+    /// </summary>
+    public void PrepareFaceUpState(bool isFaceUp)
+    {
+        shouldBeFaceUp = isFaceUp;
+    }
+
+    /// <summary>
+    /// Starts stick flipping animation.
+    /// </summary>
     public void StartFlip()
     {
         isFlipping = true;
     }
 
+    /// <summary>
+    /// Stops flipping and sets final rotation based on desired face-up state.
+    /// </summary>
     public void StopAndSnapRotation()
     {
         isFlipping = false;
 
-        // Randomly choose 0 or 180 for X-axis
-        float xRotation = Random.value < 0.5f ? 0f : 180f;
+        float xRotation = shouldBeFaceUp ? 0f : 180f; // Face-up = 0, Face-down = 180
 
-        // Preserve Y and Z rotations
-        Vector3 currentEuler = transform.eulerAngles;
-        transform.eulerAngles = new Vector3(xRotation, currentEuler.y, currentEuler.z);
+        // Optionally add slight random Y/Z variation for realism
+        float randomY = Random.Range(-10f, 10f);
+        float randomZ = Random.Range(-10f, 10f);
+
+        transform.eulerAngles = new Vector3(xRotation, randomY, randomZ);
     }
 
+    /// <summary>
+    /// Determines if the stick is face-up (based on snapped rotation).
+    /// </summary>
     public bool IsFaceUp()
     {
         float x = transform.eulerAngles.x;
-        return Mathf.Approximately(x, 0f);
+        return Mathf.Approximately(x % 360f, 0f);
     }
 
     void Update()
     {
         if (isFlipping)
         {
-            transform.Rotate(Vector3.right * 720 * Time.deltaTime); // Fast flip on X-axis
+            transform.Rotate(Vector3.right * 720f * Time.deltaTime); // Fast flip on X-axis
         }
     }
 }

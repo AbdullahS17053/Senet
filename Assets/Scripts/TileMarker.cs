@@ -94,6 +94,6 @@ public class TileMarker : MonoBehaviour
 
     public void Unhighlight()
     {
-        rend.material = defaultMaterial;
+        rend.material = isTriggerTile ? triggerMaterial : defaultMaterial;
     }
 }

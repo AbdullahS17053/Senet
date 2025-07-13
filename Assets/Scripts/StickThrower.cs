@@ -15,6 +15,8 @@ public class StickThrower : MonoBehaviour
     [SerializeField] Material highlightMaterial;
     [SerializeField] float throwDuration = 1f;
 
+    private int randomThrowValue;
+
     void Start()
     {
         throwButton.onClick.AddListener(() => StartCoroutine(ThrowSticksRoutine()));
@@ -32,46 +34,45 @@ public class StickThrower : MonoBehaviour
     {
         throwButton.gameObject.SetActive(false);
 
-        // Start flipping animation
-        foreach (Stick stick in stickObjects)
+        // Step 1: Random number of face-up sticks (0–4)
+        int faceUpCount = Random.Range(0, 5);
+        randomThrowValue = (faceUpCount == 0) ? 5 : faceUpCount;
+
+        Debug.Log($"[Pre-throw] Face-up: {faceUpCount}, throwValue: {randomThrowValue}");
+
+// Shuffle sticks and assign face-up state
+        List<int> indices = new List<int>();
+        for (int i = 0; i < stickObjects.Count; i++)
+            indices.Add(i);
+        Shuffle(indices);
+
+        for (int i = 0; i < stickObjects.Count; i++)
         {
-            stick.StartFlip();
+            bool shouldBeFaceUp = (i < faceUpCount);
+            stickObjects[indices[i]].PrepareFaceUpState(shouldBeFaceUp);
+            stickObjects[indices[i]].StartFlip();
         }
+
 
         yield return new WaitForSeconds(throwDuration);
 
-        // Snap stick rotations first BEFORE checking IsFaceUp
         foreach (Stick stick in stickObjects)
         {
-            stick.StopAndSnapRotation();  // Must run BEFORE IsFaceUp
+            stick.StopAndSnapRotation(); // snap to correct state
         }
 
-        // Now check how many are face up
-        int actualFaceUpCount = 0;
-        foreach (Stick stick in stickObjects)
-        {
-            if (stick.IsFaceUp())  // Must reflect snapped rotation
-                actualFaceUpCount++;
-        }
-
-        // Game logic value: treat 0 as 5
-        int throwValue = (actualFaceUpCount == 0) ? 5 : actualFaceUpCount;
-
-        // Display and store result
-        stickNumberText.text = throwValue.ToString();
-        PieceMover.lastStickValue = throwValue;
+        stickNumberText.text = randomThrowValue.ToString();
+        PieceMover.lastStickValue = randomThrowValue;
         PieceMover.moveInProgress = false;
 
-        Debug.Log($"Stick result: {actualFaceUpCount} face-up → throwValue = {throwValue}");
+        Debug.Log($"[Post-throw] Applied throwValue = {randomThrowValue}");
 
-        // Handle turn flow
         if (!PieceMover.HasAnyValidMove(false))
         {
             Debug.Log("No valid move — passing turn.");
             PieceMover.PassTurnImmediately();
         }
     }
-
 
     public void UpdateThrowButtonState()
     {
@@ -90,5 +91,17 @@ public class StickThrower : MonoBehaviour
     {
         stickNumberText.text = "";
         throwButton.interactable = true;
+    }
+
+    // Utility to shuffle stick indices
+    private void Shuffle(List<int> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int rnd = Random.Range(0, i + 1);
+            int temp = list[i];
+            list[i] = list[rnd];
+            list[rnd] = temp;
+        }
     }
 }
