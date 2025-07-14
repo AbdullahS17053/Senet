@@ -153,6 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1839063
 BoxCollider:
@@ -459,6 +460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &94273401
 BoxCollider:
@@ -584,6 +586,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &105411234
 BoxCollider:
@@ -958,6 +961,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &507661814
 BoxCollider:
@@ -1204,6 +1208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &539520054
 BoxCollider:
@@ -1449,6 +1454,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &646070106
 BoxCollider:
@@ -1639,6 +1645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &696075424
 BoxCollider:
@@ -1829,6 +1836,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &715389843
 BoxCollider:
@@ -2231,6 +2239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &804607572
 BoxCollider:
@@ -2355,6 +2364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &841702373
 BoxCollider:
@@ -2640,7 +2650,7 @@ RectTransform:
   m_GameObject: {fileID: 902238684}
   m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 325405026}
@@ -2766,6 +2776,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &915314568
 BoxCollider:
@@ -2930,15 +2941,15 @@ RectTransform:
   m_GameObject: {fileID: 983813034}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 325405026}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 228.8888, y: 392.7776}
+  m_AnchoredPosition: {x: -1.1111112, y: -2.222229}
+  m_SizeDelta: {x: 226.6666, y: 388.3331}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &983813036
 MonoBehaviour:
@@ -3056,6 +3067,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1033390624
 BoxCollider:
@@ -3271,6 +3283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1110052913
 BoxCollider:
@@ -3426,6 +3439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1152970520
 BoxCollider:
@@ -3603,13 +3617,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1212564208}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: -0.48, y: 31.719296, z: -23.423248}
+  m_LocalRotation: {x: 0.4999998, y: -0, z: -0, w: 0.86602557}
+  m_LocalPosition: {x: -0.48, y: 50, z: -23.423248}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!114 &1212564213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3693,6 +3707,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1289738803
 BoxCollider:
@@ -3968,6 +3983,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1354837319
 BoxCollider:
@@ -4351,6 +4367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1394614085
 BoxCollider:
@@ -4523,7 +4540,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.1339893, y: -4, z: 13.07217}
-  m_LocalScale: {x: 1, y: 1.2038, z: 1}
+  m_LocalScale: {x: 1, y: 2.4076, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -4562,6 +4579,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1457689613
 BoxCollider:
@@ -4752,6 +4770,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1562020065
 BoxCollider:
@@ -5161,6 +5180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1595868533
 BoxCollider:
@@ -5399,6 +5419,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1663991877
 BoxCollider:
@@ -5523,6 +5544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1683936485
 BoxCollider:
@@ -6025,7 +6047,7 @@ RectTransform:
   m_GameObject: {fileID: 1750837781}
   m_LocalRotation: {x: 0, y: 0, z: -0.13052624, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 325405026}
@@ -6151,6 +6173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1783960797
 BoxCollider:
@@ -6275,6 +6298,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1807418123
 BoxCollider:
@@ -6400,6 +6424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1808563880
 BoxCollider:
@@ -6579,6 +6604,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1819262600
 BoxCollider:
@@ -6703,6 +6729,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1854146167
 BoxCollider:
@@ -6889,6 +6916,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &1938240065
 BoxCollider:
@@ -7075,6 +7103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &2094161316
 BoxCollider:
@@ -7557,7 +7586,7 @@ Transform:
   m_GameObject: {fileID: 432229030779505097}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.5, y: 7.5, z: 0}
+  m_LocalPosition: {x: -0.5, y: 4.5121274, z: 0}
   m_LocalScale: {x: 400, y: 400, z: 400}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9942,6 +9971,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972223658320
 MeshRenderer:
@@ -10002,6 +10032,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972312563890
 MeshRenderer:
@@ -10062,6 +10093,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972401212908
 MeshRenderer:
@@ -10122,6 +10154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972556927637
 MeshRenderer:
@@ -10182,6 +10215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972590827288
 MeshRenderer:
@@ -10242,6 +10276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972591104292
 MeshRenderer:
@@ -10302,6 +10337,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972603535646
 MeshRenderer:
@@ -10362,6 +10398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972638378773
 MeshRenderer:
@@ -10422,6 +10459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972712202546
 MeshRenderer:
@@ -10482,6 +10520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627972922046330
 MeshRenderer:
@@ -10542,6 +10581,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973064343183
 MeshRenderer:
@@ -10602,6 +10642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973090226987
 MeshRenderer:
@@ -10662,6 +10703,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973137703503
 MeshRenderer:
@@ -10722,6 +10764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973139782553
 MeshRenderer:
@@ -10782,6 +10825,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973155776179
 MeshRenderer:
@@ -10842,6 +10886,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973165763546
 MeshRenderer:
@@ -10902,6 +10947,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973240759940
 MeshRenderer:
@@ -10962,6 +11008,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973491391312
 MeshRenderer:
@@ -11022,6 +11069,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973545008513
 MeshRenderer:
@@ -11082,6 +11130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973592155244
 MeshRenderer:
@@ -11142,6 +11191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973626159286
 MeshRenderer:
@@ -11202,6 +11252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973722141068
 MeshRenderer:
@@ -11262,6 +11313,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973752833709
 MeshRenderer:
@@ -11322,6 +11374,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973823381064
 MeshRenderer:
@@ -11382,6 +11435,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973903441423
 MeshRenderer:
@@ -11442,6 +11496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627973991135366
 MeshRenderer:
@@ -11502,6 +11557,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b6369dd5f13fdfd4a9e11640c4f80ae4, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627974031878189
 MeshRenderer:
@@ -11562,6 +11618,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627974125418210
 MeshRenderer:
@@ -11622,6 +11679,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!23 &7952627974293216086
 MeshRenderer:
@@ -11682,6 +11740,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!33 &8572613119529232348
 MeshFilter:
@@ -11713,6 +11772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: 66d8718bae5642a49b78b54111d2a637, type: 2}
   triggerMaterial: {fileID: 2100000, guid: 38edd90a6427207499c41929d2cb9ea3, type: 2}
+  isSkysparkTile: 0
   isTriggerTile: 0
 --- !u!65 &8708980711052120090
 BoxCollider:
