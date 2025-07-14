@@ -370,6 +370,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 1
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!23 &58288647
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -867,6 +869,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 1
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!23 &467834661
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1964,6 +1968,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 0
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!136 &724035158
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3140,6 +3146,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1059549533723759475}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1072253750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1072253752}
+  - component: {fileID: 1072253751}
+  m_Layer: 0
+  m_Name: ScrollEffectManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1072253751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072253750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c98fa2180bd15418279ecac813384c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  senusretMarkedTile: {fileID: 0}
+  selectedTileMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
+--- !u!4 &1072253752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072253750}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1102854985
 GameObject:
   m_ObjectHideFlags: 0
@@ -4060,6 +4112,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 0
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!136 &1384089056
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4185,6 +4239,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 0
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!136 &1392770575
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4993,6 +5049,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 0
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!136 &1582155549
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5884,6 +5942,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 1
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!23 &1741196102
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7381,6 +7441,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 1
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!23 &2113723654
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8412,6 +8474,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 1
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!1 &4915829529081201927
 GameObject:
   m_ObjectHideFlags: 0
@@ -9737,6 +9801,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   throwButton: {fileID: 0}
   isAI: 0
+  isProtected: 0
+  originalMaterial: {fileID: 0}
 --- !u!23 &6861362234655597778
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11709,3 +11775,4 @@ SceneRoots:
   - {fileID: 1686052241}
   - {fileID: 1059549533723759475}
   - {fileID: 1102854987}
+  - {fileID: 1072253752}

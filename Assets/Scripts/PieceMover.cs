@@ -24,6 +24,10 @@ public class PieceMover : MonoBehaviour
     public static bool lastMoveWasRethrow = false;
 
     private ScrollManager scrollManager;
+    [HideInInspector] public bool isProtected = false;
+    [HideInInspector] public Material originalMaterial;
+
+
 
     
 
@@ -40,6 +44,9 @@ public class PieceMover : MonoBehaviour
 
         if (throwButton == null)
             throwButton = GameObject.FindWithTag("ThrowButton"); // Optional fallback
+        
+        if (originalMaterial == null)
+            originalMaterial = GetComponent<Renderer>().material;
         
         scrollManager = GameObject.FindObjectOfType<ScrollManager>();
 
@@ -158,7 +165,17 @@ public class PieceMover : MonoBehaviour
 
         int currentIndex = piece.GetCurrentTileIndex();
         if (currentIndex == -1) return false;
+        // 🚫 Prevent leaving Skyspark unless stick value is exactly 4
+        Transform currentTile = boardTransform.GetChild(currentIndex);
+        TileMarker marker = currentTile.GetComponent<TileMarker>();
 
+        if (marker != null && marker.isSkysparkTile && lastStickValue != 4)
+        {
+            Debug.Log($"{piece.name} is on Skyspark Swap and cannot move unless stick value is exactly 4.");
+            return false;
+        }
+
+        
         // Scan for consecutive opponents from currentIndex+1 to targetIndex+3
         int consecutiveOpponents = 0;
         bool blockSwap = false;
@@ -208,7 +225,13 @@ public class PieceMover : MonoBehaviour
         targetTile = boardTransform.GetChild(targetIndex);
 
         PieceMover occupyingFinal = targetTile.GetComponentInChildren<PieceMover>();
+
+// Protected piece cannot be replaced
+        if (occupyingFinal != null && occupyingFinal.isProtected)
+            return false;
+
         bool canReplace = occupyingFinal != null && occupyingFinal.isAI != piece.isAI;
+
 
         if (!canReplace && targetTile.childCount > 0)
             return false;
@@ -247,6 +270,7 @@ public class PieceMover : MonoBehaviour
         Transform nextTile = boardTransform.GetChild(i);
         Vector3 end = new Vector3(nextTile.position.x, yPos, nextTile.position.z);
 
+        // Move to the next tile position step-by-step
         while (Vector3.Distance(transform.position, end) > 0.01f)
         {
             transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
@@ -256,15 +280,25 @@ public class PieceMover : MonoBehaviour
         transform.position = end;
     }
 
+
     // Check if there's an opponent piece to send back
     Transform previousTile = boardTransform.GetChild(currentIndex);
     PieceMover opponent = targetTile.GetComponentInChildren<PieceMover>();
 
     if (opponent != null && opponent.isAI != isAI)
     {
+        if (opponent.isProtected)
+        {
+            Debug.Log($"{opponent.name} is protected by Sylvan Shield. Cannot swap.");
+            // Cancel move (optional: allow occupying same tile if game logic allows)
+            moveInProgress = false;
+            yield break;
+        }
+
         opponent.transform.SetParent(previousTile);
         opponent.transform.localPosition = new Vector3(0, opponent.transform.localPosition.y, 0);
     }
+
 
     // Final placement
     transform.SetParent(targetTile);
@@ -274,7 +308,47 @@ public class PieceMover : MonoBehaviour
     highlightedTile?.GetComponent<TileMarker>()?.Unhighlight();
     highlightedTile = null;
     selectedPiece = null;
+    // 🚩 Senusret Path trigger check
+    if (ScrollEffectExecutor.Instance.senusretMarkedTile != null &&
+        targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile &&
+        isAI != (PieceMover.currentTurn == TurnType.Player)) // only opponent triggers
+    {
+        Debug.Log($"{name} landed on Senusret Path! Sending back...");
 
+        Transform board = targetTile.parent;
+        Transform fallbackTile = null;
+
+        for (int i = 15; i >= 0; i--)
+        {
+            Transform candidate = board.GetChild(i);
+            if (candidate.childCount == 0)
+            {
+                fallbackTile = candidate;
+                break;
+            }
+        }
+
+        if (fallbackTile == null)
+        {
+            Debug.LogWarning("No valid fallback tile found behind 15!");
+        }
+        else
+        {
+            transform.SetParent(fallbackTile);
+            transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
+            Debug.Log($"{name} relocated to tile: {fallbackTile.name}");
+
+            // Optional: trigger tile logic again if fallback tile is a trigger
+            TileMarker marker = fallbackTile.GetComponent<TileMarker>();
+            if (marker != null && marker.isTriggerTile)
+            {
+                if (isAI)
+                    AiMover.Instance.UseRandomAiScroll();
+                else
+                    GameObject.FindObjectOfType<ScrollManager>()?.SetScrollsInteractable(true);
+            }
+        }
+    }
     // Rethrow logic
     lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 4);
     lastStickValue = 0;

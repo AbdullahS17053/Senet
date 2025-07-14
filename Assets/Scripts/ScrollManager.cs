@@ -97,6 +97,12 @@ public class ScrollManager : MonoBehaviour
         scrollButtons[scrollSlotIndex].interactable = false;
 
         // Your scroll effect logic can go here...
+        if (scrollData != null && scrollIndex < scrollData.scrollEffectKeys.Length)
+        {
+            string effectKey = scrollData.scrollEffectKeys[scrollIndex];
+            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = player
+        }
+
 
         SetScrollsInteractable(false); // Hide scrolls and cancel button after use
 

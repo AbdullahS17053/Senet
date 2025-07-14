@@ -4,7 +4,9 @@ using System.Collections.Generic;
 public class TileMarker : MonoBehaviour
 {
     [SerializeField] private Material defaultMaterial;
-    [SerializeField] private Material triggerMaterial;
+    [SerializeField] public Material triggerMaterial;
+    public bool isSkysparkTile = false;
+
 
     private Renderer rend;
 
@@ -94,6 +96,7 @@ public class TileMarker : MonoBehaviour
 
     public void Unhighlight()
     {
+        if (isSkysparkTile) return;
         rend.material = isTriggerTile ? triggerMaterial : defaultMaterial;
     }
 }

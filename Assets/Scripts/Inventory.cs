@@ -50,7 +50,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private void InitializeDefaultScrolls()
+    /*private void InitializeDefaultScrolls()
     {
         int count = scrollData.scrollSprites.Length;
 
@@ -72,7 +72,33 @@ public class Inventory : MonoBehaviour
         }
 
         PlayerPrefs.Save();
+    }*/
+    private void InitializeDefaultScrolls()
+    {
+        int count = scrollData.scrollSprites.Length;
+
+        for (int i = 0; i < count; i++)
+        {
+            string unlockKey = $"scroll_{i}_unlocked";
+            string selectKey = $"scroll_{i}_selected";
+
+            // Unlock all scrolls for testing
+            PlayerPrefs.SetInt(unlockKey, 1);
+
+            // Keep only the first 3 scrolls selected, rest unselected
+            if (i < maxSelectableScrolls)
+            {
+                PlayerPrefs.SetInt(selectKey, 1);
+            }
+            else
+            {
+                PlayerPrefs.SetInt(selectKey, 0);
+            }
+        }
+
+        PlayerPrefs.Save();
     }
+
 
     private void LoadSelectedScrolls()
     {

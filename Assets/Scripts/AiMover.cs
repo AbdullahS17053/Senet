@@ -131,6 +131,11 @@ public class AiMover : MonoBehaviour
         Debug.Log($"AI used scroll {scrollIndex}");
 
         // Apply the scroll's effect here, if needed
+        if (scrollData != null && scrollIndex < scrollData.scrollEffectKeys.Length)
+        {
+            string effectKey = scrollData.scrollEffectKeys[scrollIndex];
+            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true); // true = AI
+        }
 
         // --- Handle turn switching or rethrow logic ---
         bool getsAnotherTurn = PieceMover.lastMoveWasRethrow;
