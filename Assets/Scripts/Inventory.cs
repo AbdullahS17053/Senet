@@ -48,6 +48,12 @@ public class Inventory : MonoBehaviour
             int capturedIndex = i;
             selectButtons[i].onClick.AddListener(() => ToggleSelectScroll(capturedIndex));
         }
+        for (int i = 0; i < selectButtons.Length; i++)
+        {
+            if (selectButtons[i] != null)
+                selectButtons[i].gameObject.SetActive(isScrollBackVisible[i]);
+        }
+
     }
 
     /*private void InitializeDefaultScrolls()
@@ -217,9 +223,20 @@ public class Inventory : MonoBehaviour
     {
         if (index < 0 || index >= isScrollBackVisible.Length) return;
 
+        // Toggle between front and back
         isScrollBackVisible[index] = !isScrollBackVisible[index];
+
+        // Enable select button when back side is visible
+        if (selectButtons != null && index < selectButtons.Length)
+        {
+            selectButtons[index].gameObject.SetActive(isScrollBackVisible[index]);
+        }
+
         UpdateInventoryUI();
     }
+
+
+
 
     private void ShowToaster(string message)
     {
