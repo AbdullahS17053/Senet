@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 {
     [Header("UI Panels")]
     [SerializeField] private GameObject scrollPanel;
+
+    [SerializeField] private GameObject teachingsPanel;
     
     [Header("Tap Effect Settings")]
     [SerializeField] private float scaleAmount = 1.1f;
@@ -29,9 +31,20 @@ public class GameManager : MonoBehaviour
             
     }
 
+    public void TeachingsBtn()
+    {
+        StartCoroutine(PlayTapEffect(() =>
+        {
+            teachingsPanel.SetActive(true);
+        }));
+    }
+
     public void BackBtn()
     {
-        scrollPanel.SetActive(false);
+        StartCoroutine(PlayTapEffect(() =>
+        {
+            scrollPanel.SetActive(false);
+        }));
     }
     public IEnumerator PlayTapEffect(System.Action onComplete)
     {
@@ -70,6 +83,14 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(afterEffectDelay);
 
         onComplete?.Invoke();
+    }
+
+    public void CloseTeachingsPanel()
+    {
+        StartCoroutine(PlayTapEffect(() =>
+        {
+            teachingsPanel.SetActive(false);
+        }));
     }
 }
 
