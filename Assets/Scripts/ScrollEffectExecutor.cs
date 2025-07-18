@@ -130,7 +130,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             // Visual effect
             Renderer rend = selected.GetComponent<Renderer>();
             Material shieldMat = new Material(selected.originalMaterial);
-            shieldMat.color = Color.cyan;
+            shieldMat.color = Color.yellow;
             rend.material = shieldMat;
 
             StartCoroutine(RemoveProtectionNextTurn(!isAI, selected));
@@ -217,63 +217,66 @@ public class ScrollEffectExecutor : MonoBehaviour
 
 
     private IEnumerator SelectTileByTouch(List<Transform> candidates, System.Action<Transform> callback)
-{
-    Transform selectedTile = null;
-    Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
-
-    // Highlight candidate tiles and store original materials
-    foreach (Transform t in candidates)
     {
-        Renderer r = t.GetComponent<Renderer>();
-        if (r != null)
-        {
-            originalMaterials[t] = r.material;
-            r.material.color = Color.yellow;
-        }
-    }
+        Transform selectedTile = null;
+        Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
+        Dictionary<Transform, Color> originalColors = new Dictionary<Transform, Color>();
 
-    // Wait for user touch selection
-    while (selectedTile == null)
-    {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        // Highlight candidate tiles and store original materials and colors
+        foreach (Transform t in candidates)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            Renderer r = t.GetComponent<Renderer>();
+            if (r != null)
             {
-                if (candidates.Contains(hit.transform))
-                    selectedTile = hit.transform;
+                originalMaterials[t] = r.material;
+                originalColors[t] = r.material.color;
+                r.material.color = Color.yellow;
             }
         }
 
-        yield return null;
-    }
-
-    // Restore materials after selection
-    foreach (Transform t in candidates)
-    {
-        Renderer r = t.GetComponent<Renderer>();
-        TileMarker marker = t.GetComponent<TileMarker>();
-
-        if (r != null)
+        // Wait for user touch selection
+        while (selectedTile == null)
         {
-            if (marker != null && marker.isSkysparkTile)
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
-                r.material.color = Color.red; // Keep Skyspark red
-            }
-            else if (marker != null && marker.isTriggerTile && marker.triggerMaterial != null)
-            {
-                r.material = marker.triggerMaterial;
-            }
-            else if (originalMaterials.ContainsKey(t))
-            {
-                r.material = originalMaterials[t];
+                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    if (candidates.Contains(hit.transform))
+                        selectedTile = hit.transform;
+                }
             }
 
+            yield return null;
         }
+
+        // Restore materials and colors after selection
+        foreach (Transform t in candidates)
+        {
+            Renderer r = t.GetComponent<Renderer>();
+            TileMarker marker = t.GetComponent<TileMarker>();
+
+            if (r != null)
+            {
+                if (marker != null && marker.isSkysparkTile)
+                {
+                    r.material.color = Color.red; // Keep Skyspark red
+                }
+                else if (marker != null && marker.isTriggerTile && marker.triggerMaterial != null)
+                {
+                    r.material = marker.triggerMaterial;
+                }
+                else if (originalMaterials.ContainsKey(t))
+                {
+                    r.material = originalMaterials[t];
+                    r.material.color = originalColors[t]; // Restore original color
+                }
+            }
+        }
+
+        callback?.Invoke(selectedTile);
     }
 
-    callback?.Invoke(selectedTile);
-}
 
     private IEnumerator SenusretPathEffect(bool isAI)
     {
@@ -308,6 +311,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         // ✅ Set and visually mark the tile AFTER selection
         senusretMarkedTile = chosenTile;
+        chosenTile.GetComponent<TileMarker>().senusretTile = true;
         if (chosenTile != null)
         {
             Renderer rend = chosenTile.GetComponent<Renderer>();
@@ -346,8 +350,12 @@ public class ScrollEffectExecutor : MonoBehaviour
     }
     private void HandleTurnAfterScroll()
     {
-        if (PieceMover.lastMoveWasRethrow)
+        bool isRethrow = PieceMover.lastMoveWasRethrow;
+        PieceMover.lastMoveWasRethrow = false; // Reset before continuing
+
+        if (isRethrow)
         {
+            // Same turn continues
             if (PieceMover.currentTurn == TurnType.Player)
                 PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
             else
@@ -355,6 +363,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
         else
         {
+            // Switch turns
             PieceMover.currentTurn = (PieceMover.currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
             PieceMover.ResetTurn();
 
@@ -363,7 +372,5 @@ public class ScrollEffectExecutor : MonoBehaviour
             else
                 AiMover.StartStickThrow();
         }
-
-        PieceMover.lastMoveWasRethrow = false;
     }
 }

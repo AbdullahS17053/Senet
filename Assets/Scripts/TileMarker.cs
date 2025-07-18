@@ -6,6 +6,7 @@ public class TileMarker : MonoBehaviour
     [SerializeField] private Material defaultMaterial;
     [SerializeField] public Material triggerMaterial;
     public bool isSkysparkTile = false;
+    public bool senusretTile = false;
 
 
     private Renderer rend;
@@ -97,6 +98,13 @@ public class TileMarker : MonoBehaviour
     public void Unhighlight()
     {
         if (isSkysparkTile) return;
+        
+        else if (senusretTile)
+        {
+            rend.material.color = Color.magenta;
+            return;
+        }
+
         rend.material = isTriggerTile ? triggerMaterial : defaultMaterial;
     }
 }

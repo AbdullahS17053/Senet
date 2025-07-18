@@ -6,6 +6,9 @@ public enum TurnType { Player, AI }
 public class PieceMover : MonoBehaviour
 {
     public GameObject throwButton;
+    public GameObject skipButton;
+    [SerializeField] GameObject winPanel;
+    [SerializeField] GameObject losePanel;
     private static Transform boardTransform;
     private static Camera mainCamera;
     private static int totalTiles = 30;
@@ -47,6 +50,9 @@ public class PieceMover : MonoBehaviour
         
         if (originalMaterial == null)
             originalMaterial = GetComponent<Renderer>().material;
+        
+        if(skipButton==null)
+            skipButton = GameObject.FindWithTag("SkipButton");
         
         scrollManager = GameObject.FindObjectOfType<ScrollManager>();
 
@@ -165,7 +171,7 @@ public class PieceMover : MonoBehaviour
 
         int currentIndex = piece.GetCurrentTileIndex();
         if (currentIndex == -1) return false;
-        // 🚫 Prevent leaving Skyspark unless stick value is exactly 4
+        //Prevent leaving Skyspark unless stick value is exactly 4
         Transform currentTile = boardTransform.GetChild(currentIndex);
         TileMarker marker = currentTile.GetComponent<TileMarker>();
 
@@ -310,8 +316,7 @@ public class PieceMover : MonoBehaviour
     selectedPiece = null;
     // 🚩 Senusret Path trigger check
     if (ScrollEffectExecutor.Instance.senusretMarkedTile != null &&
-        targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile &&
-        isAI != (PieceMover.currentTurn == TurnType.Player)) // only opponent triggers
+        targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile)
     {
         Debug.Log($"{name} landed on Senusret Path! Sending back...");
 
@@ -349,6 +354,7 @@ public class PieceMover : MonoBehaviour
             }
         }
     }
+
     // Rethrow logic
     lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 4);
     lastStickValue = 0;
@@ -416,6 +422,10 @@ public class PieceMover : MonoBehaviour
         if (playerCount == 0)
         {
             Debug.Log("AI Wins!");
+            if (losePanel != null)
+            {
+                losePanel.SetActive(true);
+            }
             // Add UI or game over logic here
             return true;
         }
@@ -423,6 +433,10 @@ public class PieceMover : MonoBehaviour
         if (aiCount == 0)
         {
             Debug.Log("Player Wins!");
+            if (winPanel != null)
+            {
+                winPanel.SetActive(true);
+            }
             // Add UI or game over logic here
             return true;
         }
@@ -456,7 +470,11 @@ public class PieceMover : MonoBehaviour
     void UpdateThrowButtonState()
     {
         if (throwButton != null)
+        {
             throwButton.SetActive(currentTurn == TurnType.Player);
+            skipButton.SetActive(currentTurn != TurnType.Player);
+        }
+            
     }
     
 }

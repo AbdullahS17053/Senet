@@ -76,7 +76,8 @@ public class AiMover : MonoBehaviour
 
     private IEnumerator ExecuteAiTurn()
     {
-        aiPieces = FindObjectsOfType<PieceMover>();
+        aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI);
+
 
         int chosenIndex = -1;
         Transform validatedTarget = null;

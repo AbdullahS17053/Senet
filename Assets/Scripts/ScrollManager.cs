@@ -9,17 +9,28 @@ public class ScrollManager : MonoBehaviour
     [SerializeField] private Image[] scrollButtonImages;
     [SerializeField] private GameObject cancelButton;
 
+    [Header("Scroll Panel")]
+    [SerializeField] private GameObject scrollPanel;
+    [SerializeField] private Button scrollBackButton;
+    [SerializeField] private Image scrollBackButtonImage;
+
     [Header("Scroll Data")]
-    [SerializeField] private ScrollData scrollData;  // Reference to the ScriptableObject
+    [SerializeField] private ScrollData scrollData;
 
     private int[] selectedScrollIndices = new int[3];
-    private bool[] usedScrollFlags = new bool[3]; // Track used scrolls
+    private bool[] usedScrollFlags = new bool[3];
+
+    private int selectedSlotForPanel = -1; // Store which scroll slot was clicked
 
     void Start()
     {
         LoadSelectedScrolls();
         SetupScrollButtons();
         SetScrollsInteractable(false);
+
+        // Hide panel initially
+        if (scrollPanel != null)
+            scrollPanel.SetActive(false);
     }
 
     void Update()
@@ -39,7 +50,7 @@ public class ScrollManager : MonoBehaviour
                 if (count < 3)
                 {
                     selectedScrollIndices[count] = i;
-                    usedScrollFlags[count] = false; // initialize as unused
+                    usedScrollFlags[count] = false;
                     count++;
                 }
             }
@@ -48,7 +59,7 @@ public class ScrollManager : MonoBehaviour
         for (int i = count; i < 3; i++)
         {
             selectedScrollIndices[i] = -1;
-            usedScrollFlags[i] = true; // invalid index means unusable
+            usedScrollFlags[i] = true;
         }
     }
 
@@ -77,7 +88,7 @@ public class ScrollManager : MonoBehaviour
             int capturedIndex = i;
             if (scrollIndex >= 0 && !usedScrollFlags[capturedIndex])
             {
-                scrollButtons[i].onClick.AddListener(() => OnScrollUsed(capturedIndex));
+                scrollButtons[i].onClick.AddListener(() => OpenScrollPanel(capturedIndex));
                 scrollButtons[i].interactable = true;
             }
             else
@@ -87,43 +98,61 @@ public class ScrollManager : MonoBehaviour
         }
     }
 
+    // New: Open scroll panel and show back sprite
+    private void OpenScrollPanel(int scrollSlotIndex)
+    {
+        selectedSlotForPanel = scrollSlotIndex;
+
+        int scrollIndex = selectedScrollIndices[scrollSlotIndex];
+
+        if (scrollBackButtonImage != null && scrollIndex >= 0 && scrollIndex < scrollData.scrollBacks.Length)
+        {
+            scrollBackButtonImage.sprite = scrollData.scrollBacks[scrollIndex];
+            scrollBackButtonImage.preserveAspect = true;
+        }
+
+        // Set listener for back button
+        scrollBackButton.onClick.RemoveAllListeners();
+        scrollBackButton.onClick.AddListener(() => OnScrollUsed(scrollSlotIndex));
+
+        if (scrollPanel != null)
+            scrollPanel.SetActive(true);
+
+        //SetScrollsInteractable(false); // hide main buttons
+    }
+
     private void OnScrollUsed(int scrollSlotIndex)
     {
         int scrollIndex = selectedScrollIndices[scrollSlotIndex];
         Debug.Log($"Scroll {scrollIndex} used!");
 
-        // Mark this scroll as used
         usedScrollFlags[scrollSlotIndex] = true;
         scrollButtons[scrollSlotIndex].interactable = false;
 
-        // Your scroll effect logic can go here...
+        // Execute scroll effect
         if (scrollData != null && scrollIndex < scrollData.scrollEffectKeys.Length)
         {
             string effectKey = scrollData.scrollEffectKeys[scrollIndex];
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = player
         }
 
+        if (scrollPanel != null)
+            scrollPanel.SetActive(false);
 
-        SetScrollsInteractable(false); // Hide scrolls and cancel button after use
-
-        // --- Handle turn change or rethrow ---
+        // Handle turn or rethrow
         if (PieceMover.lastMoveWasRethrow)
         {
-            // Player gets another throw
             PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
         }
         else
         {
-            // Turn goes to AI
             PieceMover.currentTurn = TurnType.AI;
-            PieceMover.ResetTurn(); // Clear selection
+            PieceMover.ResetTurn();
             AiMover.StartStickThrow();
         }
 
-        // Reset flag after processing
         PieceMover.lastMoveWasRethrow = false;
     }
-
 
     public void SetScrollsInteractable(bool state)
     {
@@ -137,31 +166,31 @@ public class ScrollManager : MonoBehaviour
 
         if (cancelButton != null)
             cancelButton.SetActive(state);
-        
-        // Disable throw button when showing scrolls
+
         if (PieceMover.Instance != null && PieceMover.Instance.throwButton != null)
             PieceMover.Instance.throwButton.SetActive(!state);
     }
 
     public void OnCancelButtonPressed()
     {
-        SetScrollsInteractable(false); // Hide scrolls and cancel button
+        SetScrollsInteractable(false);
 
         if (PieceMover.lastMoveWasRethrow)
         {
-            // Player gets another throw
             PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
         }
         else
         {
-            // Turn goes to AI
             PieceMover.currentTurn = TurnType.AI;
-            PieceMover.ResetTurn(); // Clear selection
+            PieceMover.ResetTurn();
             AiMover.StartStickThrow();
         }
 
-        // Reset this after handling
         PieceMover.lastMoveWasRethrow = false;
     }
-    
+
+    public void BackBtn()
+    {
+        scrollPanel.SetActive(false);
+    }
 }

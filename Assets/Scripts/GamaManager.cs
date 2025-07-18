@@ -92,6 +92,16 @@ public class GameManager : MonoBehaviour
             teachingsPanel.SetActive(false);
         }));
     }
+
+    public void MenuBtn()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void ReplayBtn()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }
 
 

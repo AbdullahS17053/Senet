@@ -7,6 +7,7 @@ public class StickThrower : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] public Button throwButton;
+    [SerializeField] private Button skipButton;        // NEW
     [SerializeField] Text stickNumberText;
 
     [Header("Stick References")]
@@ -20,7 +21,10 @@ public class StickThrower : MonoBehaviour
     void Start()
     {
         throwButton.onClick.AddListener(() => StartCoroutine(ThrowSticksRoutine()));
+        skipButton.onClick.AddListener(OnSkipPressed); // NEW
+
         PieceMover.highlightMaterial = highlightMaterial;
+
         ResetUI();
         UpdateThrowButtonState();
     }
@@ -33,6 +37,7 @@ public class StickThrower : MonoBehaviour
     public IEnumerator ThrowSticksRoutine()
     {
         throwButton.gameObject.SetActive(false);
+        skipButton.gameObject.SetActive(true); // Show skip after throwing
 
         // Step 1: Random number of face-up sticks (0–4)
         int faceUpCount = Random.Range(0, 5);
@@ -40,7 +45,7 @@ public class StickThrower : MonoBehaviour
 
         Debug.Log($"[Pre-throw] Face-up: {faceUpCount}, throwValue: {randomThrowValue}");
 
-// Shuffle sticks and assign face-up state
+        // Shuffle sticks and assign face-up state
         List<int> indices = new List<int>();
         for (int i = 0; i < stickObjects.Count; i++)
             indices.Add(i);
@@ -52,7 +57,6 @@ public class StickThrower : MonoBehaviour
             stickObjects[indices[i]].PrepareFaceUpState(shouldBeFaceUp);
             stickObjects[indices[i]].StartFlip();
         }
-
 
         yield return new WaitForSeconds(throwDuration);
 
@@ -80,10 +84,12 @@ public class StickThrower : MonoBehaviour
         {
             bool canThrow = PieceMover.lastStickValue == 0 && !PieceMover.moveInProgress;
             throwButton.gameObject.SetActive(canThrow);
+            skipButton.gameObject.SetActive(!canThrow); // Opposite visibility
         }
         else
         {
             throwButton.gameObject.SetActive(false);
+            skipButton.gameObject.SetActive(false);
         }
     }
 
@@ -91,6 +97,21 @@ public class StickThrower : MonoBehaviour
     {
         stickNumberText.text = "";
         throwButton.interactable = true;
+        throwButton.gameObject.SetActive(true);
+        skipButton.gameObject.SetActive(false); // Hide on reset
+    }
+
+    private void OnSkipPressed()
+    {
+        Debug.Log("Skip pressed — passing turn.");
+        PieceMover.PassTurnImmediately();
+    }
+
+    //Call this from PieceMover when a rethrow happens
+    public void EnableThrowButtonAfterRethrow()
+    {
+        throwButton.gameObject.SetActive(true);
+        skipButton.gameObject.SetActive(false);
     }
 
     // Utility to shuffle stick indices
