@@ -41,11 +41,20 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < scrollData.scrollSprites.Length; i++)
         {
-            PlayerPrefs.SetInt($"scroll_{i}_unlocked", i < maxSelectableScrolls ? 1 : 0);
-            PlayerPrefs.SetInt($"scroll_{i}_selected", i < maxSelectableScrolls ? 1 : 0);
+            bool isUnlocked = i < 10; // ✅ Only first 10 unlocked
+            PlayerPrefs.SetInt($"scroll_{i}_unlocked", isUnlocked ? 1 : 0);
+
+            // Select first 3 from unlocked scrolls only
+            if (isUnlocked && i < maxSelectableScrolls)
+                PlayerPrefs.SetInt($"scroll_{i}_selected", 1);
+            else
+                PlayerPrefs.SetInt($"scroll_{i}_selected", 0);
         }
+
         PlayerPrefs.Save();
     }
+
+
 
     private void LoadSelectedScrolls()
     {

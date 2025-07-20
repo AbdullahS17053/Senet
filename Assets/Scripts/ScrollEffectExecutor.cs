@@ -1,12 +1,15 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class ScrollEffectExecutor : MonoBehaviour
 {
     public static ScrollEffectExecutor Instance;
     public Transform senusretMarkedTile; // The tile marked by Senusret Path
     [SerializeField] private Material selectedTileMaterial;
+    [SerializeField] private Text scrollFeedbackText;
+
 
 
 
@@ -14,6 +17,8 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     public void ExecuteEffect(string effectKey, bool isAI)
     {
+        ShowTemporaryMessage($"{(isAI ? "AI" : "Player")} used {effectKey}");
+
         switch (effectKey)
         {
             case "Earthbound’s Step":
@@ -27,6 +32,24 @@ public class ScrollEffectExecutor : MonoBehaviour
                 break;
             case "Skyspark Swap":
                 StartCoroutine(SkysparkSwapEffect());
+                break;
+            case "Gift of Jahi":
+                StartCoroutine(GiftOfJahiEffect(isAI));
+                break;
+            case "Obsidian’s Burden":
+                StartCoroutine(ObsidianBurdenEffect());
+                break;
+            case "Horus Retreat":
+                StartCoroutine(HorusRetreatEffect(isAI));
+                break;
+            case "Anippe’s Grace":
+                StartCoroutine(AnippesGraceEffect(isAI));
+                break;
+            case "Vault of Shadows":
+                StartCoroutine(VaultOfShadowsEffect(isAI));
+                break;
+            case "Heka’s Blessing":
+                StartCoroutine(HekasBlessingEffect(isAI));
                 break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
@@ -348,6 +371,134 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         HandleTurnAfterScroll();
     }
+    private IEnumerator GiftOfJahiEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Gift of Jahi");
+
+        ScrollManager scrollManager = FindObjectOfType<ScrollManager>();
+        if (scrollManager == null)
+        {
+            Debug.LogWarning("ScrollManager not found!");
+            yield return new WaitForSeconds(0.3f);
+            HandleTurnAfterScroll();
+            yield break;
+        }
+
+        List<int> usedScrolls = new List<int>(scrollManager.usedScrollHistory);
+        if (usedScrolls.Count == 0)
+        {
+            Debug.Log("No used scrolls to recover.");
+            yield return new WaitForSeconds(0.3f);
+            HandleTurnAfterScroll();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(0.5f); // Optional delay
+
+        int recoveredScroll;
+
+        if (isAI)
+        {
+            recoveredScroll = usedScrolls[Random.Range(0, usedScrolls.Count)];
+        }
+        else
+        {
+            recoveredScroll = usedScrolls[usedScrolls.Count - 2]; // Most recently used
+        }
+
+        scrollManager.RestoreUsedScroll(recoveredScroll);
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] recovered scroll index: {recoveredScroll}");
+
+        HandleTurnAfterScroll();
+    }
+    private IEnumerator ObsidianBurdenEffect()
+    {
+        Debug.Log("[Player] activated Obsidian’s Burden!");
+
+        if (PieceMover.currentTurn != TurnType.AI)
+        {
+            Debug.LogWarning("Cannot use Obsidian’s Burden when it's not AI's turn.");
+            HandleTurnAfterScroll();
+            yield break;
+        }
+
+        if (PieceMover.obsidianUsedThisTurn)
+        {
+            Debug.LogWarning("Obsidian’s Burden has already been used this AI turn.");
+            HandleTurnAfterScroll();
+            yield break;
+        }
+
+        PieceMover.obsidianUsedThisTurn = true;
+
+        // Cancel any current AI processing (if applicable)
+        Debug.Log("[Obsidian’s Burden] Forcing AI rethrow...");
+
+        yield return new WaitForSeconds(0.5f);
+
+        AiMover.StartStickThrow(forceReroll: true); // <-- new optional param
+        // Note: do NOT call HandleTurnAfterScroll here — AI will handle it post-reroll
+    }
+    private IEnumerator HorusRetreatEffect(bool isAI)
+    {
+        if (isAI)
+            PieceMover.horusPenaltyPending = true; // Apply to player next turn
+        else
+            PieceMover.horusPenaltyPending = true; // Apply to AI next turn
+
+        Debug.Log("[Horus Retreat] Penalty will apply to opponent's next stick throw.");
+        yield return new WaitForSeconds(0.5f);
+        HandleTurnAfterScroll();
+    }
+    private IEnumerator AnippesGraceEffect(bool isAI)
+    {
+        if (isAI)
+            PieceMover.anippeGraceActive_AI = true;
+        else
+            PieceMover.anippeGraceActive_Player = true;
+
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Anippe’s Grace — will skip 1 trigger tile this turn.");
+
+        yield return new WaitForSeconds(0.5f);
+        HandleTurnAfterScroll();
+    }
+    private IEnumerator VaultOfShadowsEffect(bool isAI)
+    {
+        ScrollManager sm = FindObjectOfType<ScrollManager>();
+        if (sm == null)
+        {
+            Debug.LogWarning("ScrollManager not found.");
+            HandleTurnAfterScroll();
+            yield break;
+        }
+
+        string lastKey = isAI ? sm.lastScrollEffectKey_AI : sm.lastScrollEffectKey_Player;
+
+        if (string.IsNullOrEmpty(lastKey) || lastKey == "Vault of Shadows")
+        {
+            Debug.LogWarning("No scroll to repeat or cannot repeat Vault of Shadows itself.");
+            yield return new WaitForSeconds(0.3f);
+            HandleTurnAfterScroll();
+            yield break;
+        }
+
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] Vault of Shadows repeating: {lastKey}");
+        yield return new WaitForSeconds(0.5f); // Optional delay
+        ExecuteEffect(lastKey, isAI); // Repeats the last scroll!
+    }
+    private IEnumerator HekasBlessingEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Heka’s Blessing");
+
+        yield return new WaitForSeconds(0.5f); // Optional delay
+
+        ScrollManager sm = FindObjectOfType<ScrollManager>();
+        if (sm != null)
+            sm.GrantHekasBlessingScroll(isAI);
+
+        HandleTurnAfterScroll();
+    }
+
     private void HandleTurnAfterScroll()
     {
         bool isRethrow = PieceMover.lastMoveWasRethrow;
@@ -366,6 +517,8 @@ public class ScrollEffectExecutor : MonoBehaviour
             // Switch turns
             PieceMover.currentTurn = (PieceMover.currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
             PieceMover.ResetTurn();
+            ShowTemporaryMessage($"{PieceMover.currentTurn} Turn");
+
 
             if (PieceMover.currentTurn == TurnType.Player)
                 PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
@@ -373,4 +526,22 @@ public class ScrollEffectExecutor : MonoBehaviour
                 AiMover.StartStickThrow();
         }
     }
+    private Coroutine messageRoutine;
+
+    private void ShowTemporaryMessage(string message, float duration = 2f)
+    {
+        if (messageRoutine != null)
+            StopCoroutine(messageRoutine);
+
+        messageRoutine = StartCoroutine(ClearAfterDelay(message, duration));
+        scrollFeedbackText.text = message;
+    }
+
+    private IEnumerator ClearAfterDelay(string message, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (scrollFeedbackText.text == message) // Only clear if message hasn't changed
+            scrollFeedbackText.text = "";
+    }
+
 }

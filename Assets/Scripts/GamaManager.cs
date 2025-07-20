@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,6 +8,8 @@ public class GameManager : MonoBehaviour
 {
     [Header("UI Panels")]
     [SerializeField] private GameObject scrollPanel;
+    [SerializeField] private GameObject winPanel;
+    [SerializeField] private GameObject losePanel;
 
     [SerializeField] private GameObject teachingsPanel;
     
@@ -14,6 +17,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scaleAmount = 1.1f;
     [SerializeField] private float scaleDuration = 0.1f;
     [SerializeField] private float afterEffectDelay = 0.1f;
+    
+    public static GameManager Instance;
+
+    public void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject); // Prevent duplicates
+    }
+
     public void PlayBtn()
     {
         StartCoroutine(PlayTapEffect(() =>
@@ -102,6 +116,32 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+    public void CheckForWinCondition()
+    {
+        int playerCount = 0;
+        int aiCount = 0;
+
+        PieceMover[] allPieces = FindObjectsOfType<PieceMover>();
+        foreach (var piece in allPieces)
+        {
+            if (piece.isAI) aiCount++;
+            else playerCount++;
+        }
+
+        if (aiCount == 1)
+        {
+            Debug.Log("AI Wins!");
+            if (losePanel != null)
+                losePanel.SetActive(true);
+        }
+        else if (playerCount == 1)
+        {
+            Debug.Log("Player Wins!");
+            if (winPanel != null)
+                winPanel.SetActive(true);
+        }
+    }
 }
+
 
 

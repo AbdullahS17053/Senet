@@ -1,13 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ScrollManager : MonoBehaviour
 {
     [Header("Scroll UI")]
-    [SerializeField] private Button[] scrollButtons;
+    [SerializeField] public Button[] scrollButtons;
     [SerializeField] private Text[] scrollButtonTexts;
     [SerializeField] private Image[] scrollButtonImages;
-    [SerializeField] private GameObject cancelButton;
+    [SerializeField] public GameObject cancelButton;
 
     [Header("Scroll Panel")]
     [SerializeField] private GameObject scrollPanel;
@@ -15,12 +16,26 @@ public class ScrollManager : MonoBehaviour
     [SerializeField] private Image scrollBackButtonImage;
 
     [Header("Scroll Data")]
-    [SerializeField] private ScrollData scrollData;
+    [SerializeField] public ScrollData scrollData;
 
-    private int[] selectedScrollIndices = new int[3];
+    public int[] selectedScrollIndices = new int[3];
     private bool[] usedScrollFlags = new bool[3];
 
     private int selectedSlotForPanel = -1; // Store which scroll slot was clicked
+    
+    public List<int> usedScrollHistory = new List<int>(); // Track used/discarded scrolls this match
+    
+    public string lastScrollEffectKey_Player = null;
+    public string lastScrollEffectKey_AI = null;
+    
+    [Header("Extra Scroll")]
+    [SerializeField] private Button extraScrollButton;
+    [SerializeField] private Image extraScrollButtonImage;
+    private int extraScrollIndex = -1;
+    private bool extraScrollUsed = false;
+
+
+
 
     void Start()
     {
@@ -31,14 +46,27 @@ public class ScrollManager : MonoBehaviour
         // Hide panel initially
         if (scrollPanel != null)
             scrollPanel.SetActive(false);
+        
+        if (extraScrollButton != null)
+            extraScrollButton.gameObject.SetActive(false);
+        
+        extraScrollButton.onClick.AddListener(OnExtraScrollClicked);
+
+
     }
 
     void Update()
     {
         bool isPlayerTurn = PieceMover.currentTurn == TurnType.Player;
+
         foreach (var btn in scrollButtons)
             btn.gameObject.SetActive(isPlayerTurn);
+
+        if (extraScrollButton != null)
+            extraScrollButton.gameObject.SetActive(isPlayerTurn && !extraScrollUsed && extraScrollIndex >= 0);
     }
+
+    
 
     private void LoadSelectedScrolls()
     {
@@ -125,6 +153,9 @@ public class ScrollManager : MonoBehaviour
     {
         int scrollIndex = selectedScrollIndices[scrollSlotIndex];
         Debug.Log($"Scroll {scrollIndex} used!");
+        
+        if (!usedScrollHistory.Contains(selectedScrollIndices[scrollSlotIndex]))
+            usedScrollHistory.Add(selectedScrollIndices[scrollSlotIndex]);
 
         usedScrollFlags[scrollSlotIndex] = true;
         scrollButtons[scrollSlotIndex].interactable = false;
@@ -133,11 +164,20 @@ public class ScrollManager : MonoBehaviour
         if (scrollData != null && scrollIndex < scrollData.scrollEffectKeys.Length)
         {
             string effectKey = scrollData.scrollEffectKeys[scrollIndex];
-            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = player
+
+            if (effectKey != "Vault of Shadows")
+                lastScrollEffectKey_Player = effectKey;
+            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = Player
+
         }
 
         if (scrollPanel != null)
+        {
             scrollPanel.SetActive(false);
+            cancelButton.SetActive(false);
+            SetScrollsInteractable(false);
+        }
+            
 
         // Handle turn or rethrow
         if (PieceMover.lastMoveWasRethrow)
@@ -164,11 +204,38 @@ public class ScrollManager : MonoBehaviour
                 scrollButtons[i].interactable = false;
         }
 
+        if (!extraScrollUsed && extraScrollIndex >= 0)
+        {
+            extraScrollButton.interactable = state;
+            extraScrollButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            extraScrollButton.interactable = false;
+            extraScrollButton.gameObject.SetActive(false);
+        }
+
         if (cancelButton != null)
             cancelButton.SetActive(state);
 
         if (PieceMover.Instance != null && PieceMover.Instance.throwButton != null)
             PieceMover.Instance.throwButton.SetActive(!state);
+    }
+
+    public void RestoreUsedScroll(int scrollIndex)
+    {
+        for (int i = 0; i < selectedScrollIndices.Length; i++)
+        {
+            if (selectedScrollIndices[i] == scrollIndex && usedScrollFlags[i])
+            {
+                usedScrollFlags[i] = false;
+                scrollButtons[i].interactable = true;
+                if (usedScrollHistory.Contains(scrollIndex))
+                    usedScrollHistory.Remove(scrollIndex);
+                Debug.Log($"Scroll {scrollIndex} has been restored!");
+                break;
+            }
+        }
     }
 
     public void OnCancelButtonPressed()
@@ -188,6 +255,101 @@ public class ScrollManager : MonoBehaviour
 
         PieceMover.lastMoveWasRethrow = false;
     }
+    private void OnExtraScrollClicked()
+    {
+        if (extraScrollUsed || extraScrollIndex < 0) return;
+
+        // Set up back image
+        if (scrollBackButtonImage != null && extraScrollIndex < scrollData.scrollBacks.Length)
+        {
+            scrollBackButtonImage.sprite = scrollData.scrollBacks[extraScrollIndex];
+            scrollBackButtonImage.preserveAspect = true;
+        }
+
+        // Set scroll panel active
+        if (scrollPanel != null)
+            scrollPanel.SetActive(true);
+
+        // Remove previous listeners and assign a new one for extra scroll usage
+        scrollBackButton.onClick.RemoveAllListeners();
+        scrollBackButton.onClick.AddListener(() => OnExtraScrollUsed());
+    }
+    private void OnExtraScrollUsed()
+    {
+        if (extraScrollUsed || extraScrollIndex < 0) return;
+
+        extraScrollUsed = true;
+        extraScrollButton.interactable = false;
+        extraScrollButton.gameObject.SetActive(false);
+
+        string effectKey = scrollData.scrollEffectKeys[extraScrollIndex];
+        Debug.Log($"[Player] used extra scroll from Heka’s Blessing: {effectKey}");
+
+        if (effectKey != "Vault of Shadows")
+            lastScrollEffectKey_Player = effectKey;
+
+        ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false);
+
+        if (scrollPanel != null)
+            scrollPanel.SetActive(false);
+
+        if (PieceMover.lastMoveWasRethrow)
+        {
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+        }
+        else
+        {
+            PieceMover.currentTurn = TurnType.AI;
+            PieceMover.ResetTurn();
+            AiMover.StartStickThrow();
+        }
+
+        PieceMover.lastMoveWasRethrow = false;
+    }
+
+    public void GrantHekasBlessingScroll(bool isAI)
+    {
+        List<int> eligibleScrolls = new List<int>();
+
+        for (int i = 0; i < scrollData.scrollSprites.Length; i++)
+        {
+            if (PlayerPrefs.GetInt($"scroll_{i}_unlocked", 0) == 1 &&
+                System.Array.IndexOf(selectedScrollIndices, i) == -1 &&
+                i != extraScrollIndex) // prevent re-selection
+            {
+                eligibleScrolls.Add(i);
+            }
+        }
+
+        if (eligibleScrolls.Count == 0)
+        {
+            Debug.LogWarning("No eligible scrolls for Heka's Blessing.");
+            return;
+        }
+
+        int randomScroll = eligibleScrolls[Random.Range(0, eligibleScrolls.Count)];
+
+        if (isAI)
+        {
+            AiMover.Instance.GrantExtraScroll(randomScroll);
+            Debug.Log($"[AI] received Heka's Blessing scroll: {randomScroll}");
+        }
+        else
+        {
+            extraScrollIndex = randomScroll;
+            extraScrollUsed = false;
+
+            if (extraScrollButtonImage != null)
+            {
+                extraScrollButtonImage.sprite = scrollData.scrollSprites[randomScroll];
+                extraScrollButtonImage.preserveAspect = true;
+            }
+
+            extraScrollButton.interactable = true;
+            extraScrollButton.gameObject.SetActive(true);
+        }
+    }
+
 
     public void BackBtn()
     {

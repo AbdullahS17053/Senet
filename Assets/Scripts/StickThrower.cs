@@ -12,6 +12,8 @@ public class StickThrower : MonoBehaviour
 
     [Header("Stick References")]
     [SerializeField] List<Stick> stickObjects;
+    [SerializeField] private GameObject stickVisualParent;
+
 
     [SerializeField] Material highlightMaterial;
     [SerializeField] float throwDuration = 1f;
@@ -67,6 +69,16 @@ public class StickThrower : MonoBehaviour
 
         stickNumberText.text = randomThrowValue.ToString();
         PieceMover.lastStickValue = randomThrowValue;
+
+// Apply Horus Retreat penalty
+        if (PieceMover.horusPenaltyPending)
+        {
+            PieceMover.lastStickValue = Mathf.Max(0, PieceMover.lastStickValue - 1);
+            Debug.Log("[Horus Retreat] Applied -1 penalty. New stick value: " + PieceMover.lastStickValue);
+            PieceMover.horusPenaltyPending = false; // Clear after applying
+        }
+
+
         PieceMover.moveInProgress = false;
 
         Debug.Log($"[Post-throw] Applied throwValue = {randomThrowValue}");
@@ -76,6 +88,7 @@ public class StickThrower : MonoBehaviour
             Debug.Log("No valid move — passing turn.");
             PieceMover.PassTurnImmediately();
         }
+        StartCoroutine(HideStickVisualsAfterDelay());
     }
 
     public void UpdateThrowButtonState()
@@ -125,4 +138,21 @@ public class StickThrower : MonoBehaviour
             list[rnd] = temp;
         }
     }
+    public void ShowStickVisuals()
+    {
+        if (stickVisualParent != null)
+            stickVisualParent.SetActive(true);
+    }
+
+    public void HideStickVisuals()
+    {
+        if (stickVisualParent != null)
+            stickVisualParent.SetActive(false);
+    }
+    private IEnumerator HideStickVisualsAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+        HideStickVisuals(); // only visuals disappear, text stays
+    }
+
 }
