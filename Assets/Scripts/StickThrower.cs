@@ -13,8 +13,10 @@ public class StickThrower : MonoBehaviour
     [Header("Stick References")]
     [SerializeField] List<Stick> stickObjects;
     [SerializeField] private GameObject stickVisualParent;
-
-
+    
+    [Header("Sound References")]
+    [SerializeField] AudioSource throwSound;
+    
     [SerializeField] Material highlightMaterial;
     [SerializeField] float throwDuration = 1f;
 
@@ -38,6 +40,7 @@ public class StickThrower : MonoBehaviour
 
     public IEnumerator ThrowSticksRoutine()
     {
+        throwSound.Play();
         throwButton.gameObject.SetActive(false);
         skipButton.gameObject.SetActive(true); // Show skip after throwing
 

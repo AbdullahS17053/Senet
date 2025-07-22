@@ -30,10 +30,14 @@ public class GameBoardManager : MonoBehaviour
         else if (Input.GetMouseButton(0) && isSwiping)
         {
             Vector2 currentTouchPos = Input.mousePosition;
-            float deltaX = currentTouchPos.x - startTouchPos.x;
+            float deltaY = currentTouchPos.y - startTouchPos.y;
 
-            // Rotate around Y axis
-            board.transform.Rotate(0f, deltaX * rotationSpeed, 0f);
+            float newXRotation = board.transform.eulerAngles.x + deltaY * rotationSpeed;
+            if (newXRotation > 180) newXRotation -= 360;
+            newXRotation = Mathf.Clamp(newXRotation, -60f, 30f);
+
+            Vector3 currentRotation = board.transform.eulerAngles;
+            board.transform.eulerAngles = new Vector3(newXRotation, currentRotation.y, currentRotation.z);
 
             startTouchPos = currentTouchPos;
         }
@@ -42,29 +46,34 @@ public class GameBoardManager : MonoBehaviour
             isSwiping = false;
         }
 #else
-        // For touch (Mobile)
-        if (Input.touchCount > 0)
+    // For touch (Mobile)
+    if (Input.touchCount > 0)
+    {
+        Touch touch = Input.GetTouch(0);
+
+        if (touch.phase == TouchPhase.Began)
         {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                startTouchPos = touch.position;
-                isSwiping = true;
-            }
-            else if (touch.phase == TouchPhase.Moved && isSwiping)
-            {
-                float deltaX = touch.position.x - startTouchPos.x;
-
-                board.transform.Rotate(0f, deltaX * rotationSpeed, 0f);
-
-                startTouchPos = touch.position;
-            }
-            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-            {
-                isSwiping = false;
-            }
+            startTouchPos = touch.position;
+            isSwiping = true;
         }
+        else if (touch.phase == TouchPhase.Moved && isSwiping)
+        {
+            float deltaY = touch.position.y - startTouchPos.y;
+
+            float newXRotation = board.transform.eulerAngles.x + deltaY * rotationSpeed;
+            if (newXRotation > 180) newXRotation -= 360;
+            newXRotation = Mathf.Clamp(newXRotation, -60f, 30f);
+
+            Vector3 currentRotation = board.transform.eulerAngles;
+            board.transform.eulerAngles = new Vector3(newXRotation, currentRotation.y, currentRotation.z);
+
+            startTouchPos = touch.position;
+        }
+        else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+        {
+            isSwiping = false;
+        }
+    }
 #endif
     }
 }

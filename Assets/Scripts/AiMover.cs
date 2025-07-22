@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AiMover : MonoBehaviour
@@ -85,39 +86,74 @@ public class AiMover : MonoBehaviour
     }
 
     private IEnumerator ExecuteAiTurn()
+{
+    aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI);
+
+    List<(PieceMover piece, Transform target, int targetIndex)> validMoves = new();
+
+    foreach (var piece in aiPieces)
     {
-        aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI);
+        int currentIndex = piece.GetCurrentTileIndex();
+        if (currentIndex == -1) continue;
 
-        int chosenIndex = -1;
-        Transform validatedTarget = null;
+        int proposedIndex = currentIndex + PieceMover.lastStickValue;
+        if (proposedIndex > 30) continue;
 
-        for (int i = 0; i < aiPieces.Length; i++)
+        if (PieceMover.IsValidMove(piece, proposedIndex, out Transform validatedTarget))
         {
-            PieceMover piece = aiPieces[i];
-            int currentIndex = piece.GetCurrentTileIndex();
-            if (currentIndex == -1) continue;
-
-            int proposedIndex = currentIndex + PieceMover.lastStickValue;
-            if (proposedIndex >= 30) continue;
-
-            if (PieceMover.IsValidMove(piece, proposedIndex, out validatedTarget))
-            {
-                chosenIndex = i;
-                break;
-            }
-        }
-
-        if (chosenIndex != -1 && validatedTarget != null)
-        {
-            yield return aiPieces[chosenIndex].StartCoroutine(aiPieces[chosenIndex].MoveToTile(validatedTarget));
-        }
-        else
-        {
-            Debug.LogWarning("AI found no valid move. Passing turn...");
-            yield return new WaitForSeconds(0.5f);
-            PieceMover.PassTurnImmediately();
+            validMoves.Add((piece, validatedTarget, proposedIndex));
         }
     }
+
+    if (validMoves.Count == 0)
+    {
+        Debug.Log("AI has no valid moves. Passing turn...");
+        PieceMover.PassTurnImmediately();
+        yield break;
+    }
+
+    // 1️⃣ Prioritize trigger tiles
+    foreach (var move in validMoves)
+    {
+        TileMarker marker = move.target.GetComponent<TileMarker>();
+        if (marker != null && marker.isTriggerTile)
+        {
+            Debug.Log("[AI] Moving to trigger tile.");
+            yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+            yield break;
+        }
+    }
+
+
+    // 2️⃣ Prioritize move to last (virtual) tile
+    foreach (var move in validMoves)
+    {
+        if (move.targetIndex == 30)
+        {
+            Debug.Log("[AI] Moving to virtual last tile.");
+            yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+            yield break;
+        }
+    }
+
+    // 3️⃣ Prioritize swapping with player piece
+    foreach (var move in validMoves)
+    {
+        PieceMover occupyingPiece = PieceMover.GetPieceOnTile(move.target);
+        if (occupyingPiece != null && !occupyingPiece.isAI)
+        {
+            Debug.Log("[AI] Swapping with player piece.");
+            yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+            yield break;
+        }
+    }
+
+    // 4️⃣ Move the one closest to the end
+    var furthestMove = validMoves.OrderByDescending(m => m.targetIndex).First();
+    Debug.Log("[AI] Moving piece closest to end.");
+    yield return furthestMove.piece.StartCoroutine(furthestMove.piece.MoveToTile(furthestMove.target));
+}
+
 
     public void UseRandomAiScroll()
     {
@@ -165,19 +201,6 @@ public class AiMover : MonoBehaviour
 
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
         }
-
-        if (PieceMover.lastMoveWasRethrow)
-        {
-            StartStickThrow(); // AI rethrows
-        }
-        else
-        {
-            PieceMover.currentTurn = TurnType.Player;
-            PieceMover.ResetTurn();
-            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
-        }
-
-        PieceMover.lastMoveWasRethrow = false;
     }
 
     public void GrantExtraScroll(int scrollIndex)

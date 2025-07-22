@@ -177,8 +177,11 @@ public class ScrollManager : MonoBehaviour
             cancelButton.SetActive(false);
             SetScrollsInteractable(false);
         }
-            
 
+        if (scrollData.scrollEffectKeys[scrollIndex] == "Earthbound’s Step")
+        {
+            return;
+        }
         // Handle turn or rethrow
         if (PieceMover.lastMoveWasRethrow)
         {
@@ -188,6 +191,7 @@ public class ScrollManager : MonoBehaviour
         {
             PieceMover.currentTurn = TurnType.AI;
             PieceMover.ResetTurn();
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
             AiMover.StartStickThrow();
         }
 

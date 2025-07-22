@@ -53,7 +53,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                 break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
-                HandleTurnAfterScroll(); // fallback
+                //HandleTurnAfterScroll(); // fallback
                 break;
         }
     }
@@ -85,7 +85,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.Log("No valid second piece for Earthbound’s Step.");
             yield return new WaitForSeconds(0.3f);
-            HandleTurnAfterScroll();
+            //if (!isAI) HandleTurnAfterScroll();
+
             yield break;
         }
 
@@ -130,7 +131,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.LogWarning("No available pieces to protect.");
             yield return new WaitForSeconds(0.3f);
-            HandleTurnAfterScroll();
+            //if (!isAI) HandleTurnAfterScroll();
+
             yield break;
         }
 
@@ -153,7 +155,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             // Visual effect
             Renderer rend = selected.GetComponent<Renderer>();
             Material shieldMat = new Material(selected.originalMaterial);
-            shieldMat.color = Color.yellow;
+            shieldMat.color = Color.magenta;
             rend.material = shieldMat;
 
             StartCoroutine(RemoveProtectionNextTurn(!isAI, selected));
@@ -235,70 +237,85 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         callback?.Invoke(selected);
-        HandleTurnAfterScroll();
+        /*if (PieceMover.currentTurn != TurnType.AI)
+            HandleTurnAfterScroll();*/
+
     }
 
 
     private IEnumerator SelectTileByTouch(List<Transform> candidates, System.Action<Transform> callback)
+{
+    Transform selectedTile = null;
+    Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
+    Dictionary<Transform, Color> originalColors = new Dictionary<Transform, Color>();
+
+    // Highlight candidate tiles and store original materials and colors
+    foreach (Transform t in candidates)
     {
-        Transform selectedTile = null;
-        Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
-        Dictionary<Transform, Color> originalColors = new Dictionary<Transform, Color>();
-
-        // Highlight candidate tiles and store original materials and colors
-        foreach (Transform t in candidates)
+        Renderer r = t.GetComponent<Renderer>();
+        if (r != null)
         {
-            Renderer r = t.GetComponent<Renderer>();
-            if (r != null)
-            {
-                originalMaterials[t] = r.material;
-                originalColors[t] = r.material.color;
-                r.material.color = Color.yellow;
-            }
+            originalMaterials[t] = r.material;
+            originalColors[t] = r.material.color;
+            r.material.color = Color.yellow;
         }
-
-        // Wait for user touch selection
-        while (selectedTile == null)
-        {
-            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    if (candidates.Contains(hit.transform))
-                        selectedTile = hit.transform;
-                }
-            }
-
-            yield return null;
-        }
-
-        // Restore materials and colors after selection
-        foreach (Transform t in candidates)
-        {
-            Renderer r = t.GetComponent<Renderer>();
-            TileMarker marker = t.GetComponent<TileMarker>();
-
-            if (r != null)
-            {
-                if (marker != null && marker.isSkysparkTile)
-                {
-                    r.material.color = Color.red; // Keep Skyspark red
-                }
-                else if (marker != null && marker.isTriggerTile && marker.triggerMaterial != null)
-                {
-                    r.material = marker.triggerMaterial;
-                }
-                else if (originalMaterials.ContainsKey(t))
-                {
-                    r.material = originalMaterials[t];
-                    r.material.color = originalColors[t]; // Restore original color
-                }
-            }
-        }
-
-        callback?.Invoke(selectedTile);
     }
+
+    // Wait for user touch selection
+    while (selectedTile == null)
+    {
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            RaycastHit[] hits = Physics.RaycastAll(ray);
+
+            foreach (RaycastHit hit in hits)
+            {
+                GameObject hitObject = hit.collider.gameObject;
+
+                // Ignore any GameObject with tag "Piece"
+                if (hitObject.CompareTag("Piece"))
+                    continue;
+
+                // Check if the tapped object is a valid tile
+                if (candidates.Contains(hit.transform))
+                {
+                    selectedTile = hit.transform;
+                    break;
+                }
+            }
+        }
+
+        yield return null;
+    }
+
+    // Restore materials and colors after selection
+    foreach (Transform t in candidates)
+    {
+        Renderer r = t.GetComponent<Renderer>();
+        TileMarker marker = t.GetComponent<TileMarker>();
+
+        if (r != null)
+        {
+            if (marker != null && marker.isSkysparkTile)
+            {
+                r.material.color = Color.red; // Keep Skyspark red
+            }
+            else if (marker != null && marker.isTriggerTile && marker.triggerMaterial != null)
+            {
+                r.material = marker.triggerMaterial;
+            }
+            else if (originalMaterials.ContainsKey(t))
+            {
+                r.material = originalMaterials[t];
+                r.material.color = originalColors[t]; // Restore original color
+            }
+        }
+    }
+
+    callback?.Invoke(selectedTile);
+}
+
 
 
     private IEnumerator SenusretPathEffect(bool isAI)
@@ -316,7 +333,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (boardTiles.Count == 0)
         {
             Debug.LogWarning("No valid tiles beyond 15.");
-            HandleTurnAfterScroll(); // ✅ OK here
+            //if (!isAI) HandleTurnAfterScroll();
+
             yield break;
         }
 
@@ -332,7 +350,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             yield return StartCoroutine(SelectTileByTouch(boardTiles, result => chosenTile = result));
         }
 
-        // ✅ Set and visually mark the tile AFTER selection
+        //Set and visually mark the tile AFTER selection
         senusretMarkedTile = chosenTile;
         chosenTile.GetComponent<TileMarker>().senusretTile = true;
         if (chosenTile != null)
@@ -347,8 +365,9 @@ public class ScrollEffectExecutor : MonoBehaviour
             Debug.Log("Senusret Path marked at tile: " + chosenTile.name);
         }
 
-        // ✅ ✅ ✅ Only now switch the turn
-        HandleTurnAfterScroll();
+        //Only now switch the turn
+        //if (!isAI) HandleTurnAfterScroll();
+
     }
     private IEnumerator SkysparkSwapEffect()
     {
@@ -369,7 +388,9 @@ public class ScrollEffectExecutor : MonoBehaviour
             r.material.color = Color.red;
 
         yield return new WaitForSeconds(0.5f);
-        HandleTurnAfterScroll();
+        /*if (PieceMover.currentTurn != TurnType.AI)
+            HandleTurnAfterScroll();*/
+
     }
     private IEnumerator GiftOfJahiEffect(bool isAI)
     {
@@ -380,7 +401,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.LogWarning("ScrollManager not found!");
             yield return new WaitForSeconds(0.3f);
-            HandleTurnAfterScroll();
+            //if (!isAI) HandleTurnAfterScroll();
+
             yield break;
         }
 
@@ -389,7 +411,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.Log("No used scrolls to recover.");
             yield return new WaitForSeconds(0.3f);
-            HandleTurnAfterScroll();
+            //if (!isAI) HandleTurnAfterScroll();
+
             yield break;
         }
 
@@ -409,7 +432,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         scrollManager.RestoreUsedScroll(recoveredScroll);
         Debug.Log($"[{(isAI ? "AI" : "Player")}] recovered scroll index: {recoveredScroll}");
 
-        HandleTurnAfterScroll();
+        //if (!isAI) HandleTurnAfterScroll();
+
     }
     private IEnumerator ObsidianBurdenEffect()
     {
@@ -418,14 +442,18 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (PieceMover.currentTurn != TurnType.AI)
         {
             Debug.LogWarning("Cannot use Obsidian’s Burden when it's not AI's turn.");
-            HandleTurnAfterScroll();
+            /*if (PieceMover.currentTurn != TurnType.AI)
+                HandleTurnAfterScroll();*/
+
             yield break;
         }
 
         if (PieceMover.obsidianUsedThisTurn)
         {
             Debug.LogWarning("Obsidian’s Burden has already been used this AI turn.");
-            HandleTurnAfterScroll();
+            /*if (PieceMover.currentTurn != TurnType.AI)
+                HandleTurnAfterScroll();*/
+
             yield break;
         }
 
@@ -448,7 +476,8 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         Debug.Log("[Horus Retreat] Penalty will apply to opponent's next stick throw.");
         yield return new WaitForSeconds(0.5f);
-        HandleTurnAfterScroll();
+        //if (!isAI) HandleTurnAfterScroll();
+
     }
     private IEnumerator AnippesGraceEffect(bool isAI)
     {
@@ -460,7 +489,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Anippe’s Grace — will skip 1 trigger tile this turn.");
 
         yield return new WaitForSeconds(0.5f);
-        HandleTurnAfterScroll();
+        //if (!isAI) HandleTurnAfterScroll();
+
     }
     private IEnumerator VaultOfShadowsEffect(bool isAI)
     {
@@ -468,7 +498,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (sm == null)
         {
             Debug.LogWarning("ScrollManager not found.");
-            HandleTurnAfterScroll();
+            //if (!isAI) HandleTurnAfterScroll();
+
             yield break;
         }
 
@@ -478,7 +509,8 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.LogWarning("No scroll to repeat or cannot repeat Vault of Shadows itself.");
             yield return new WaitForSeconds(0.3f);
-            HandleTurnAfterScroll();
+            //if (!isAI) HandleTurnAfterScroll();
+
             yield break;
         }
 
@@ -496,10 +528,11 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (sm != null)
             sm.GrantHekasBlessingScroll(isAI);
 
-        HandleTurnAfterScroll();
+        //if (!isAI) HandleTurnAfterScroll();
+
     }
 
-    private void HandleTurnAfterScroll()
+    /*private void HandleTurnAfterScroll()
     {
         bool isRethrow = PieceMover.lastMoveWasRethrow;
         PieceMover.lastMoveWasRethrow = false; // Reset before continuing
@@ -525,7 +558,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             else
                 AiMover.StartStickThrow();
         }
-    }
+    }*/
     private Coroutine messageRoutine;
 
     private void ShowTemporaryMessage(string message, float duration = 2f)

@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using System.Linq;
+
 
 public enum TurnType { Player, AI }
 
@@ -84,25 +86,34 @@ public class PieceMover : MonoBehaviour
         {
             Touch touch = Input.touches[0];
             Ray ray = mainCamera.ScreenPointToRay(touch.position);
-            RaycastHit hit;
+            RaycastHit[] hits = Physics.RaycastAll(ray);
 
-            if (Physics.Raycast(ray, out hit))
+            foreach (RaycastHit hit in hits)
             {
                 GameObject tapped = hit.collider.gameObject;
+                PieceMover tappedPiece = tapped.GetComponent<PieceMover>();
 
+                // Skip AI pieces
+                if (tappedPiece != null && tappedPiece.isAI)
+                    continue;
+
+                // Handle player piece tap
                 if (tapped.CompareTag("Piece"))
                 {
-                    PieceMover tappedPiece = tapped.GetComponent<PieceMover>();
-                    if (!tappedPiece.isAI) // Only allow selecting player piece
-                        HandlePieceTap(tappedPiece);
+                    HandlePieceTap(tappedPiece);
                 }
+                // Handle tile tap
                 else if (highlightedTile != null && tapped.transform == highlightedTile)
                 {
                     selectedPiece?.StartCoroutine(selectedPiece.MoveToTile(highlightedTile));
                 }
+
+                // Process only the first valid hit (non-AI)
+                break;
             }
         }
     }
+
 
     void HandlePieceTap(PieceMover piece)
     {
@@ -110,22 +121,32 @@ public class PieceMover : MonoBehaviour
         if (currentIndex == -1) return;
 
         int targetIndex = currentIndex + lastStickValue;
-        if (targetIndex >= totalTiles) return;
+
+        // ✅ Prevent anything beyond 31
+        if (targetIndex > totalTiles) return;
+
+        // ✅ Special case: move directly to tile 30 (last tile), no highlight
+        if (targetIndex == totalTiles)
+        {
+            selectedPiece = piece;
+            Transform finalTile = boardTransform.GetChild(totalTiles - 1); // Tile 30
+            piece.StartCoroutine(piece.MoveToTile(finalTile));
+            return;
+        }
 
         Transform targetTile;
         if (!IsValidMove(piece, targetIndex, out targetTile))
             return;
 
-        // Unhighlight previous
         if (highlightedTile != null)
             highlightedTile.GetComponent<TileMarker>()?.Unhighlight();
 
-        // Highlight new tile
         targetTile.GetComponent<TileMarker>()?.Highlight(highlightMaterial);
 
         selectedPiece = piece;
         highlightedTile = targetTile;
     }
+
     public static bool HasAnyValidMove(bool isAI)
     {
         PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
@@ -168,7 +189,7 @@ public class PieceMover : MonoBehaviour
                 Debug.LogError("StickThrower not found when trying to enable throw button.");
             }
 
-            // ✅ Update turn text
+            //Update turn text
             Instance?.ShowTemporaryTurnMessage("Player Turn");
         }
         else if (currentTurn == TurnType.Player)
@@ -178,7 +199,7 @@ public class PieceMover : MonoBehaviour
             moveInProgress = false;
             currentTurn = TurnType.AI;
 
-            // ✅ Update turn text
+            //Update turn text
             Instance?.ShowTemporaryTurnMessage("AI Turn");
 
             AiMover.StartStickThrow();
@@ -189,21 +210,29 @@ public class PieceMover : MonoBehaviour
     {
         targetTile = null;
 
-        if (targetIndex >= totalTiles) return false;
+        //Reject if targetIndex is greater than 30 (virtual max)
+        if (targetIndex > totalTiles) return false;
 
         int currentIndex = piece.GetCurrentTileIndex();
         if (currentIndex == -1) return false;
-        //Prevent leaving Skyspark unless stick value is exactly 4
+
+        //Prevent leaving Skyspark unless stick value is exactly 5 now
         Transform currentTile = boardTransform.GetChild(currentIndex);
         TileMarker marker = currentTile.GetComponent<TileMarker>();
 
-        if (marker != null && marker.isSkysparkTile && lastStickValue != 4)
+        if (marker != null && marker.isSkysparkTile && lastStickValue != 5)
         {
-            Debug.Log($"{piece.name} is on Skyspark Swap and cannot move unless stick value is exactly 4.");
+            Debug.Log($"{piece.name} is on Skyspark Swap and cannot move unless stick value is exactly 5.");
             return false;
         }
 
-        
+        //Handle virtual tile 31 logic — redirect to last real tile
+        if (targetIndex == totalTiles)
+        {
+            targetTile = boardTransform.GetChild(totalTiles - 1); // Tile 30 (index 29)
+            return true;
+        }
+
         // Scan for consecutive opponents from currentIndex+1 to targetIndex+3
         int consecutiveOpponents = 0;
         bool blockSwap = false;
@@ -254,18 +283,19 @@ public class PieceMover : MonoBehaviour
 
         PieceMover occupyingFinal = targetTile.GetComponentInChildren<PieceMover>();
 
-// Protected piece cannot be replaced
+        // Protected piece cannot be replaced
         if (occupyingFinal != null && occupyingFinal.isProtected)
             return false;
 
         bool canReplace = occupyingFinal != null && occupyingFinal.isAI != piece.isAI;
-
 
         if (!canReplace && targetTile.childCount > 0)
             return false;
 
         return true;
     }
+
+
 
 
     public IEnumerator MoveToTile(Transform targetTile)
@@ -291,14 +321,13 @@ public class PieceMover : MonoBehaviour
         }
 
         float moveSpeed = 5f;
-        float yPos = transform.position.y;
+        float worldY = transform.position.y;
 
         for (int i = currentIndex + 1; i <= targetIndex; i++)
         {
             Transform nextTile = boardTransform.GetChild(i);
-            Vector3 end = new Vector3(nextTile.position.x, yPos, nextTile.position.z);
+            Vector3 end = new Vector3(nextTile.position.x, worldY, nextTile.position.z);
 
-            // Move to the next tile position step-by-step
             while (Vector3.Distance(transform.position, end) > 0.01f)
             {
                 transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
@@ -306,7 +335,11 @@ public class PieceMover : MonoBehaviour
             }
 
             transform.position = end;
+
+            transform.SetParent(nextTile);
+            transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
         }
+
 
 
         // Check if there's an opponent piece to send back
@@ -388,6 +421,28 @@ public class PieceMover : MonoBehaviour
         {
             GameManager.Instance.CheckForWinCondition();
             yield return new WaitForSeconds(0.1f); // short delay
+            // ---- Turn Switching ----
+            if (!lastMoveWasRethrow)
+            {
+                currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
+            }
+        
+            ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+
+            UpdateThrowButtonState();
+            if (isAI && anippeGraceUsed_AI)
+                anippeGraceActive_AI = false;
+            else if (!isAI && anippeGraceUsed_Player)
+                anippeGraceActive_Player = false;
+
+
+            if (currentTurn == TurnType.AI)
+            {
+                if (lastMoveWasRethrow)
+                    AiMover.StartStickThrow();
+                else
+                    AiMover.StartAITurn();
+            }
             Destroy(gameObject);
             yield break;
         }
@@ -428,7 +483,6 @@ public class PieceMover : MonoBehaviour
                 }
             }
         }
-
 
         // ---- Turn Switching ----
         if (!lastMoveWasRethrow)
@@ -502,6 +556,20 @@ public class PieceMover : MonoBehaviour
             stickThrower.ShowStickVisuals();
         }
     }
+    public Transform GetCurrentTile()
+    {
+        int index = GetCurrentTileIndex();
+        if (index >= 0 && index < boardTransform.childCount)
+            return boardTransform.GetChild(index);
+        return null;
+    }
+
+    // Add this inside your PieceMover class
+    public static PieceMover GetPieceOnTile(Transform tile)
+    {
+        return FindObjectsOfType<PieceMover>().FirstOrDefault(p => p.GetCurrentTile() == tile);
+    }
+
     private Coroutine turnMessageRoutine;
 
     private void ShowTemporaryTurnMessage(string message, float duration = 2f)
@@ -521,5 +589,5 @@ public class PieceMover : MonoBehaviour
         if (turnFeedbackText.text == message)
             turnFeedbackText.text = "";
     }
-
+    
 }
