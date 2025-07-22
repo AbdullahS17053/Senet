@@ -33,6 +33,14 @@ public class AiMover : MonoBehaviour
 
     public static void StartStickThrow(bool forceReroll = false)
     {
+        // ✅ Prevent AI stick throw if turn has changed
+        if (PieceMover.currentTurn != TurnType.AI)
+        {
+            Debug.LogWarning("AI tried to throw sticks but it's no longer AI's turn.");
+            return;
+        }
+
+        // ✅ Skip if Obsidian’s Burden already forced a throw and this isn't a reroll
         if (!forceReroll && PieceMover.obsidianUsedThisTurn)
         {
             Debug.Log("Skipping redundant AI stick throw due to Obsidian’s Burden already applied.");
@@ -43,14 +51,29 @@ public class AiMover : MonoBehaviour
             Instance.StartCoroutine(Instance.ThrowSticksAndPlay(forceReroll));
     }
 
+
     private IEnumerator ThrowSticksAndPlay(bool forceReroll = false)
     {
-        yield return new WaitForSeconds(1f);
+        // ✅ Check before anything happens
+        if (PieceMover.currentTurn != TurnType.AI)
+        {
+            Debug.LogWarning("[AI] Turn changed before stick throw — skipping AI move.");
+            yield break;
+        }
 
         StickThrower stickThrower = FindObjectOfType<StickThrower>();
         if (stickThrower == null)
         {
             Debug.LogError("StickThrower not found!");
+            yield break;
+        }
+
+        yield return new WaitForSeconds(1f); // Optional thinking delay before throw
+
+        // ✅ Check again before throwing, in case scrolls changed turn during delay
+        if (PieceMover.currentTurn != TurnType.AI)
+        {
+            Debug.LogWarning("[AI] Turn changed before stick throw (post-delay) — skipping.");
             yield break;
         }
 
@@ -68,17 +91,28 @@ public class AiMover : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(1f); // Optional AI thinking delay
+        // ✅ Final check before executing AI move
+        if (PieceMover.currentTurn != TurnType.AI)
+        {
+            Debug.LogWarning("[AI] Turn changed after stick throw — aborting AI move.");
+            yield break;
+        }
 
-        if (!PieceMover.HasAnyValidMove(true))
+        yield return new WaitForSeconds(1f); // Optional thinking delay
+
+        if (!PieceMover.HasValidMoveForAI())
         {
             Debug.Log("AI has no valid moves. Passing turn...");
             PieceMover.PassTurnImmediately();
+            stickThrower.ShowStickVisuals();
+            PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
             yield break;
         }
 
         StartCoroutine(ExecuteAiTurn());
     }
+
+
 
     public static void StartAITurn()
     {

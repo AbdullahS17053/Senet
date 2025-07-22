@@ -53,66 +53,76 @@ public class ScrollEffectExecutor : MonoBehaviour
                 break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
-                //HandleTurnAfterScroll(); // fallback
                 break;
         }
     }
 
     private IEnumerator EarthboundsStepEffect(bool isAI)
+{
+    Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Earthbound’s Step");
+
+    List<PieceMover> movable = new List<PieceMover>();
+    PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
+
+    foreach (var piece in allPieces)
     {
-        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Earthbound’s Step");
-
-        List<PieceMover> movable = new List<PieceMover>();
-        PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
-
-        foreach (var piece in allPieces)
+        if (piece.isAI == isAI && piece != PieceMover.selectedPiece)
         {
-            if (piece.isAI == isAI && piece != PieceMover.selectedPiece)
-            {
-                int currentIndex = piece.GetCurrentTileIndex();
-                int nextIndex = currentIndex + 1;
+            int currentIndex = piece.GetCurrentTileIndex();
+            int nextIndex = currentIndex + 1;
 
-                if (nextIndex < 30)
-                {
-                    Transform dummy;
-                    if (PieceMover.IsValidMove(piece, nextIndex, out dummy))
-                        movable.Add(piece);
-                }
+            if (nextIndex < 30)
+            {
+                Transform dummy;
+                if (PieceMover.IsValidMove(piece, nextIndex, out dummy))
+                    movable.Add(piece);
             }
         }
+    }
 
-        if (movable.Count == 0)
+    if (movable.Count == 0)
+    {
+        Debug.Log("No valid second piece for Earthbound’s Step.");
+        yield return new WaitForSeconds(0.3f);
+        yield break;
+    }
+
+    if (isAI)
+    {
+        yield return new WaitForSeconds(0.5f); // AI "thinking"
+        PieceMover aiPiece = movable[Random.Range(0, movable.Count)];
+        int nextIndex = aiPiece.GetCurrentTileIndex() + 1;
+        Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
+        yield return aiPiece.StartCoroutine(aiPiece.MoveToTile(targetTile));
+
+        // ✅ Handle turn transition based on rethrow status
+        yield return new WaitForSeconds(0.5f); // Small pause after move
+
+        if (PieceMover.lastMoveWasRethrow)
         {
-            Debug.Log("No valid second piece for Earthbound’s Step.");
-            yield return new WaitForSeconds(0.3f);
-            //if (!isAI) HandleTurnAfterScroll();
-
-            yield break;
-        }
-
-        if (isAI)
-        {
-            yield return new WaitForSeconds(0.5f); // AI "thinking"
-            PieceMover aiPiece = movable[Random.Range(0, movable.Count)];
-            int nextIndex = aiPiece.GetCurrentTileIndex() + 1;
-            Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
-            yield return aiPiece.StartCoroutine(aiPiece.MoveToTile(targetTile));
+            AiMover.StartStickThrow(); // Give AI another turn
         }
         else
         {
-            PieceMover chosen = null;
-            yield return StartCoroutine(SelectPieceByTouch(movable, result => chosen = result));
-
-            if (chosen != null)
-            {
-                int nextIndex = chosen.GetCurrentTileIndex() + 1;
-                Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
-                yield return chosen.StartCoroutine(chosen.MoveToTile(targetTile));
-            }
+            PieceMover.currentTurn = TurnType.Player;
+            PieceMover.Instance?.ShowTemporaryTurnMessage("Player Turn");
+            PieceMover.Instance?.Invoke("UpdateThrowButtonState", 0.1f);
         }
-
-        //HandleTurnAfterScroll();
     }
+    else
+    {
+        PieceMover chosen = null;
+        yield return StartCoroutine(SelectPieceByTouch(movable, result => chosen = result));
+
+        if (chosen != null)
+        {
+            int nextIndex = chosen.GetCurrentTileIndex() + 1;
+            Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
+            yield return chosen.StartCoroutine(chosen.MoveToTile(targetTile));
+        }
+    }
+}
+
 
     private IEnumerator SylvanShieldEffect(bool isAI)
     {
@@ -131,7 +141,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.LogWarning("No available pieces to protect.");
             yield return new WaitForSeconds(0.3f);
-            //if (!isAI) HandleTurnAfterScroll();
 
             yield break;
         }
@@ -160,8 +169,6 @@ public class ScrollEffectExecutor : MonoBehaviour
 
             StartCoroutine(RemoveProtectionNextTurn(!isAI, selected));
         }
-
-        //HandleTurnAfterScroll();
     }
 
     private IEnumerator RemoveProtectionNextTurn(bool fromPlayer, PieceMover protectedPiece)
@@ -237,9 +244,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         callback?.Invoke(selected);
-        /*if (PieceMover.currentTurn != TurnType.AI)
-            HandleTurnAfterScroll();*/
-
     }
 
 
@@ -333,7 +337,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (boardTiles.Count == 0)
         {
             Debug.LogWarning("No valid tiles beyond 15.");
-            //if (!isAI) HandleTurnAfterScroll();
 
             yield break;
         }
@@ -365,9 +368,6 @@ public class ScrollEffectExecutor : MonoBehaviour
             Debug.Log("Senusret Path marked at tile: " + chosenTile.name);
         }
 
-        //Only now switch the turn
-        //if (!isAI) HandleTurnAfterScroll();
-
     }
     private IEnumerator SkysparkSwapEffect()
     {
@@ -388,8 +388,6 @@ public class ScrollEffectExecutor : MonoBehaviour
             r.material.color = Color.red;
 
         yield return new WaitForSeconds(0.5f);
-        /*if (PieceMover.currentTurn != TurnType.AI)
-            HandleTurnAfterScroll();*/
 
     }
     private IEnumerator GiftOfJahiEffect(bool isAI)
@@ -401,7 +399,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.LogWarning("ScrollManager not found!");
             yield return new WaitForSeconds(0.3f);
-            //if (!isAI) HandleTurnAfterScroll();
 
             yield break;
         }
@@ -411,7 +408,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.Log("No used scrolls to recover.");
             yield return new WaitForSeconds(0.3f);
-            //if (!isAI) HandleTurnAfterScroll();
 
             yield break;
         }
@@ -432,8 +428,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         scrollManager.RestoreUsedScroll(recoveredScroll);
         Debug.Log($"[{(isAI ? "AI" : "Player")}] recovered scroll index: {recoveredScroll}");
 
-        //if (!isAI) HandleTurnAfterScroll();
-
     }
     private IEnumerator ObsidianBurdenEffect()
     {
@@ -442,8 +436,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (PieceMover.currentTurn != TurnType.AI)
         {
             Debug.LogWarning("Cannot use Obsidian’s Burden when it's not AI's turn.");
-            /*if (PieceMover.currentTurn != TurnType.AI)
-                HandleTurnAfterScroll();*/
 
             yield break;
         }
@@ -451,8 +443,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (PieceMover.obsidianUsedThisTurn)
         {
             Debug.LogWarning("Obsidian’s Burden has already been used this AI turn.");
-            /*if (PieceMover.currentTurn != TurnType.AI)
-                HandleTurnAfterScroll();*/
 
             yield break;
         }
@@ -476,7 +466,6 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         Debug.Log("[Horus Retreat] Penalty will apply to opponent's next stick throw.");
         yield return new WaitForSeconds(0.5f);
-        //if (!isAI) HandleTurnAfterScroll();
 
     }
     private IEnumerator AnippesGraceEffect(bool isAI)
@@ -489,7 +478,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Anippe’s Grace — will skip 1 trigger tile this turn.");
 
         yield return new WaitForSeconds(0.5f);
-        //if (!isAI) HandleTurnAfterScroll();
 
     }
     private IEnumerator VaultOfShadowsEffect(bool isAI)
@@ -498,7 +486,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (sm == null)
         {
             Debug.LogWarning("ScrollManager not found.");
-            //if (!isAI) HandleTurnAfterScroll();
 
             yield break;
         }
@@ -509,7 +496,6 @@ public class ScrollEffectExecutor : MonoBehaviour
         {
             Debug.LogWarning("No scroll to repeat or cannot repeat Vault of Shadows itself.");
             yield return new WaitForSeconds(0.3f);
-            //if (!isAI) HandleTurnAfterScroll();
 
             yield break;
         }
@@ -528,37 +514,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         if (sm != null)
             sm.GrantHekasBlessingScroll(isAI);
 
-        //if (!isAI) HandleTurnAfterScroll();
-
     }
-
-    /*private void HandleTurnAfterScroll()
-    {
-        bool isRethrow = PieceMover.lastMoveWasRethrow;
-        PieceMover.lastMoveWasRethrow = false; // Reset before continuing
-
-        if (isRethrow)
-        {
-            // Same turn continues
-            if (PieceMover.currentTurn == TurnType.Player)
-                PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
-            else
-                AiMover.StartStickThrow();
-        }
-        else
-        {
-            // Switch turns
-            PieceMover.currentTurn = (PieceMover.currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
-            PieceMover.ResetTurn();
-            ShowTemporaryMessage($"{PieceMover.currentTurn} Turn");
-
-
-            if (PieceMover.currentTurn == TurnType.Player)
-                PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
-            else
-                AiMover.StartStickThrow();
-        }
-    }*/
     private Coroutine messageRoutine;
 
     private void ShowTemporaryMessage(string message, float duration = 2f)

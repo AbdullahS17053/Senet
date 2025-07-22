@@ -120,7 +120,13 @@ public class StickThrower : MonoBehaviour
     private void OnSkipPressed()
     {
         Debug.Log("Skip pressed — passing turn.");
-        PieceMover.PassTurnImmediately();
+        //PieceMover.PassTurnImmediately();
+        PieceMover.ResetTurn();
+        PieceMover.currentTurn = TurnType.AI;
+        UpdateThrowButtonState();
+        PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+        ShowStickVisuals();
+        AiMover.StartStickThrow();
     }
 
     //Call this from PieceMover when a rethrow happens

@@ -24,7 +24,14 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
-        InitializeDefaultScrolls();
+        // Only initialize default scrolls if not done before
+        if (PlayerPrefs.GetInt("scrolls_initialized", 0) == 0)
+        {
+            InitializeDefaultScrolls();
+            PlayerPrefs.SetInt("scrolls_initialized", 1);
+            PlayerPrefs.Save();
+        }
+
         LoadSelectedScrolls();
 
         for (int i = 0; i < scrollButtons.Length; i++)
@@ -36,6 +43,7 @@ public class Inventory : MonoBehaviour
         selectButton.onClick.AddListener(OnSelectButtonClicked);
         selectPanel.SetActive(false);
     }
+
 
     private void InitializeDefaultScrolls()
     {

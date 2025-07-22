@@ -87,30 +87,28 @@ public class PieceMover : MonoBehaviour
             Touch touch = Input.touches[0];
             Ray ray = mainCamera.ScreenPointToRay(touch.position);
             RaycastHit[] hits = Physics.RaycastAll(ray);
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
             foreach (RaycastHit hit in hits)
             {
                 GameObject tapped = hit.collider.gameObject;
                 PieceMover tappedPiece = tapped.GetComponent<PieceMover>();
 
-                // Skip AI pieces
                 if (tappedPiece != null && tappedPiece.isAI)
                     continue;
 
-                // Handle player piece tap
                 if (tapped.CompareTag("Piece"))
                 {
                     HandlePieceTap(tappedPiece);
+                    break;
                 }
-                // Handle tile tap
                 else if (highlightedTile != null && tapped.transform == highlightedTile)
                 {
                     selectedPiece?.StartCoroutine(selectedPiece.MoveToTile(highlightedTile));
+                    break;
                 }
-
-                // Process only the first valid hit (non-AI)
-                break;
             }
+
         }
     }
 
@@ -153,25 +151,49 @@ public class PieceMover : MonoBehaviour
 
         foreach (PieceMover piece in allPieces)
         {
-            if (piece.isAI != isAI) continue;
+            if (piece.isAI != isAI)
+                continue;
 
             int currentIndex = piece.GetCurrentTileIndex();
-            if (currentIndex == -1) continue;
+            if (currentIndex == -1)
+                continue;
 
             int targetIndex = currentIndex + lastStickValue;
-            if (targetIndex >= totalTiles) continue;
+            if (targetIndex > totalTiles)
+                continue;
 
-            Transform dummy;
-            if (IsValidMove(piece, targetIndex, out dummy))
+            if (IsValidMove(piece, targetIndex, out _))
                 return true;
         }
 
         return false;
     }
+    public static bool HasValidMoveForAI()
+    {
+        bool has = HasAnyValidMove(true);
+        Debug.Log($"[Check] AI has valid move? {has}");
+        return has;
+    }
+
+    public static bool HasValidMoveForPlayer()
+    {
+        bool has = HasAnyValidMove(false);
+        Debug.Log($"[Check] Player has valid move? {has}");
+        return has;
+    }
+
+
+
     public static void PassTurnImmediately()
     {
         if (currentTurn == TurnType.AI)
         {
+            if (HasValidMoveForAI())
+            {
+                Debug.Log("[AI] Still has valid moves. Not passing turn.");
+                return;
+            }
+
             Debug.Log("Passing turn from AI → Player");
             lastStickValue = 0;
             moveInProgress = false;
@@ -180,31 +202,33 @@ public class PieceMover : MonoBehaviour
             StickThrower stickThrower = GameObject.FindObjectOfType<StickThrower>();
             if (stickThrower != null)
             {
-                Debug.Log(1);
                 stickThrower.UpdateThrowButtonState();
-                Debug.Log(2);
+                stickThrower.ShowStickVisuals();
             }
+                
             else
-            {
                 Debug.LogError("StickThrower not found when trying to enable throw button.");
-            }
 
-            //Update turn text
             Instance?.ShowTemporaryTurnMessage("Player Turn");
         }
         else if (currentTurn == TurnType.Player)
         {
+            if (HasValidMoveForPlayer())
+            {
+                Debug.Log("[Player] Still has valid moves. Not passing turn.");
+                return;
+            }
+
             Debug.Log("Passing turn from Player → AI");
             lastStickValue = 0;
             moveInProgress = false;
             currentTurn = TurnType.AI;
 
-            //Update turn text
             Instance?.ShowTemporaryTurnMessage("AI Turn");
-
             AiMover.StartStickThrow();
         }
     }
+
 
     public static bool IsValidMove(PieceMover piece, int targetIndex, out Transform targetTile)
     {
@@ -299,207 +323,69 @@ public class PieceMover : MonoBehaviour
 
 
     public IEnumerator MoveToTile(Transform targetTile)
+{
+    moveInProgress = true;
+
+    int currentIndex = GetCurrentTileIndex();
+    int targetIndex = -1;
+
+    for (int i = 0; i < totalTiles; i++)
     {
-        moveInProgress = true;
-
-        int currentIndex = GetCurrentTileIndex();
-        int targetIndex = -1;
-
-        for (int i = 0; i < totalTiles; i++)
+        if (boardTransform.GetChild(i) == targetTile)
         {
-            if (boardTransform.GetChild(i) == targetTile)
-            {
-                targetIndex = i;
-                break;
-            }
+            targetIndex = i;
+            break;
+        }
+    }
+
+    if (targetIndex == -1 || currentIndex == -1)
+    {
+        moveInProgress = false;
+        yield break;
+    }
+
+    if (currentIndex + lastStickValue == totalTiles)
+    {
+        Transform finalTile = boardTransform.GetChild(totalTiles - 1); // Tile 30
+        float VmoveSpeed = 5f;
+        float VworldY = transform.position.y;
+        float VlocalY = transform.localPosition.y;
+        Vector3 end = new Vector3(finalTile.position.x, finalTile.position.y + VlocalY, finalTile.position.z);
+
+        // Animate movement to final tile
+        while (Vector3.Distance(transform.position, end) > 0.01f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, end, VmoveSpeed * Time.deltaTime);
+            yield return null;
         }
 
-        if (targetIndex == -1 || currentIndex == -1)
-        {
-            moveInProgress = false;
-            yield break;
-        }
+        transform.SetParent(finalTile);
+        transform.localPosition = new Vector3(0, VlocalY, 0);
 
-        float moveSpeed = 5f;
-        float worldY = transform.position.y;
-        float localY = transform.localPosition.y;
+        // Delay so movement is visible
+        yield return new WaitForSeconds(0.3f);
 
-        for (int i = currentIndex + 1; i <= targetIndex; i++)
-        {
-            Transform nextTile = boardTransform.GetChild(i);
-            Vector3 end = new Vector3(nextTile.position.x, nextTile.position.y + localY, nextTile.position.z);
+        GameManager.Instance.CheckForWinCondition();
 
-            while (Vector3.Distance(transform.position, end) > 0.01f)
-            {
-                end = new Vector3(nextTile.position.x, nextTile.position.y + localY, nextTile.position.z);
-                transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
-                yield return null;
-            }
-
-            //transform.position = end;
-
-            transform.SetParent(nextTile);
-            transform.localPosition = new Vector3(0, localY, 0);
-        }
-
-
-
-        // Check if there's an opponent piece to send back
-        Transform previousTile = boardTransform.GetChild(currentIndex);
-        PieceMover opponent = targetTile.GetComponentInChildren<PieceMover>();
-
-        if (opponent != null && opponent.isAI != isAI)
-        {
-            if (opponent.isProtected)
-            {
-                Debug.Log($"{opponent.name} is protected by Sylvan Shield. Cannot swap.");
-                // Cancel move (optional: allow occupying same tile if game logic allows)
-                moveInProgress = false;
-                yield break;
-            }
-
-            opponent.transform.SetParent(previousTile);
-            opponent.transform.localPosition = new Vector3(0, opponent.transform.localPosition.y, 0);
-        }
-
-
-        // Final placement
-        transform.SetParent(targetTile);
-        transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
-
-        // Unhighlight and reset selection
-        highlightedTile?.GetComponent<TileMarker>()?.Unhighlight();
-        highlightedTile = null;
-        selectedPiece = null;
-        // 🚩 Senusret Path trigger check
-        if (ScrollEffectExecutor.Instance.senusretMarkedTile != null &&
-            targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile)
-        {
-            Debug.Log($"{name} landed on Senusret Path! Sending back...");
-
-            Transform board = targetTile.parent;
-            Transform fallbackTile = null;
-
-            for (int i = 15; i >= 0; i--)
-            {
-                Transform candidate = board.GetChild(i);
-                if (candidate.childCount == 0)
-                {
-                    fallbackTile = candidate;
-                    break;
-                }
-            }
-
-            if (fallbackTile == null)
-            {
-                Debug.LogWarning("No valid fallback tile found behind 15!");
-            }
-            else
-            {
-                transform.SetParent(fallbackTile);
-                transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
-                Debug.Log($"{name} relocated to tile: {fallbackTile.name}");
-
-                // Optional: trigger tile logic again if fallback tile is a trigger
-                TileMarker marker = fallbackTile.GetComponent<TileMarker>();
-                if (marker != null && marker.isTriggerTile)
-                {
-                    if (isAI)
-                        AiMover.Instance.UseRandomAiScroll();
-                    else
-                        GameObject.FindObjectOfType<ScrollManager>()?.SetScrollsInteractable(true);
-                }
-            }
-        }
-
-        // Rethrow logic
+        // ✅ Set rethrow flag before clearing lastStickValue
         lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 4);
         lastStickValue = 0;
 
         moveInProgress = false;
 
-        // Win condition
-        if (targetIndex == totalTiles - 1)
-        {
-            GameManager.Instance.CheckForWinCondition();
-            yield return new WaitForSeconds(0.1f); // short delay
-            // ---- Turn Switching ----
-            if (!lastMoveWasRethrow)
-            {
-                currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
-            }
-        
-            ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
-
-            UpdateThrowButtonState();
-            if (isAI && anippeGraceUsed_AI)
-                anippeGraceActive_AI = false;
-            else if (!isAI && anippeGraceUsed_Player)
-                anippeGraceActive_Player = false;
-
-
-            if (currentTurn == TurnType.AI)
-            {
-                if (lastMoveWasRethrow)
-                    AiMover.StartStickThrow();
-                else
-                    AiMover.StartAITurn();
-            }
-            Destroy(gameObject);
-            yield break;
-        }
-
-
-        // ---- Scroll Trigger Logic with Anippe’s Grace ----
-        TileMarker tileMarker = targetTile.GetComponent<TileMarker>();
-        if (tileMarker != null && tileMarker.isTriggerTile)
-        {
-            bool skipTrigger = false;
-
-            if (isAI && anippeGraceActive_AI && !anippeGraceUsed_AI)
-            {
-                anippeGraceUsed_AI = true;
-                skipTrigger = true;
-                Debug.Log("[Anippe’s Grace] AI skipped trigger tile effect.");
-            }
-            else if (!isAI && anippeGraceActive_Player && !anippeGraceUsed_Player)
-            {
-                anippeGraceUsed_Player = true;
-                skipTrigger = true;
-                Debug.Log("[Anippe’s Grace] Player skipped trigger tile effect.");
-            }
-
-            if (!skipTrigger)
-            {
-                if (isAI)
-                {
-                    AiMover.Instance.UseRandomAiScroll();
-                }
-                else
-                {
-                    ScrollManager scrollManager = GameObject.FindObjectOfType<ScrollManager>();
-                    if (scrollManager != null)
-                        scrollManager.SetScrollsInteractable(true);
-
-                    yield break; // Wait for player to use or cancel scroll
-                }
-            }
-        }
-
-        // ---- Turn Switching ----
+        // ✅ Turn switching
         if (!lastMoveWasRethrow)
         {
             currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
         }
-        
-        ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
 
+        ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
         UpdateThrowButtonState();
+
         if (isAI && anippeGraceUsed_AI)
             anippeGraceActive_AI = false;
         else if (!isAI && anippeGraceUsed_Player)
             anippeGraceActive_Player = false;
-
 
         if (currentTurn == TurnType.AI)
         {
@@ -508,7 +394,166 @@ public class PieceMover : MonoBehaviour
             else
                 AiMover.StartAITurn();
         }
+
+        Destroy(gameObject);
+        yield break;
     }
+
+
+
+    float moveSpeed = 5f;
+    float worldY = transform.position.y;
+    float localY = transform.localPosition.y;
+
+    for (int i = currentIndex + 1; i <= targetIndex; i++)
+    {
+        Transform nextTile = boardTransform.GetChild(i);
+        Vector3 end = new Vector3(nextTile.position.x, nextTile.position.y + localY, nextTile.position.z);
+
+        while (Vector3.Distance(transform.position, end) > 0.01f)
+        {
+            end = new Vector3(nextTile.position.x, nextTile.position.y + localY, nextTile.position.z);
+            transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        transform.SetParent(nextTile);
+        transform.localPosition = new Vector3(0, localY, 0);
+    }
+
+    // Check if there's an opponent piece to send back
+    Transform previousTile = boardTransform.GetChild(currentIndex);
+    PieceMover opponent = targetTile.GetComponentInChildren<PieceMover>();
+
+    if (opponent != null && opponent.isAI != isAI)
+    {
+        if (opponent.isProtected)
+        {
+            Debug.Log($"{opponent.name} is protected by Sylvan Shield. Cannot swap.");
+            moveInProgress = false;
+            yield break;
+        }
+
+        opponent.transform.SetParent(previousTile);
+        opponent.transform.localPosition = new Vector3(0, opponent.transform.localPosition.y, 0);
+    }
+
+    // Final placement
+    transform.SetParent(targetTile);
+    transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
+
+    // Unhighlight and reset selection
+    highlightedTile?.GetComponent<TileMarker>()?.Unhighlight();
+    highlightedTile = null;
+    selectedPiece = null;
+
+    // 🚩 Senusret Path trigger check
+    if (ScrollEffectExecutor.Instance.senusretMarkedTile != null &&
+        targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile)
+    {
+        Debug.Log($"{name} landed on Senusret Path! Sending back...");
+
+        Transform board = targetTile.parent;
+        Transform fallbackTile = null;
+
+        for (int i = 15; i >= 0; i--)
+        {
+            Transform candidate = board.GetChild(i);
+            if (candidate.childCount == 0)
+            {
+                fallbackTile = candidate;
+                break;
+            }
+        }
+
+        if (fallbackTile != null)
+        {
+            transform.SetParent(fallbackTile);
+            transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
+            Debug.Log($"{name} relocated to tile: {fallbackTile.name}");
+
+            TileMarker marker = fallbackTile.GetComponent<TileMarker>();
+            if (marker != null && marker.isTriggerTile)
+            {
+                if (isAI)
+                    AiMover.Instance.UseRandomAiScroll();
+                else
+                    GameObject.FindObjectOfType<ScrollManager>()?.SetScrollsInteractable(true);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No valid fallback tile found behind 15!");
+        }
+    }
+
+    // Rethrow logic
+    lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 4);
+    lastStickValue = 0;
+
+    moveInProgress = false;
+
+    
+
+    // ---- Scroll Trigger Logic with Anippe’s Grace ----
+    TileMarker tileMarker = targetTile.GetComponent<TileMarker>();
+    if (tileMarker != null && tileMarker.isTriggerTile)
+    {
+        bool skipTrigger = false;
+
+        if (isAI && anippeGraceActive_AI && !anippeGraceUsed_AI)
+        {
+            anippeGraceUsed_AI = true;
+            skipTrigger = true;
+            Debug.Log("[Anippe’s Grace] AI skipped trigger tile effect.");
+        }
+        else if (!isAI && anippeGraceActive_Player && !anippeGraceUsed_Player)
+        {
+            anippeGraceUsed_Player = true;
+            skipTrigger = true;
+            Debug.Log("[Anippe’s Grace] Player skipped trigger tile effect.");
+        }
+
+        if (!skipTrigger)
+        {
+            if (isAI)
+            {
+                AiMover.Instance.UseRandomAiScroll();
+            }
+            else
+            {
+                ScrollManager scrollManager = GameObject.FindObjectOfType<ScrollManager>();
+                if (scrollManager != null)
+                    scrollManager.SetScrollsInteractable(true);
+
+                yield break;
+            }
+        }
+    }
+
+    // ---- Turn Switching ----
+    if (!lastMoveWasRethrow)
+    {
+        currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
+    }
+
+    ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+    UpdateThrowButtonState();
+
+    if (isAI && anippeGraceUsed_AI)
+        anippeGraceActive_AI = false;
+    else if (!isAI && anippeGraceUsed_Player)
+        anippeGraceActive_Player = false;
+
+    if (currentTurn == TurnType.AI)
+    {
+        if (lastMoveWasRethrow)
+            AiMover.StartStickThrow();
+        else
+            AiMover.StartAITurn();
+    }
+}
+
 
     public int GetCurrentTileIndex()
     {
@@ -565,8 +610,6 @@ public class PieceMover : MonoBehaviour
             return boardTransform.GetChild(index);
         return null;
     }
-
-    // Add this inside your PieceMover class
     public static PieceMover GetPieceOnTile(Transform tile)
     {
         return FindObjectsOfType<PieceMover>().FirstOrDefault(p => p.GetCurrentTile() == tile);
@@ -574,7 +617,7 @@ public class PieceMover : MonoBehaviour
 
     private Coroutine turnMessageRoutine;
 
-    private void ShowTemporaryTurnMessage(string message, float duration = 2f)
+    public void ShowTemporaryTurnMessage(string message, float duration = 2f)
     {
         if (turnFeedbackText == null) return;
 
