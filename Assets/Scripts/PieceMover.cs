@@ -322,22 +322,24 @@ public class PieceMover : MonoBehaviour
 
         float moveSpeed = 5f;
         float worldY = transform.position.y;
+        float localY = transform.localPosition.y;
 
         for (int i = currentIndex + 1; i <= targetIndex; i++)
         {
             Transform nextTile = boardTransform.GetChild(i);
-            Vector3 end = new Vector3(nextTile.position.x, worldY, nextTile.position.z);
+            Vector3 end = new Vector3(nextTile.position.x, nextTile.position.y + localY, nextTile.position.z);
 
             while (Vector3.Distance(transform.position, end) > 0.01f)
             {
+                end = new Vector3(nextTile.position.x, nextTile.position.y + localY, nextTile.position.z);
                 transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
                 yield return null;
             }
 
-            transform.position = end;
+            //transform.position = end;
 
             transform.SetParent(nextTile);
-            transform.localPosition = new Vector3(0, transform.localPosition.y, 0);
+            transform.localPosition = new Vector3(0, localY, 0);
         }
 
 
