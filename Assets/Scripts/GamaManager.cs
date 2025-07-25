@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scaleAmount = 1.1f;
     [SerializeField] private float scaleDuration = 0.1f;
     [SerializeField] private float afterEffectDelay = 0.1f;
+
+    [SerializeField] private GameObject stickThrower;
     
     public static GameManager Instance;
 
@@ -132,13 +134,19 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("AI Wins!");
             if (losePanel != null)
+            {
                 losePanel.SetActive(true);
+                stickThrower.SetActive(false);
+            }
         }
         else if (playerCount == 1)
         {
             Debug.Log("Player Wins!");
             if (winPanel != null)
+            {
                 winPanel.SetActive(true);
+                stickThrower.SetActive(false);
+            }
         }
     }
 }

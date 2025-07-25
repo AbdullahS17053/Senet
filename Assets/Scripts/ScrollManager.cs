@@ -63,8 +63,9 @@ public class ScrollManager : MonoBehaviour
             btn.gameObject.SetActive(isPlayerTurn);
 
         if (extraScrollButton != null)
-            extraScrollButton.gameObject.SetActive(isPlayerTurn && !extraScrollUsed && extraScrollIndex >= 0);
+            extraScrollButton.gameObject.SetActive(isPlayerTurn && !extraScrollUsed && extraScrollIndex >= 0 && !PieceMover.playerScrollsDisabled);
     }
+
 
     
 
@@ -129,6 +130,12 @@ public class ScrollManager : MonoBehaviour
     // New: Open scroll panel and show back sprite
     private void OpenScrollPanel(int scrollSlotIndex)
     {
+        if (PieceMover.playerScrollsDisabled)
+        {
+            Debug.Log("[ScrollManager] Scrolls are disabled by Dominion of Kamo.");
+            return;
+        }
+
         selectedSlotForPanel = scrollSlotIndex;
 
         int scrollIndex = selectedScrollIndices[scrollSlotIndex];
@@ -170,6 +177,26 @@ public class ScrollManager : MonoBehaviour
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = Player
 
         }
+        // Handle Apep’s Trick effect
+        string effectKeyUsed = scrollData.scrollEffectKeys[scrollIndex];
+        if (effectKeyUsed == "Apep’s Trick")
+        {
+            if (PieceMover.currentTurn == TurnType.Player)
+            {
+                PieceMover.apepTrickActive_Player = true;
+                PieceMover.apepTrickUsed_Player = false;
+            }
+            else
+            {
+                PieceMover.apepTrickActive_AI = true;
+                PieceMover.apepTrickUsed_AI = false;
+            }
+
+            Debug.Log("[ScrollManager] Apep’s Trick activated: extra turn + extra scroll allowed.");
+            scrollPanel.SetActive(false);
+            return; // ✅ Don't end the turn yet, since we give an extra turn!
+        }
+
 
         if (scrollPanel != null)
         {
@@ -200,15 +227,27 @@ public class ScrollManager : MonoBehaviour
 
     public void SetScrollsInteractable(bool state)
     {
+        if (PieceMover.playerScrollsDisabled)
+            state = false;
+
         for (int i = 0; i < scrollButtons.Length; i++)
         {
             if (selectedScrollIndices[i] >= 0 && !usedScrollFlags[i])
+            {
                 scrollButtons[i].interactable = state;
+
+                // Optional: Gray out visually if disabled by Dominion
+                ColorBlock cb = scrollButtons[i].colors;
+                cb.normalColor = state ? Color.white : new Color(0.5f, 0.5f, 0.5f);
+                scrollButtons[i].colors = cb;
+            }
             else
+            {
                 scrollButtons[i].interactable = false;
+            }
         }
 
-        if (!extraScrollUsed && extraScrollIndex >= 0)
+        if (!extraScrollUsed && extraScrollIndex >= 0 && !PieceMover.playerScrollsDisabled)
         {
             extraScrollButton.interactable = state;
             extraScrollButton.gameObject.SetActive(true);
@@ -225,6 +264,7 @@ public class ScrollManager : MonoBehaviour
         if (PieceMover.Instance != null && PieceMover.Instance.throwButton != null)
             PieceMover.Instance.throwButton.SetActive(!state);
     }
+
 
     public void RestoreUsedScroll(int scrollIndex)
     {
@@ -263,7 +303,8 @@ public class ScrollManager : MonoBehaviour
     }
     private void OnExtraScrollClicked()
     {
-        if (extraScrollUsed || extraScrollIndex < 0) return;
+        if (extraScrollUsed || extraScrollIndex < 0 || PieceMover.playerScrollsDisabled) return;
+
 
         // Set up back image
         if (scrollBackButtonImage != null && extraScrollIndex < scrollData.scrollBacks.Length)

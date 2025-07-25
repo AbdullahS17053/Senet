@@ -7640,6 +7640,7 @@ MonoBehaviour:
   scaleAmount: 1.1
   scaleDuration: 0.1
   afterEffectDelay: 0.1
+  stickThrower: {fileID: 1656456483}
 --- !u!4 &1809770268
 Transform:
   m_ObjectHideFlags: 0

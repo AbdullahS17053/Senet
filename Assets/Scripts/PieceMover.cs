@@ -36,6 +36,18 @@ public class PieceMover : MonoBehaviour
     public static PieceMover Instance;
     public bool isAI = false;
     public static bool lastMoveWasRethrow = false;
+    
+    public static bool pathOfAaruActive_Player = false;
+    public static bool pathOfAaruActive_AI = false;
+    
+    public static bool apepTrickActive_Player = false;
+    public static bool apepTrickUsed_Player = false;
+
+    public static bool apepTrickActive_AI = false;
+    public static bool apepTrickUsed_AI = false;
+    
+    public static bool playerScrollsDisabled = false;
+    public static bool aiScrollsDisabled = false;
 
     private ScrollManager scrollManager;
     [HideInInspector] public bool isProtected = false;
@@ -258,50 +270,57 @@ public class PieceMover : MonoBehaviour
         }
 
         // Scan for consecutive opponents from currentIndex+1 to targetIndex+3
-        int consecutiveOpponents = 0;
-        bool blockSwap = false;
-        bool blockMove = false;
-        int checkLimit = Mathf.Min(targetIndex + 3, totalTiles);
+        bool pathOfAaruActive = (piece.isAI && pathOfAaruActive_AI) || (!piece.isAI && pathOfAaruActive_Player);
 
-        for (int i = currentIndex + 1; i < checkLimit; i++)
+        if (!pathOfAaruActive)
         {
-            Transform tile = boardTransform.GetChild(i);
-            PieceMover occupying = tile.GetComponentInChildren<PieceMover>();
+            // Scan for consecutive opponents from currentIndex+1 to targetIndex+3
+            int consecutiveOpponents = 0;
+            bool blockSwap = false;
+            bool blockMove = false;
+            int checkLimit = Mathf.Min(targetIndex + 3, totalTiles);
 
-            if (occupying != null && occupying.isAI != piece.isAI)
+            for (int i = currentIndex + 1; i < checkLimit; i++)
             {
-                consecutiveOpponents++;
+                Transform tile = boardTransform.GetChild(i);
+                PieceMover occupying = tile.GetComponentInChildren<PieceMover>();
 
-                if (consecutiveOpponents == 2)
+                if (occupying != null && occupying.isAI != piece.isAI)
                 {
-                    if (i == targetIndex)
-                    {
-                        blockSwap = true;
-                    }
-                    else if (i > targetIndex)
-                    {
-                        Transform targetTileCheck = boardTransform.GetChild(targetIndex);
-                        PieceMover targetOccupying = targetTileCheck.GetComponentInChildren<PieceMover>();
+                    consecutiveOpponents++;
 
-                        if (targetOccupying != null && targetOccupying.isAI != piece.isAI)
+                    if (consecutiveOpponents == 2)
+                    {
+                        if (i == targetIndex)
+                        {
                             blockSwap = true;
+                        }
+                        else if (i > targetIndex)
+                        {
+                            Transform targetTileCheck = boardTransform.GetChild(targetIndex);
+                            PieceMover targetOccupying = targetTileCheck.GetComponentInChildren<PieceMover>();
+
+                            if (targetOccupying != null && targetOccupying.isAI != piece.isAI)
+                                blockSwap = true;
+                        }
+                    }
+
+                    if (consecutiveOpponents >= 3)
+                    {
+                        blockMove = true;
+                        break;
                     }
                 }
-
-                if (consecutiveOpponents >= 3)
+                else
                 {
-                    blockMove = true;
-                    break;
+                    consecutiveOpponents = 0;
                 }
             }
-            else
-            {
-                consecutiveOpponents = 0;
-            }
+
+            if (blockMove || blockSwap)
+                return false;
         }
 
-        if (blockMove || blockSwap)
-            return false;
 
         targetTile = boardTransform.GetChild(targetIndex);
 
@@ -368,7 +387,7 @@ public class PieceMover : MonoBehaviour
         GameManager.Instance.CheckForWinCondition();
 
         // ✅ Set rethrow flag before clearing lastStickValue
-        lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 4);
+        lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 3);
         lastStickValue = 0;
 
         moveInProgress = false;
@@ -488,7 +507,7 @@ public class PieceMover : MonoBehaviour
     }
 
     // Rethrow logic
-    lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 4);
+    lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 3);
     lastStickValue = 0;
 
     moveInProgress = false;
@@ -534,8 +553,37 @@ public class PieceMover : MonoBehaviour
     // ---- Turn Switching ----
     if (!lastMoveWasRethrow)
     {
-        currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
+        bool extraTurnUsed = false;
+
+        if (currentTurn == TurnType.Player && apepTrickActive_Player && !apepTrickUsed_Player)
+        {
+            Debug.Log("[Apep’s Trick] Player gets an extra turn!");
+            apepTrickUsed_Player = true;
+            extraTurnUsed = true;
+            // Don't switch turn
+        }
+        else if (currentTurn == TurnType.AI && apepTrickActive_AI && !apepTrickUsed_AI)
+        {
+            Debug.Log("[Apep’s Trick] AI gets an extra turn!");
+            apepTrickUsed_AI = true;
+            extraTurnUsed = true;
+            // Don't switch turn
+        }
+
+        if (!extraTurnUsed)
+        {
+            currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
+            // Reset scroll effect after extra turn is consumed
+            apepTrickActive_Player = false;
+            apepTrickUsed_Player = false;
+            apepTrickActive_AI = false;
+            apepTrickUsed_AI = false;
+
+            pathOfAaruActive_AI = false;
+            pathOfAaruActive_Player = false;
+        }
     }
+
 
     ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
     UpdateThrowButtonState();

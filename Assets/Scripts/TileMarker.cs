@@ -97,7 +97,12 @@ public class TileMarker : MonoBehaviour
 
     public void Unhighlight()
     {
-        if (isSkysparkTile) return;
+        if (isSkysparkTile)
+        {
+            rend.material = defaultMaterial;
+            rend.material.color = Color.red;
+            return;
+        }
         
         else if (senusretTile)
         {

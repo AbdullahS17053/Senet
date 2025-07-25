@@ -51,6 +51,21 @@ public class ScrollEffectExecutor : MonoBehaviour
             case "Heka’s Blessing":
                 StartCoroutine(HekasBlessingEffect(isAI));
                 break;
+            case "Oath of Isfet":
+                StartCoroutine(OathOfIsfetEffect(isAI));
+                break;
+            case "Grasp of the Scarab":
+                StartCoroutine(GraspOfTheScarabEffect(isAI));
+                break;
+            case "Path of Aaru":
+                StartCoroutine(PathOfAaruEffect(isAI));
+                break;
+            case "Apep’s Trick":
+                StartCoroutine(ApepsTrickEffect(isAI));
+                break;
+            case "Dominion of Kamo":
+                DominionOfKamoEffect(isAI);
+                break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
                 break;
@@ -515,6 +530,164 @@ public class ScrollEffectExecutor : MonoBehaviour
             sm.GrantHekasBlessingScroll(isAI);
 
     }
+    private IEnumerator OathOfIsfetEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Oath of Isfet — Swapping all pieces!");
+
+        // Find all pieces
+        List<PieceMover> aiPieces = new List<PieceMover>();
+        List<PieceMover> playerPieces = new List<PieceMover>();
+        Transform board = GameObject.Find("Board").transform;
+
+        foreach (var piece in GameObject.FindObjectsOfType<PieceMover>())
+        {
+            if (piece.GetCurrentTileIndex() == -1) continue;
+
+            if (piece.isAI)
+                aiPieces.Add(piece);
+            else
+                playerPieces.Add(piece);
+        }
+
+        int swapCount = Mathf.Min(aiPieces.Count, playerPieces.Count);
+
+        if (swapCount == 0)
+        {
+            Debug.Log("Oath of Isfet: No pieces to swap.");
+            yield break;
+        }
+
+        for (int i = 0; i < swapCount; i++)
+        {
+            PieceMover aiPiece = aiPieces[i];
+            PieceMover playerPiece = playerPieces[i];
+
+            Transform aiTile = aiPiece.transform.parent;
+            Transform playerTile = playerPiece.transform.parent;
+
+            // Swap positions
+            Vector3 aiLocalY = aiPiece.transform.localPosition;
+            Vector3 playerLocalY = playerPiece.transform.localPosition;
+
+            aiPiece.transform.SetParent(playerTile);
+            aiPiece.transform.localPosition = new Vector3(0, aiLocalY.y, 0);
+
+            playerPiece.transform.SetParent(aiTile);
+            playerPiece.transform.localPosition = new Vector3(0, playerLocalY.y, 0);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    private IEnumerator GraspOfTheScarabEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] used Grasp of the Scarab to send opponent's leading piece back!");
+
+        List<PieceMover> opponentPieces = new List<PieceMover>();
+        PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
+
+        foreach (var piece in allPieces)
+        {
+            if (piece.isAI != isAI)
+            {
+                int tileIndex = piece.GetCurrentTileIndex();
+                if (tileIndex != -1)
+                    opponentPieces.Add(piece);
+            }
+        }
+
+        if (opponentPieces.Count == 0)
+        {
+            Debug.LogWarning("No opponent pieces found on board.");
+            yield break;
+        }
+
+        // Sort by tile index descending → leading piece first
+        opponentPieces.Sort((a, b) => b.GetCurrentTileIndex().CompareTo(a.GetCurrentTileIndex()));
+        PieceMover target = opponentPieces[0];
+
+        Transform board = GameObject.Find("Board").transform;
+
+        // Find the first empty tile starting from index 0
+        Transform destination = null;
+        for (int i = 0; i < board.childCount; i++)
+        {
+            if (board.GetChild(i).childCount == 0)
+            {
+                destination = board.GetChild(i);
+                break;
+            }
+        }
+
+        if (destination == null)
+        {
+            Debug.LogWarning("Grasp of the Scarab: No empty tile found near start.");
+            yield break;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        // Smooth move to new tile
+        float moveSpeed = 6f;
+        float localY = target.transform.localPosition.y;
+        Vector3 targetPos =
+            new Vector3(destination.position.x, destination.position.y + localY, destination.position.z);
+
+        while (Vector3.Distance(target.transform.position, targetPos) > 0.01f)
+        {
+            target.transform.position =
+                Vector3.MoveTowards(target.transform.position, targetPos, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        target.transform.SetParent(destination);
+        target.transform.localPosition = new Vector3(0, localY, 0);
+
+        Debug.Log($"{target.name} was sent to tile: {destination.name} by Grasp of the Scarab.");
+    }
+    private IEnumerator PathOfAaruEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Path of Aaru — ignoring movement restrictions this turn!");
+
+        if (isAI)
+            PieceMover.pathOfAaruActive_AI = true;
+        else
+            PieceMover.pathOfAaruActive_Player = true;
+
+        yield return new WaitForSeconds(0.5f);
+    }
+    private IEnumerator ApepsTrickEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Apep’s Trick — extra turn + extra scroll!");
+
+        if (isAI)
+        {
+            PieceMover.apepTrickActive_AI = true;
+            PieceMover.apepTrickUsed_AI = false;
+        }
+        else
+        {
+            PieceMover.apepTrickActive_Player = true;
+            PieceMover.apepTrickUsed_Player = false;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+    }
+    private void DominionOfKamoEffect(bool isAI)
+    {
+        if (isAI)
+        {
+            PieceMover.playerScrollsDisabled = true;
+            Debug.Log("[ScrollEffectExecutor] AI used Dominion of Kamo — Player scrolls disabled!");
+        }
+        else
+        {
+            PieceMover.aiScrollsDisabled = true;
+            Debug.Log("[ScrollEffectExecutor] Player used Dominion of Kamo — AI scrolls disabled!");
+        }
+    }
+
+
     private Coroutine messageRoutine;
 
     private void ShowTemporaryMessage(string message, float duration = 2f)

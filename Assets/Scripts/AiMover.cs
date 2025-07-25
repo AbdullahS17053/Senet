@@ -19,17 +19,23 @@ public class AiMover : MonoBehaviour
 
     void Start()
     {
-        int count = 0;
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 3; i++)
         {
-            if (PlayerPrefs.GetInt($"scroll_{i}_selected", 0) == 1 && count < 3)
+            int index = PlayerPrefs.GetInt($"selected_scroll_{i}", -1);
+            if (index >= 0)
             {
-                aiScrollIndices[count] = i;
-                aiScrollUsed[count] = false;
-                count++;
+                aiScrollIndices[i] = index;
+                aiScrollUsed[i] = false;
+                Debug.Log($"[AI Scroll Init] Slot {i}: {scrollData.scrollEffectKeys[index]}");
+            }
+            else
+            {
+                aiScrollIndices[i] = -1;
+                aiScrollUsed[i] = true; // mark as already used if not selected
             }
         }
     }
+
 
     public static void StartStickThrow(bool forceReroll = false)
     {
@@ -76,7 +82,7 @@ public class AiMover : MonoBehaviour
             Debug.LogWarning("[AI] Turn changed before stick throw (post-delay) — skipping.");
             yield break;
         }
-
+        stickThrower.ShowStickVisuals();
         yield return stickThrower.StartCoroutine(stickThrower.ThrowSticksRoutine());
 
         Debug.Log("AI Stick Value: " + PieceMover.lastStickValue);
@@ -191,6 +197,12 @@ public class AiMover : MonoBehaviour
 
     public void UseRandomAiScroll()
     {
+        // 🚫 Check if AI scrolls are blocked
+        if (PieceMover.aiScrollsDisabled)
+        {
+            Debug.Log("[AI] Scrolls are disabled by Dominion of Kamo.");
+            return;
+        }
         List<int> availableScrollSlots = new List<int>();
         for (int i = 0; i < aiScrollUsed.Length; i++)
         {
