@@ -21,6 +21,9 @@ public class StickThrower : MonoBehaviour
     [SerializeField] float throwDuration = 1f;
 
     private int randomThrowValue;
+    public static bool obsidianCapNextMove_Player = false;
+    public static bool obsidianCapNextMove_AI = false;
+
 
     void Start()
     {
@@ -70,8 +73,32 @@ public class StickThrower : MonoBehaviour
             stick.StopAndSnapRotation(); // snap to correct state
         }
 
-        stickNumberText.text = randomThrowValue.ToString();
-        PieceMover.lastStickValue = randomThrowValue;
+        // Default assignment
+        int finalValue = randomThrowValue;
+
+// 🧱 Obsidian’s Burden effect (max cap to 2)
+        if (PieceMover.currentTurn == TurnType.Player && obsidianCapNextMove_Player)
+        {
+            if (finalValue > 2)
+            {
+                Debug.Log("[Obsidian’s Burden] Player's roll capped from " + finalValue + " to 2");
+                finalValue = 2;
+            }
+            obsidianCapNextMove_Player = false;
+        }
+        else if (PieceMover.currentTurn == TurnType.AI && obsidianCapNextMove_AI)
+        {
+            if (finalValue > 2)
+            {
+                Debug.Log("[Obsidian’s Burden] AI's roll capped from " + finalValue + " to 2");
+                finalValue = 2;
+            }
+            obsidianCapNextMove_AI = false;
+        }
+
+        PieceMover.lastStickValue = finalValue;
+        stickNumberText.text = finalValue.ToString();
+
 
 // Apply Horus Retreat penalty
         if (PieceMover.horusPenaltyPending)
@@ -124,10 +151,18 @@ public class StickThrower : MonoBehaviour
         PieceMover.ResetTurn();
         PieceMover.currentTurn = TurnType.AI;
         UpdateThrowButtonState();
-        PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+
+        if (PieceMover.Instance != null)
+        {
+            PieceMover.Instance.ShowTemporaryTurnMessage(
+                PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn"
+            );
+        }
+
         ShowStickVisuals();
         AiMover.StartStickThrow();
     }
+
 
     //Call this from PieceMover when a rethrow happens
     public void EnableThrowButtonAfterRethrow()

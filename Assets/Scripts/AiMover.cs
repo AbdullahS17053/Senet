@@ -37,7 +37,7 @@ public class AiMover : MonoBehaviour
     }
 
 
-    public static void StartStickThrow(bool forceReroll = false)
+    public static void StartStickThrow()
     {
         // ✅ Prevent AI stick throw if turn has changed
         if (PieceMover.currentTurn != TurnType.AI)
@@ -46,15 +46,8 @@ public class AiMover : MonoBehaviour
             return;
         }
 
-        // ✅ Skip if Obsidian’s Burden already forced a throw and this isn't a reroll
-        if (!forceReroll && PieceMover.obsidianUsedThisTurn)
-        {
-            Debug.Log("Skipping redundant AI stick throw due to Obsidian’s Burden already applied.");
-            return;
-        }
-
         if (Instance != null)
-            Instance.StartCoroutine(Instance.ThrowSticksAndPlay(forceReroll));
+            Instance.StartCoroutine(Instance.ThrowSticksAndPlay());
     }
 
 
@@ -82,6 +75,7 @@ public class AiMover : MonoBehaviour
             Debug.LogWarning("[AI] Turn changed before stick throw (post-delay) — skipping.");
             yield break;
         }
+
         stickThrower.ShowStickVisuals();
         yield return stickThrower.StartCoroutine(stickThrower.ThrowSticksRoutine());
 
@@ -111,7 +105,9 @@ public class AiMover : MonoBehaviour
             Debug.Log("AI has no valid moves. Passing turn...");
             PieceMover.PassTurnImmediately();
             stickThrower.ShowStickVisuals();
-            PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+            PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player
+                ? "Player Turn"
+                : "AI Turn");
             yield break;
         }
 
@@ -126,73 +122,73 @@ public class AiMover : MonoBehaviour
     }
 
     private IEnumerator ExecuteAiTurn()
-{
-    aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI);
-
-    List<(PieceMover piece, Transform target, int targetIndex)> validMoves = new();
-
-    foreach (var piece in aiPieces)
     {
-        int currentIndex = piece.GetCurrentTileIndex();
-        if (currentIndex == -1) continue;
+        aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI && p.frozenTurnsRemaining == 0);
 
-        int proposedIndex = currentIndex + PieceMover.lastStickValue;
-        if (proposedIndex > 30) continue;
+        List<(PieceMover piece, Transform target, int targetIndex)> validMoves = new();
 
-        if (PieceMover.IsValidMove(piece, proposedIndex, out Transform validatedTarget))
+        foreach (var piece in aiPieces)
         {
-            validMoves.Add((piece, validatedTarget, proposedIndex));
+            int currentIndex = piece.GetCurrentTileIndex();
+            if (currentIndex == -1) continue;
+
+            int proposedIndex = currentIndex + PieceMover.lastStickValue;
+            if (proposedIndex > 30) continue;
+
+            if (PieceMover.IsValidMove(piece, proposedIndex, out Transform validatedTarget))
+            {
+                validMoves.Add((piece, validatedTarget, proposedIndex));
+            }
         }
-    }
 
-    if (validMoves.Count == 0)
-    {
-        Debug.Log("AI has no valid moves. Passing turn...");
-        PieceMover.PassTurnImmediately();
-        yield break;
-    }
-
-    // 1️⃣ Prioritize trigger tiles
-    foreach (var move in validMoves)
-    {
-        TileMarker marker = move.target.GetComponent<TileMarker>();
-        if (marker != null && marker.isTriggerTile)
+        if (validMoves.Count == 0)
         {
-            Debug.Log("[AI] Moving to trigger tile.");
-            yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+            Debug.Log("AI has no valid moves. Passing turn...");
+            PieceMover.PassTurnImmediately();
             yield break;
         }
-    }
 
-
-    // 2️⃣ Prioritize move to last (virtual) tile
-    foreach (var move in validMoves)
-    {
-        if (move.targetIndex == 30)
+        // 1️⃣ Prioritize trigger tiles
+        foreach (var move in validMoves)
         {
-            Debug.Log("[AI] Moving to virtual last tile.");
-            yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
-            yield break;
+            TileMarker marker = move.target.GetComponent<TileMarker>();
+            if (marker != null && marker.isTriggerTile)
+            {
+                Debug.Log("[AI] Moving to trigger tile.");
+                yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+                yield break;
+            }
         }
-    }
 
-    // 3️⃣ Prioritize swapping with player piece
-    foreach (var move in validMoves)
-    {
-        PieceMover occupyingPiece = PieceMover.GetPieceOnTile(move.target);
-        if (occupyingPiece != null && !occupyingPiece.isAI)
+
+        // 2️⃣ Prioritize move to last (virtual) tile
+        foreach (var move in validMoves)
         {
-            Debug.Log("[AI] Swapping with player piece.");
-            yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
-            yield break;
+            if (move.targetIndex == 30)
+            {
+                Debug.Log("[AI] Moving to virtual last tile.");
+                yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+                yield break;
+            }
         }
-    }
 
-    // 4️⃣ Move the one closest to the end
-    var furthestMove = validMoves.OrderByDescending(m => m.targetIndex).First();
-    Debug.Log("[AI] Moving piece closest to end.");
-    yield return furthestMove.piece.StartCoroutine(furthestMove.piece.MoveToTile(furthestMove.target));
-}
+        // 3️⃣ Prioritize swapping with player piece
+        foreach (var move in validMoves)
+        {
+            PieceMover occupyingPiece = PieceMover.GetPieceOnTile(move.target);
+            if (occupyingPiece != null && !occupyingPiece.isAI)
+            {
+                Debug.Log("[AI] Swapping with player piece.");
+                yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+                yield break;
+            }
+        }
+
+        // 4️⃣ Move the one closest to the end
+        var furthestMove = validMoves.OrderByDescending(m => m.targetIndex).First();
+        Debug.Log("[AI] Moving piece closest to end.");
+        yield return furthestMove.piece.StartCoroutine(furthestMove.piece.MoveToTile(furthestMove.target));
+    }
 
 
     public void UseRandomAiScroll()
@@ -203,6 +199,7 @@ public class AiMover : MonoBehaviour
             Debug.Log("[AI] Scrolls are disabled by Dominion of Kamo.");
             return;
         }
+
         List<int> availableScrollSlots = new List<int>();
         for (int i = 0; i < aiScrollUsed.Length; i++)
         {

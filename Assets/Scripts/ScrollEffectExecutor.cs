@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Linq;
 
 public class ScrollEffectExecutor : MonoBehaviour
 {
@@ -37,7 +38,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                 StartCoroutine(GiftOfJahiEffect(isAI));
                 break;
             case "Obsidian’s Burden":
-                StartCoroutine(ObsidianBurdenEffect());
+                StartCoroutine(ObsidianBurdenEffect(isAI));
                 break;
             case "Horus Retreat":
                 StartCoroutine(HorusRetreatEffect(isAI));
@@ -66,6 +67,15 @@ public class ScrollEffectExecutor : MonoBehaviour
             case "Dominion of Kamo":
                 DominionOfKamoEffect(isAI);
                 break;
+            case "Mirror of Merneith":
+                StartCoroutine(MirrorOfMerneithEffect(isAI));
+                break;
+            case "Mena’s Grasp":
+                StartCoroutine(MenasGraspEffect(isAI));
+                break;
+            case "Binding of Aegis":
+                StartCoroutine(BindingOfAegisEffect(isAI));
+                break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
                 break;
@@ -73,70 +83,70 @@ public class ScrollEffectExecutor : MonoBehaviour
     }
 
     private IEnumerator EarthboundsStepEffect(bool isAI)
-{
-    Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Earthbound’s Step");
-
-    List<PieceMover> movable = new List<PieceMover>();
-    PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
-
-    foreach (var piece in allPieces)
     {
-        if (piece.isAI == isAI && piece != PieceMover.selectedPiece)
-        {
-            int currentIndex = piece.GetCurrentTileIndex();
-            int nextIndex = currentIndex + 1;
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Earthbound’s Step");
 
-            if (nextIndex < 30)
+        List<PieceMover> movable = new List<PieceMover>();
+        PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
+
+        foreach (var piece in allPieces)
+        {
+            if (piece.isAI == isAI && piece != PieceMover.selectedPiece)
             {
-                Transform dummy;
-                if (PieceMover.IsValidMove(piece, nextIndex, out dummy))
-                    movable.Add(piece);
+                int currentIndex = piece.GetCurrentTileIndex();
+                int nextIndex = currentIndex + 1;
+
+                if (nextIndex < 30)
+                {
+                    Transform dummy;
+                    if (PieceMover.IsValidMove(piece, nextIndex, out dummy))
+                        movable.Add(piece);
+                }
             }
         }
-    }
 
-    if (movable.Count == 0)
-    {
-        Debug.Log("No valid second piece for Earthbound’s Step.");
-        yield return new WaitForSeconds(0.3f);
-        yield break;
-    }
-
-    if (isAI)
-    {
-        yield return new WaitForSeconds(0.5f); // AI "thinking"
-        PieceMover aiPiece = movable[Random.Range(0, movable.Count)];
-        int nextIndex = aiPiece.GetCurrentTileIndex() + 1;
-        Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
-        yield return aiPiece.StartCoroutine(aiPiece.MoveToTile(targetTile));
-
-        // ✅ Handle turn transition based on rethrow status
-        yield return new WaitForSeconds(0.5f); // Small pause after move
-
-        if (PieceMover.lastMoveWasRethrow)
+        if (movable.Count == 0)
         {
-            AiMover.StartStickThrow(); // Give AI another turn
+            Debug.Log("No valid second piece for Earthbound’s Step.");
+            yield return new WaitForSeconds(0.3f);
+            yield break;
+        }
+
+        if (isAI)
+        {
+            yield return new WaitForSeconds(0.5f); // AI "thinking"
+            PieceMover aiPiece = movable[Random.Range(0, movable.Count)];
+            int nextIndex = aiPiece.GetCurrentTileIndex() + 1;
+            Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
+            yield return aiPiece.StartCoroutine(aiPiece.MoveToTile(targetTile));
+            yield return new WaitForSeconds(0.5f); // Small pause after move
+
+            if (PieceMover.lastMoveWasRethrow)
+            {
+                AiMover.StartStickThrow(); // Give AI another turn
+            }
+            else
+            {
+                PieceMover.currentTurn = TurnType.Player;
+                PieceMover.Instance?.ShowTemporaryTurnMessage("Player Turn");
+                PieceMover.Instance?.Invoke("UpdateThrowButtonState", 0.1f);
+            }
         }
         else
         {
-            PieceMover.currentTurn = TurnType.Player;
-            PieceMover.Instance?.ShowTemporaryTurnMessage("Player Turn");
-            PieceMover.Instance?.Invoke("UpdateThrowButtonState", 0.1f);
-        }
-    }
-    else
-    {
-        PieceMover chosen = null;
-        yield return StartCoroutine(SelectPieceByTouch(movable, result => chosen = result));
+            PieceMover chosen = null;
+            yield return StartCoroutine(SelectPieceByTouch(movable, result => chosen = result));
 
-        if (chosen != null)
-        {
-            int nextIndex = chosen.GetCurrentTileIndex() + 1;
-            Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
-            yield return chosen.StartCoroutine(chosen.MoveToTile(targetTile));
+            if (chosen != null)
+            {
+                int nextIndex = chosen.GetCurrentTileIndex() + 1;
+                Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
+                yield return chosen.StartCoroutine(chosen.MoveToTile(targetTile));
+            }
         }
+
+        yield return new WaitForSeconds(0.5f);
     }
-}
 
 
     private IEnumerator SylvanShieldEffect(bool isAI)
@@ -263,77 +273,77 @@ public class ScrollEffectExecutor : MonoBehaviour
 
 
     private IEnumerator SelectTileByTouch(List<Transform> candidates, System.Action<Transform> callback)
-{
-    Transform selectedTile = null;
-    Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
-    Dictionary<Transform, Color> originalColors = new Dictionary<Transform, Color>();
-
-    // Highlight candidate tiles and store original materials and colors
-    foreach (Transform t in candidates)
     {
-        Renderer r = t.GetComponent<Renderer>();
-        if (r != null)
-        {
-            originalMaterials[t] = r.material;
-            originalColors[t] = r.material.color;
-            r.material.color = Color.yellow;
-        }
-    }
+        Transform selectedTile = null;
+        Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
+        Dictionary<Transform, Color> originalColors = new Dictionary<Transform, Color>();
 
-    // Wait for user touch selection
-    while (selectedTile == null)
-    {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        // Highlight candidate tiles and store original materials and colors
+        foreach (Transform t in candidates)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit[] hits = Physics.RaycastAll(ray);
-
-            foreach (RaycastHit hit in hits)
+            Renderer r = t.GetComponent<Renderer>();
+            if (r != null)
             {
-                GameObject hitObject = hit.collider.gameObject;
+                originalMaterials[t] = r.material;
+                originalColors[t] = r.material.color;
+                r.material.color = Color.yellow;
+            }
+        }
 
-                // Ignore any GameObject with tag "Piece"
-                if (hitObject.CompareTag("Piece"))
-                    continue;
+        // Wait for user touch selection
+        while (selectedTile == null)
+        {
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                RaycastHit[] hits = Physics.RaycastAll(ray);
 
-                // Check if the tapped object is a valid tile
-                if (candidates.Contains(hit.transform))
+                foreach (RaycastHit hit in hits)
                 {
-                    selectedTile = hit.transform;
-                    break;
+                    GameObject hitObject = hit.collider.gameObject;
+
+                    // Ignore any GameObject with tag "Piece"
+                    if (hitObject.CompareTag("Piece"))
+                        continue;
+
+                    // Check if the tapped object is a valid tile
+                    if (candidates.Contains(hit.transform))
+                    {
+                        selectedTile = hit.transform;
+                        break;
+                    }
+                }
+            }
+
+            yield return null;
+        }
+
+        // Restore materials and colors after selection
+        foreach (Transform t in candidates)
+        {
+            Renderer r = t.GetComponent<Renderer>();
+            TileMarker marker = t.GetComponent<TileMarker>();
+
+            if (r != null)
+            {
+                if (marker != null && marker.isSkysparkTile)
+                {
+                    r.material.color = Color.red; // Keep Skyspark red
+                }
+                else if (marker != null && marker.isTriggerTile && marker.triggerMaterial != null)
+                {
+                    r.material = marker.triggerMaterial;
+                }
+                else if (originalMaterials.ContainsKey(t))
+                {
+                    r.material = originalMaterials[t];
+                    r.material.color = originalColors[t]; // Restore original color
                 }
             }
         }
 
-        yield return null;
+        callback?.Invoke(selectedTile);
     }
-
-    // Restore materials and colors after selection
-    foreach (Transform t in candidates)
-    {
-        Renderer r = t.GetComponent<Renderer>();
-        TileMarker marker = t.GetComponent<TileMarker>();
-
-        if (r != null)
-        {
-            if (marker != null && marker.isSkysparkTile)
-            {
-                r.material.color = Color.red; // Keep Skyspark red
-            }
-            else if (marker != null && marker.isTriggerTile && marker.triggerMaterial != null)
-            {
-                r.material = marker.triggerMaterial;
-            }
-            else if (originalMaterials.ContainsKey(t))
-            {
-                r.material = originalMaterials[t];
-                r.material.color = originalColors[t]; // Restore original color
-            }
-        }
-    }
-
-    callback?.Invoke(selectedTile);
-}
 
 
 
@@ -384,6 +394,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
     }
+
     private IEnumerator SkysparkSwapEffect()
     {
         Debug.Log("[Skyspark Swap] Activating square 26 as Skyspark Swap.");
@@ -405,6 +416,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
     }
+
     private IEnumerator GiftOfJahiEffect(bool isAI)
     {
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Gift of Jahi");
@@ -444,34 +456,35 @@ public class ScrollEffectExecutor : MonoBehaviour
         Debug.Log($"[{(isAI ? "AI" : "Player")}] recovered scroll index: {recoveredScroll}");
 
     }
-    private IEnumerator ObsidianBurdenEffect()
+
+    private IEnumerator ObsidianBurdenEffect(bool isAI)
     {
-        Debug.Log("[Player] activated Obsidian’s Burden!");
-
-        if (PieceMover.currentTurn != TurnType.AI)
+        if (isAI)
         {
-            Debug.LogWarning("Cannot use Obsidian’s Burden when it's not AI's turn.");
+            if (StickThrower.obsidianCapNextMove_Player)
+            {
+                Debug.LogWarning("[AI] Already applied Obsidian’s Burden on Player.");
+                yield break;
+            }
 
-            yield break;
+            Debug.Log("[AI] activated Obsidian’s Burden! Player’s next movement will be capped to 2.");
+            StickThrower.obsidianCapNextMove_Player = true;
         }
-
-        if (PieceMover.obsidianUsedThisTurn)
+        else
         {
-            Debug.LogWarning("Obsidian’s Burden has already been used this AI turn.");
+            if (StickThrower.obsidianCapNextMove_AI)
+            {
+                Debug.LogWarning("[Player] Already applied Obsidian’s Burden on AI.");
+                yield break;
+            }
 
-            yield break;
+            Debug.Log("[Player] activated Obsidian’s Burden! AI’s next movement will be capped to 2.");
+            StickThrower.obsidianCapNextMove_AI = true;
         }
-
-        PieceMover.obsidianUsedThisTurn = true;
-
-        // Cancel any current AI processing (if applicable)
-        Debug.Log("[Obsidian’s Burden] Forcing AI rethrow...");
 
         yield return new WaitForSeconds(0.5f);
-
-        AiMover.StartStickThrow(forceReroll: true); // <-- new optional param
-        // Note: do NOT call HandleTurnAfterScroll here — AI will handle it post-reroll
     }
+
     private IEnumerator HorusRetreatEffect(bool isAI)
     {
         if (isAI)
@@ -483,18 +496,60 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
     }
+
     private IEnumerator AnippesGraceEffect(bool isAI)
     {
-        if (isAI)
-            PieceMover.anippeGraceActive_AI = true;
-        else
-            PieceMover.anippeGraceActive_Player = true;
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Anippe’s Grace");
 
-        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Anippe’s Grace — will skip 1 trigger tile this turn.");
+        List<PieceMover> candidates = new List<PieceMover>();
+        PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
+
+        foreach (var piece in allPieces)
+        {
+            if (piece.isAI == isAI && !piece.hasPermanentGrace)
+            {
+                candidates.Add(piece);
+            }
+        }
+
+        if (candidates.Count == 0)
+        {
+            Debug.LogWarning("No valid pieces to protect.");
+            yield break;
+        }
+
+        PieceMover selected = null;
+
+        if (isAI)
+        {
+            selected = candidates[Random.Range(0, candidates.Count)];
+            yield return new WaitForSeconds(0.5f);
+        }
+        else
+        {
+            yield return StartCoroutine(SelectPieceByTouch(candidates, result => selected = result));
+        }
+
+        if (selected != null)
+        {
+            selected.hasPermanentGrace = true;
+
+            // Optional visual effect: greenish glow
+            Renderer rend = selected.GetComponent<Renderer>();
+            if (rend != null && selected.originalMaterial != null)
+            {
+                Material permanentMat = new Material(selected.originalMaterial);
+                permanentMat.color = Color.black;
+                rend.material = permanentMat;
+            }
+
+            Debug.Log($"[{(isAI ? "AI" : "Player")}] permanently protected: {selected.name}");
+            ShowTemporaryMessage($"{(isAI ? "AI" : "You")} protected {selected.name} permanently!");
+        }
 
         yield return new WaitForSeconds(0.5f);
-
     }
+
     private IEnumerator VaultOfShadowsEffect(bool isAI)
     {
         ScrollManager sm = FindObjectOfType<ScrollManager>();
@@ -519,6 +574,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f); // Optional delay
         ExecuteEffect(lastKey, isAI); // Repeats the last scroll!
     }
+
     private IEnumerator HekasBlessingEffect(bool isAI)
     {
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Heka’s Blessing");
@@ -530,6 +586,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             sm.GrantHekasBlessingScroll(isAI);
 
     }
+
     private IEnumerator OathOfIsfetEffect(bool isAI)
     {
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Oath of Isfet — Swapping all pieces!");
@@ -645,6 +702,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         Debug.Log($"{target.name} was sent to tile: {destination.name} by Grasp of the Scarab.");
     }
+
     private IEnumerator PathOfAaruEffect(bool isAI)
     {
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Path of Aaru — ignoring movement restrictions this turn!");
@@ -656,23 +714,65 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
     }
+
     private IEnumerator ApepsTrickEffect(bool isAI)
     {
-        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Apep’s Trick — extra turn + extra scroll!");
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Apep’s Trick — summons opponent’s piece!");
 
-        if (isAI)
+        // Count opponent's existing pieces
+        PieceMover[] allPieces = FindObjectsOfType<PieceMover>();
+        int opponentCount = allPieces.Count(p => p.isAI != isAI);
+
+        if (opponentCount >= 5)
         {
-            PieceMover.apepTrickActive_AI = true;
-            PieceMover.apepTrickUsed_AI = false;
+            Debug.Log("Opponent already has 5 or more pieces. No new piece summoned.");
+            yield break;
         }
-        else
+
+        // Find an existing piece to clone
+        PieceMover pieceToClone = allPieces.FirstOrDefault(p => p.isAI != isAI);
+        if (pieceToClone == null)
         {
-            PieceMover.apepTrickActive_Player = true;
-            PieceMover.apepTrickUsed_Player = false;
+            Debug.LogWarning("No opponent piece found to clone.");
+            yield break;
         }
+
+        // Find first empty tile
+        Transform board = GameObject.Find("Board").transform;
+        Transform spawnTile = null;
+
+        for (int i = 0; i < board.childCount; i++)
+        {
+            if (board.GetChild(i).childCount == 0)
+            {
+                spawnTile = board.GetChild(i);
+                break;
+            }
+        }
+
+        if (spawnTile == null)
+        {
+            Debug.LogWarning("No empty tile found for new piece.");
+            yield break;
+        }
+
+        // Clone the piece and set it up
+        GameObject newPiece = Instantiate(pieceToClone.gameObject, spawnTile.position, Quaternion.identity);
+        newPiece.name = pieceToClone.name.Replace("(Clone)", "") + "_Reinforced";
+        newPiece.transform.SetParent(spawnTile);
+        newPiece.transform.localPosition = new Vector3(0, pieceToClone.transform.localPosition.y, 0);
+        newPiece.transform.localScale = pieceToClone.transform.localScale;
+
+        PieceMover newPieceMover = newPiece.GetComponent<PieceMover>();
+        newPieceMover.isAI = !isAI;
+        newPieceMover.originalMaterial = pieceToClone.originalMaterial;
+        newPieceMover.isProtected = false;
+
+        Debug.Log($"[Apep’s Trick] Summoned a new {(isAI ? "Player" : "AI")} piece at tile: {spawnTile.name}");
 
         yield return new WaitForSeconds(0.5f);
     }
+
     private void DominionOfKamoEffect(bool isAI)
     {
         if (isAI)
@@ -686,6 +786,177 @@ public class ScrollEffectExecutor : MonoBehaviour
             Debug.Log("[ScrollEffectExecutor] Player used Dominion of Kamo — AI scrolls disabled!");
         }
     }
+
+    private IEnumerator MirrorOfMerneithEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Mirror of Merneith");
+
+        List<PieceMover> candidates = new List<PieceMover>();
+        PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
+
+        foreach (var piece in allPieces)
+        {
+            if (piece.isAI == isAI)
+                candidates.Add(piece);
+        }
+
+        if (candidates.Count == 0)
+        {
+            Debug.LogWarning("No piece available to remove.");
+            yield return new WaitForSeconds(0.3f);
+            yield break;
+        }
+
+        PieceMover selected = null;
+        GameManager.Instance?.CheckForWinCondition();
+
+        if (isAI)
+        {
+            yield return new WaitForSeconds(0.5f); // Simulate AI thinking
+            selected = candidates[Random.Range(0, candidates.Count)];
+        }
+        else
+        {
+            yield return StartCoroutine(SelectPieceByTouch(candidates, result => selected = result));
+        }
+
+        if (selected != null)
+        {
+            // Optional visual/sound effect before destroy
+            yield return new WaitForSeconds(0.2f);
+            Destroy(selected.gameObject);
+            Debug.Log($"[{(isAI ? "AI" : "Player")}] piece removed by Mirror of Merneith.");
+        }
+
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    private IEnumerator MenasGraspEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Mena’s Grasp");
+
+        List<PieceMover> targets = new List<PieceMover>();
+        PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
+
+        foreach (var piece in allPieces)
+        {
+            if (piece.isAI != isAI)
+                targets.Add(piece);
+        }
+
+        if (targets.Count == 0)
+        {
+            Debug.LogWarning("No opponent pieces to affect.");
+            yield break;
+        }
+
+        PieceMover selected = null;
+
+        if (isAI)
+        {
+            selected = targets.OrderByDescending(p => p.GetCurrentTileIndex()).FirstOrDefault();
+            yield return new WaitForSeconds(0.5f);
+        }
+        else
+        {
+            yield return StartCoroutine(SelectPieceByTouch(targets, result => selected = result));
+        }
+
+        if (selected != null)
+        {
+            int currentIndex = selected.GetCurrentTileIndex();
+            int targetIndex = currentIndex - 3;
+
+            if (targetIndex < 0)
+            {
+                Debug.Log("Mena’s Grasp has no effect — too close to start.");
+                yield break;
+            }
+
+            Transform board = GameObject.Find("Board").transform;
+            Transform destinationTile = board.GetChild(targetIndex);
+
+            bool occupied = allPieces.Any(p => p != selected && p.GetCurrentTileIndex() == targetIndex);
+
+            if (occupied)
+            {
+                Debug.Log("Original backward tile occupied. Searching next free tile...");
+                int boardSize = board.childCount;
+                bool found = false;
+
+                for (int i = targetIndex + 1; i < boardSize; i++)
+                {
+                    bool tileTaken = allPieces.Any(p => p != selected && p.GetCurrentTileIndex() == i);
+                    if (!tileTaken)
+                    {
+                        destinationTile = board.GetChild(i);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Debug.Log("No empty tile found after target. Cannot move.");
+                    yield break;
+                }
+            }
+
+            // Move the piece instantly
+            selected.transform.SetParent(destinationTile);
+            Vector3 localPos = selected.transform.localPosition;
+            selected.transform.localPosition = new Vector3(0f, localPos.y, 0f);
+
+            Debug.Log($"Moved {selected.name} back to tile {destinationTile.name}");
+
+            yield return new WaitForSeconds(0.3f);
+        }
+    }
+    private IEnumerator BindingOfAegisEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Binding of Aegis");
+
+        List<PieceMover> targets = GameObject.FindObjectsOfType<PieceMover>()
+            .Where(p => p.isAI != isAI && !p.IsFrozen())
+            .ToList();
+
+        if (targets.Count == 0)
+        {
+            Debug.Log("No valid opponent to freeze.");
+            yield break;
+        }
+
+        PieceMover selected = null;
+
+        if (isAI)
+        {
+            selected = targets.OrderByDescending(p => p.GetCurrentTileIndex()).FirstOrDefault();
+            yield return new WaitForSeconds(0.5f);
+        }
+        else
+        {
+            yield return StartCoroutine(SelectPieceByTouch(targets, result => selected = result));
+        }
+
+        if (selected != null)
+        {
+            selected.frozenTurnsRemaining = 4;
+
+            // Visual cue (cyan color)
+            Renderer rend = selected.GetComponent<Renderer>();
+            if (selected.originalMaterial != null)
+            {
+                Material frozenMat = new Material(selected.originalMaterial);
+                frozenMat.color = Color.magenta;
+                rend.material = frozenMat;
+            }
+
+            Debug.Log($"[Binding of Aegis] {selected.name} is frozen for 2 turns.");
+        }
+
+        yield return new WaitForSeconds(0.5f);
+    }
+
 
 
     private Coroutine messageRoutine;

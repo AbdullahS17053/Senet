@@ -6,20 +6,20 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("UI Panels")]
-    [SerializeField] private GameObject scrollPanel;
+    [Header("UI Panels")] [SerializeField] private GameObject scrollPanel;
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject losePanel;
 
     [SerializeField] private GameObject teachingsPanel;
-    
-    [Header("Tap Effect Settings")]
-    [SerializeField] private float scaleAmount = 1.1f;
+
+    [Header("Tap Effect Settings")] [SerializeField]
+    private float scaleAmount = 1.1f;
+
     [SerializeField] private float scaleDuration = 0.1f;
     [SerializeField] private float afterEffectDelay = 0.1f;
 
     [SerializeField] private GameObject stickThrower;
-    
+
     public static GameManager Instance;
 
     public void Awake()
@@ -32,36 +32,25 @@ public class GameManager : MonoBehaviour
 
     public void PlayBtn()
     {
-        StartCoroutine(PlayTapEffect(() =>
-        {
-            SceneManager.LoadScene(1);
-        }));
+        StartCoroutine(PlayTapEffect(() => { SceneManager.LoadScene(2); }));
     }
 
     public void ScrollBtn()
     {
-        StartCoroutine(PlayTapEffect(() =>
-        {
-            scrollPanel.SetActive(true);
-        }));
-            
+        StartCoroutine(PlayTapEffect(() => { scrollPanel.SetActive(true); }));
+
     }
 
     public void TeachingsBtn()
     {
-        StartCoroutine(PlayTapEffect(() =>
-        {
-            teachingsPanel.SetActive(true);
-        }));
+        StartCoroutine(PlayTapEffect(() => { teachingsPanel.SetActive(true); }));
     }
 
     public void BackBtn()
     {
-        StartCoroutine(PlayTapEffect(() =>
-        {
-            scrollPanel.SetActive(false);
-        }));
+        StartCoroutine(PlayTapEffect(() => { scrollPanel.SetActive(false); }));
     }
+
     public IEnumerator PlayTapEffect(System.Action onComplete)
     {
         GameObject clicked = EventSystem.current.currentSelectedGameObject;
@@ -103,21 +92,19 @@ public class GameManager : MonoBehaviour
 
     public void CloseTeachingsPanel()
     {
-        StartCoroutine(PlayTapEffect(() =>
-        {
-            teachingsPanel.SetActive(false);
-        }));
+        StartCoroutine(PlayTapEffect(() => { teachingsPanel.SetActive(false); }));
     }
 
     public void MenuBtn()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
     public void ReplayBtn()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
     public void CheckForWinCondition()
     {
         int playerCount = 0;

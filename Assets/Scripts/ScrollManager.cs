@@ -4,32 +4,33 @@ using UnityEngine.UI;
 
 public class ScrollManager : MonoBehaviour
 {
-    [Header("Scroll UI")]
-    [SerializeField] public Button[] scrollButtons;
+    [Header("Scroll UI")] [SerializeField] public Button[] scrollButtons;
     [SerializeField] private Text[] scrollButtonTexts;
     [SerializeField] private Image[] scrollButtonImages;
     [SerializeField] public GameObject cancelButton;
 
-    [Header("Scroll Panel")]
-    [SerializeField] private GameObject scrollPanel;
+    [Header("Scroll Panel")] [SerializeField]
+    private GameObject scrollPanel;
+
     [SerializeField] private Button scrollBackButton;
     [SerializeField] private Image scrollBackButtonImage;
 
-    [Header("Scroll Data")]
-    [SerializeField] public ScrollData scrollData;
+    [Header("Scroll Data")] [SerializeField]
+    public ScrollData scrollData;
 
     public int[] selectedScrollIndices = new int[3];
     private bool[] usedScrollFlags = new bool[3];
 
     private int selectedSlotForPanel = -1; // Store which scroll slot was clicked
-    
+
     public List<int> usedScrollHistory = new List<int>(); // Track used/discarded scrolls this match
-    
+
     public string lastScrollEffectKey_Player = null;
     public string lastScrollEffectKey_AI = null;
-    
-    [Header("Extra Scroll")]
-    [SerializeField] private Button extraScrollButton;
+
+    [Header("Extra Scroll")] [SerializeField]
+    private Button extraScrollButton;
+
     [SerializeField] private Image extraScrollButtonImage;
     private int extraScrollIndex = -1;
     private bool extraScrollUsed = false;
@@ -46,10 +47,10 @@ public class ScrollManager : MonoBehaviour
         // Hide panel initially
         if (scrollPanel != null)
             scrollPanel.SetActive(false);
-        
+
         if (extraScrollButton != null)
             extraScrollButton.gameObject.SetActive(false);
-        
+
         extraScrollButton.onClick.AddListener(OnExtraScrollClicked);
 
 
@@ -63,11 +64,12 @@ public class ScrollManager : MonoBehaviour
             btn.gameObject.SetActive(isPlayerTurn);
 
         if (extraScrollButton != null)
-            extraScrollButton.gameObject.SetActive(isPlayerTurn && !extraScrollUsed && extraScrollIndex >= 0 && !PieceMover.playerScrollsDisabled);
+            extraScrollButton.gameObject.SetActive(isPlayerTurn && !extraScrollUsed && extraScrollIndex >= 0 &&
+                                                   !PieceMover.playerScrollsDisabled);
     }
 
 
-    
+
 
     private void LoadSelectedScrolls()
     {
@@ -107,7 +109,8 @@ public class ScrollManager : MonoBehaviour
             if (scrollButtonTexts != null && i < scrollButtonTexts.Length)
                 scrollButtonTexts[i].text = scrollIndex >= 0 ? $"Scroll {scrollIndex + 1}" : "None";
 
-            if (scrollButtonImages != null && i < scrollButtonImages.Length && scrollIndex >= 0 && scrollIndex < scrollData.scrollSprites.Length)
+            if (scrollButtonImages != null && i < scrollButtonImages.Length && scrollIndex >= 0 &&
+                scrollIndex < scrollData.scrollSprites.Length)
             {
                 scrollButtonImages[i].sprite = scrollData.scrollSprites[scrollIndex];
                 scrollButtonImages[i].preserveAspect = true;
@@ -160,7 +163,7 @@ public class ScrollManager : MonoBehaviour
     {
         int scrollIndex = selectedScrollIndices[scrollSlotIndex];
         Debug.Log($"Scroll {scrollIndex} used!");
-        
+
         if (!usedScrollHistory.Contains(selectedScrollIndices[scrollSlotIndex]))
             usedScrollHistory.Add(selectedScrollIndices[scrollSlotIndex]);
 
@@ -177,25 +180,6 @@ public class ScrollManager : MonoBehaviour
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = Player
 
         }
-        // Handle Apep’s Trick effect
-        string effectKeyUsed = scrollData.scrollEffectKeys[scrollIndex];
-        if (effectKeyUsed == "Apep’s Trick")
-        {
-            if (PieceMover.currentTurn == TurnType.Player)
-            {
-                PieceMover.apepTrickActive_Player = true;
-                PieceMover.apepTrickUsed_Player = false;
-            }
-            else
-            {
-                PieceMover.apepTrickActive_AI = true;
-                PieceMover.apepTrickUsed_AI = false;
-            }
-
-            Debug.Log("[ScrollManager] Apep’s Trick activated: extra turn + extra scroll allowed.");
-            scrollPanel.SetActive(false);
-            return; // ✅ Don't end the turn yet, since we give an extra turn!
-        }
 
 
         if (scrollPanel != null)
@@ -209,6 +193,7 @@ public class ScrollManager : MonoBehaviour
         {
             return;
         }
+
         // Handle turn or rethrow
         if (PieceMover.lastMoveWasRethrow)
         {
@@ -298,9 +283,12 @@ public class ScrollManager : MonoBehaviour
         }
 
         PieceMover.lastMoveWasRethrow = false;
-        PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+        PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player
+            ? "Player Turn"
+            : "AI Turn");
         FindAnyObjectByType<StickThrower>().GetComponent<StickThrower>().ShowStickVisuals();
     }
+
     private void OnExtraScrollClicked()
     {
         if (extraScrollUsed || extraScrollIndex < 0 || PieceMover.playerScrollsDisabled) return;
@@ -321,6 +309,7 @@ public class ScrollManager : MonoBehaviour
         scrollBackButton.onClick.RemoveAllListeners();
         scrollBackButton.onClick.AddListener(() => OnExtraScrollUsed());
     }
+
     private void OnExtraScrollUsed()
     {
         if (extraScrollUsed || extraScrollIndex < 0) return;
