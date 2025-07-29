@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -10,18 +11,20 @@ public class GameManager : MonoBehaviour
     [Header("UI Panels")] [SerializeField] private GameObject scrollPanel;
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject losePanel;
+    [SerializeField] private GameObject pausePanel;
 
     [SerializeField] private GameObject teachingsPanel;
-    
+
     [SerializeField] private Text feedbackText;
-    
-    [Header("Reward System")]
-    [SerializeField] private GameObject rewardsPanel;
+
+    [Header("Reward System")] [SerializeField]
+    private GameObject rewardsPanel;
+
     [SerializeField] private GameObject rewardBackPanel;
     [SerializeField] private Button[] rewardScrollButtons; // 3 scroll buttons shown as reward choices
-    [SerializeField] private Image rewardBackImage;         // image component on rewardBackPanel
-    [SerializeField] private Button rewardBackButton;       // button with the scroll back sprite
-    [SerializeField] private ScrollData scrollData;         // reference to ScrollData asset
+    [SerializeField] private Image rewardBackImage; // image component on rewardBackPanel
+    [SerializeField] private Button rewardBackButton; // button with the scroll back sprite
+    [SerializeField] private ScrollData scrollData; // reference to ScrollData asset
 
     private int rewardScrollIndex = -1; // index of scroll the player is about to unlock
 
@@ -39,6 +42,7 @@ public class GameManager : MonoBehaviour
 
     public void Awake()
     {
+        Time.timeScale = 1f;
         if (Instance == null)
             Instance = this;
         else
@@ -47,8 +51,12 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        rewardBackButton.onClick.AddListener(OnRewardBackConfirmed);
+        if (rewardBackButton != null)
+        {
+            rewardBackButton.onClick.AddListener(OnRewardBackConfirmed);
+        }
     }
+
     public void PlayBtn()
     {
         StartCoroutine(PlayTapEffect(() =>
@@ -66,7 +74,7 @@ public class GameManager : MonoBehaviour
                 {
                     feedbackText.text = "Select 3 scrolls before starting the game.";
                     CancelInvoke(nameof(ClearFeedback)); // In case a previous timer is running
-                    Invoke(nameof(ClearFeedback), 5f);  // Clear after 5 seconds
+                    Invoke(nameof(ClearFeedback), 5f); // Clear after 5 seconds
                 }
             }
         }));
@@ -174,6 +182,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
     private bool HasSelectedThreeScrolls()
     {
         int selectedCount = 0;
@@ -196,6 +205,7 @@ public class GameManager : MonoBehaviour
         if (feedbackText != null)
             feedbackText.text = "";
     }
+
     private void SetupRewardScrolls()
     {
         rewardsPanel.SetActive(true);
@@ -221,6 +231,7 @@ public class GameManager : MonoBehaviour
             rewardScrollButtons[i].gameObject.SetActive(false);
         }
     }
+
     private void OnRewardScrollSelected(int index)
     {
         rewardScrollIndex = index;
@@ -232,6 +243,7 @@ public class GameManager : MonoBehaviour
 
         rewardBackPanel.SetActive(true);
     }
+
     private void OnRewardBackConfirmed()
     {
         if (rewardScrollIndex >= 0)
@@ -248,6 +260,23 @@ public class GameManager : MonoBehaviour
     public void GotoRewards()
     {
         rewardBackPanel.SetActive(false);
+    }
+
+    public void Resume()
+    {
+        Time.timeScale = 1f;
+        pausePanel.SetActive(false);
+    }
+
+    void Pause()
+    {
+        pausePanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void PauseBtn()
+    {
+        StartCoroutine(PlayTapEffect(() => { Pause(); }));
     }
 }
 
