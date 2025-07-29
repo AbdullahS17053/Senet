@@ -17,6 +17,12 @@ public class Inventory : MonoBehaviour
     [SerializeField] private Sprite selectSprite;
     [SerializeField] private Sprite unselectSprite;
     [SerializeField] private Sprite lockedSprite;
+    
+    [Header("Locked Sprites")]
+    [SerializeField] private Sprite lockedSpriteTier1; // For scrolls 0–9
+    [SerializeField] private Sprite lockedSpriteTier2; // For scrolls 10–14
+    [SerializeField] private Sprite lockedSpriteTier3; // For scrolls 15–19
+
 
     private const int maxSelectableScrolls = 3;
     private List<int> selectedScrollIndices = new List<int>();
@@ -24,32 +30,49 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
-        // Only initialize default scrolls if not done before
         if (PlayerPrefs.GetInt("scrolls_initialized", 0) == 0)
         {
             InitializeDefaultScrolls();
             PlayerPrefs.SetInt("scrolls_initialized", 1);
             PlayerPrefs.Save();
         }
-
         LoadSelectedScrolls();
 
         for (int i = 0; i < scrollButtons.Length; i++)
         {
             int capturedIndex = i;
+            bool isUnlocked = PlayerPrefs.GetInt($"scroll_{i}_unlocked", 0) == 1;
+
+            Image btnImage = scrollButtons[i].GetComponent<Image>();
+
+            if (isUnlocked)
+            {
+                btnImage.sprite = scrollData.scrollSprites[i];
+            }
+            else
+            {
+                btnImage.sprite = GetLockedSprite(i);
+            }
+
             scrollButtons[i].onClick.AddListener(() => OnScrollButtonClicked(capturedIndex));
         }
-
         selectButton.onClick.AddListener(OnSelectButtonClicked);
         selectPanel.SetActive(false);
     }
+    private Sprite GetLockedSprite(int index)
+    {
+        if (index < 10) return lockedSpriteTier1;
+        if (index < 15) return lockedSpriteTier2;
+        return lockedSpriteTier3;
+    }
+
 
 
     private void InitializeDefaultScrolls()
     {
         for (int i = 0; i < scrollData.scrollSprites.Length; i++)
         {
-            bool isUnlocked = i < 20; // Only first 20 unlocked
+            bool isUnlocked = i < 3; // Only first 3 unlocked
             PlayerPrefs.SetInt($"scroll_{i}_unlocked", isUnlocked ? 1 : 0);
 
             // Select first 3 from unlocked scrolls only
@@ -90,31 +113,25 @@ public class Inventory : MonoBehaviour
 
     private void OnScrollButtonClicked(int index)
     {
+        bool isUnlocked = PlayerPrefs.GetInt($"scroll_{index}_unlocked", 0) == 1;
+        if (!isUnlocked)
+            return;
+
         currentIndex = index;
 
-        bool isUnlocked = PlayerPrefs.GetInt($"scroll_{index}_unlocked", 0) == 1;
         bool isSelected = PlayerPrefs.GetInt($"scroll_{index}_selected", 0) == 1;
 
-        // Set back image
         if (scrollBackImage != null && index < scrollData.scrollBacks.Length)
         {
             scrollBackImage.sprite = scrollData.scrollBacks[index];
         }
 
-        // Set select button sprite
-        if (!isUnlocked)
-        {
-            selectButton.image.sprite = lockedSprite;
-            selectButton.interactable = false;
-        }
-        else
-        {
-            selectButton.interactable = true;
-            selectButton.image.sprite = isSelected ? unselectSprite : selectSprite;
-        }
+        selectButton.interactable = true;
+        selectButton.image.sprite = isSelected ? unselectSprite : selectSprite;
 
         selectPanel.SetActive(true);
     }
+
 
     private void OnSelectButtonClicked()
     {
