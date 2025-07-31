@@ -30,6 +30,7 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
+        PlayerPrefs.DeleteAll();
         if (PlayerPrefs.GetInt("scrolls_initialized", 0) == 0)
         {
             InitializeDefaultScrolls();

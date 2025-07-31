@@ -76,6 +76,9 @@ public class ScrollEffectExecutor : MonoBehaviour
             case "Binding of Aegis":
                 StartCoroutine(BindingOfAegisEffect(isAI));
                 break;
+            case "Echo of the Twin":
+                StartCoroutine(EchoOfTheTwinEffect(isAI));
+                break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
                 break;
@@ -957,7 +960,30 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
+    private IEnumerator EchoOfTheTwinEffect(bool isAI)
+    {
+        yield return new WaitForSeconds(0.25f); // Optional delay for pacing
 
+        string lastUsedKey = isAI
+            ? ScrollManager.Instance.lastScrollEffectKey_AI
+            : ScrollManager.Instance.lastScrollEffectKey_Player;
+
+        if (!string.IsNullOrEmpty(lastUsedKey) && lastUsedKey != "Echo of the Twin")
+        {
+            Debug.Log($"[Echo of the Twin] {(isAI ? "AI" : "Player")} is echoing: {lastUsedKey}");
+            ShowTemporaryMessage($"{(isAI ? "AI" : "Player")} echoed {lastUsedKey}");
+
+            // Echo the last scroll effect
+            ExecuteEffect(lastUsedKey, isAI);
+        }
+        else
+        {
+            Debug.LogWarning($"[Echo of the Twin] No valid scroll to echo for {(isAI ? "AI" : "Player")}.");
+            ShowTemporaryMessage($"{(isAI ? "AI" : "Player")} tried to echo but nothing to reuse.");
+        }
+
+        yield return null;
+    }
 
     private Coroutine messageRoutine;
 

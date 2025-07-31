@@ -444,7 +444,7 @@ public class PieceMover : MonoBehaviour
             transform.localPosition = new Vector3(0, VlocalY, 0);
             yield return new WaitForSeconds(0.3f);
 
-            GameManager.Instance.CheckForWinCondition();
+            //GameManager.Instance.CheckForWinCondition();
 
             lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 3);
             lastStickValue = 0;

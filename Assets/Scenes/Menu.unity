@@ -4562,6 +4562,7 @@ MonoBehaviour:
   scrollPanel: {fileID: 1399760384}
   winPanel: {fileID: 0}
   losePanel: {fileID: 0}
+  pausePanel: {fileID: 0}
   teachingsPanel: {fileID: 1761632385}
   feedbackText: {fileID: 560055639}
   rewardsPanel: {fileID: 0}
@@ -4977,7 +4978,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 123.44554, y: 0}
-  m_SizeDelta: {x: 246.89001, y: 0}
+  m_SizeDelta: {x: 246.89001, y: -7.25}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &948092414
 MonoBehaviour:
@@ -5016,7 +5017,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
-  m_VerticalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &1077793951
 GameObject:
   m_ObjectHideFlags: 0
@@ -5702,7 +5703,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.000015258789, y: 0}
-  m_SizeDelta: {x: 1043.11, y: 923.75}
+  m_SizeDelta: {x: 1043.11, y: 1237.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1361372098
 MonoBehaviour:

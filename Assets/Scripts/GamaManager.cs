@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour
 
     public void Awake()
     {
-        Time.timeScale = 1f;
         if (Instance == null)
             Instance = this;
         else
@@ -51,12 +50,12 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1f;
         if (rewardBackButton != null)
         {
             rewardBackButton.onClick.AddListener(OnRewardBackConfirmed);
         }
     }
-
     public void PlayBtn()
     {
         StartCoroutine(PlayTapEffect(() =>
@@ -143,11 +142,13 @@ public class GameManager : MonoBehaviour
 
     public void MenuBtn()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(1);
     }
 
     public void ReplayBtn()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -162,22 +163,22 @@ public class GameManager : MonoBehaviour
             if (piece.isAI) aiCount++;
             else playerCount++;
         }
-
-        if (aiCount == 1)
+        if (playerCount == 1)
+        {
+            Debug.Log("Player Wins!");
+            if (winPanel != null)
+            {
+                winPanel.SetActive(true);
+                Invoke(nameof(SetupRewardScrolls), 2f);
+                stickThrower.SetActive(false);
+            }
+        }
+        else if (aiCount == 1)
         {
             Debug.Log("AI Wins!");
             if (losePanel != null)
             {
                 losePanel.SetActive(true);
-                stickThrower.SetActive(false);
-            }
-        }
-        else if (playerCount == 1)
-        {
-            Debug.Log("Player Wins!");
-            if (winPanel != null)
-            {
-                SetupRewardScrolls();
                 stickThrower.SetActive(false);
             }
         }
@@ -254,7 +255,7 @@ public class GameManager : MonoBehaviour
 
         rewardBackPanel.SetActive(false);
         rewardsPanel.SetActive(false);
-        winPanel.SetActive(true);
+        SceneManager.LoadScene(1);
     }
 
     public void GotoRewards()

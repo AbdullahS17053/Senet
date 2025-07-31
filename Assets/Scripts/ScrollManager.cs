@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ScrollManager : MonoBehaviour
 {
@@ -35,7 +37,19 @@ public class ScrollManager : MonoBehaviour
     private int extraScrollIndex = -1;
     private bool extraScrollUsed = false;
 
+    public static ScrollManager Instance;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;  
+        }
+        else
+        {
+            return;
+        }
+    }
 
 
     void Start()
@@ -175,8 +189,12 @@ public class ScrollManager : MonoBehaviour
         {
             string effectKey = scrollData.scrollEffectKeys[scrollIndex];
 
-            if (effectKey != "Vault of Shadows")
+            // Store the scroll being used so it can be echoed later
+            if (effectKey != "Vault of Shadows" && effectKey != "Echo of the Twin")
+            {
                 lastScrollEffectKey_Player = effectKey;
+            }
+
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = Player
 
         }
@@ -321,8 +339,12 @@ public class ScrollManager : MonoBehaviour
         string effectKey = scrollData.scrollEffectKeys[extraScrollIndex];
         Debug.Log($"[Player] used extra scroll from Heka’s Blessing: {effectKey}");
 
-        if (effectKey != "Vault of Shadows")
+        // Store the scroll being used so it can be echoed later
+        if (effectKey != "Vault of Shadows" && effectKey != "Echo of the Twin")
+        {
             lastScrollEffectKey_Player = effectKey;
+        }
+
 
         ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false);
 

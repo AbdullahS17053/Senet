@@ -239,7 +239,7 @@ public class AiMover : MonoBehaviour
             Debug.Log($"[AI] used scroll: {effectKey}");
 
             ScrollManager sm = FindObjectOfType<ScrollManager>();
-            if (sm != null && effectKey != "Vault of Shadows")
+            if (sm != null && effectKey != "Vault of Shadows" && effectKey != "Echo of the Twin")
                 sm.lastScrollEffectKey_AI = effectKey;
 
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
