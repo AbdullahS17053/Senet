@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
 
     [SerializeField] private GameObject teachingsPanel;
+    [SerializeField] GameObject toolsPanel;
 
     [SerializeField] private Text feedbackText;
 
@@ -51,6 +52,14 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
+        if (PieceMover.Instance != null)
+        {
+            PieceMover.currentTurn = TurnType.Player;
+            PieceMover.lastStickValue = 0;
+            PieceMover.moveInProgress = false;
+        }
+
+        Debug.Log("Game Manager");
         if (rewardBackButton != null)
         {
             rewardBackButton.onClick.AddListener(OnRewardBackConfirmed);
@@ -58,6 +67,7 @@ public class GameManager : MonoBehaviour
     }
     public void PlayBtn()
     {
+        AudioController.Instance.Play("ButtonTap");
         StartCoroutine(PlayTapEffect(() =>
         {
             if (HasSelectedThreeScrolls())
@@ -98,6 +108,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator PlayTapEffect(System.Action onComplete)
     {
+        AudioController.Instance.Play("ButtonTap");
         GameObject clicked = EventSystem.current.currentSelectedGameObject;
         if (clicked == null)
         {
@@ -278,6 +289,16 @@ public class GameManager : MonoBehaviour
     public void PauseBtn()
     {
         StartCoroutine(PlayTapEffect(() => { Pause(); }));
+    }
+
+    public void ToolsBtn()
+    {
+        StartCoroutine(PlayTapEffect(() => { toolsPanel.SetActive(true); }));
+    }
+
+    public void CloseToolsPanel()
+    {
+        StartCoroutine(PlayTapEffect(() => { toolsPanel.SetActive(false); }));
     }
 }
 

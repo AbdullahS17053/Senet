@@ -31,7 +31,6 @@ public class StickThrower : MonoBehaviour
         skipButton.onClick.AddListener(OnSkipPressed); // NEW
 
         PieceMover.highlightMaterial = highlightMaterial;
-
         ResetUI();
         UpdateThrowButtonState();
     }
@@ -43,7 +42,7 @@ public class StickThrower : MonoBehaviour
 
     public IEnumerator ThrowSticksRoutine()
     {
-        throwSound.Play();
+        AudioController.Instance.Play("StickThrow");
         throwButton.gameObject.SetActive(false);
         skipButton.gameObject.SetActive(true); // Show skip after throwing
 
@@ -84,6 +83,7 @@ public class StickThrower : MonoBehaviour
                 Debug.Log("[Obsidian’s Burden] Player's roll capped from " + finalValue + " to 2");
                 finalValue = 2;
             }
+
             obsidianCapNextMove_Player = false;
         }
         else if (PieceMover.currentTurn == TurnType.AI && obsidianCapNextMove_AI)
@@ -93,6 +93,7 @@ public class StickThrower : MonoBehaviour
                 Debug.Log("[Obsidian’s Burden] AI's roll capped from " + finalValue + " to 2");
                 finalValue = 2;
             }
+
             obsidianCapNextMove_AI = false;
         }
 
@@ -118,6 +119,7 @@ public class StickThrower : MonoBehaviour
             Debug.Log("No valid move — passing turn.");
             PieceMover.PassTurnImmediately();
         }
+
         StartCoroutine(HideStickVisualsAfterDelay());
     }
 
@@ -144,10 +146,11 @@ public class StickThrower : MonoBehaviour
         skipButton.gameObject.SetActive(false); // Hide on reset
     }
 
-    private void OnSkipPressed()
+    public void OnSkipPressed()
     {
         Debug.Log("Skip pressed — passing turn.");
         //PieceMover.PassTurnImmediately();
+        AudioController.Instance.Play("ButtonTap");
         PieceMover.ResetTurn();
         PieceMover.currentTurn = TurnType.AI;
         UpdateThrowButtonState();

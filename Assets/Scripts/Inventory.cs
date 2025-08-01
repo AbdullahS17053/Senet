@@ -30,7 +30,6 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
-        PlayerPrefs.DeleteAll();
         if (PlayerPrefs.GetInt("scrolls_initialized", 0) == 0)
         {
             InitializeDefaultScrolls();
@@ -142,6 +141,7 @@ public class Inventory : MonoBehaviour
         bool isSelected = PlayerPrefs.GetInt($"scroll_{currentIndex}_selected", 0) == 1;
 
         if (!isUnlocked) return;
+        AudioController.Instance.Play("ButtonTap");
 
         if (isSelected)
         {

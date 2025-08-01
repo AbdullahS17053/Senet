@@ -256,6 +256,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                     if (tapped != null && candidates.Contains(tapped))
                     {
                         selected = tapped;
+                        AudioController.Instance.Play("PieceTap");
                     }
                 }
             }
@@ -312,6 +313,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                     // Check if the tapped object is a valid tile
                     if (candidates.Contains(hit.transform))
                     {
+                        AudioController.Instance.Play("PieceTap");
                         selectedTile = hit.transform;
                         break;
                     }

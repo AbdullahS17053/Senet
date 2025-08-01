@@ -287,6 +287,7 @@ public class ScrollManager : MonoBehaviour
 
     public void OnCancelButtonPressed()
     {
+        AudioController.Instance.Play("ButtonTap");
         SetScrollsInteractable(false);
 
         if (PieceMover.lastMoveWasRethrow)

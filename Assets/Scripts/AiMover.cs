@@ -124,7 +124,7 @@ public class AiMover : MonoBehaviour
     private IEnumerator ExecuteAiTurn()
     {
         aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI && p.frozenTurnsRemaining == 0);
-
+        
         List<(PieceMover piece, Transform target, int targetIndex)> validMoves = new();
 
         foreach (var piece in aiPieces)

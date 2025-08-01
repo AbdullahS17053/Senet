@@ -8,6 +8,7 @@ TagManager:
   - Piece
   - ThrowButton
   - SkipButton
+  - VolumeSlider
   layers:
   - Default
   - TransparentFX

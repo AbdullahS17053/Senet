@@ -79,8 +79,6 @@ public class PieceMover : MonoBehaviour
 
         if (skipButton == null)
             skipButton = GameObject.FindWithTag("SkipButton");
-
-
         scrollManager = GameObject.FindObjectOfType<ScrollManager>();
         turnFeedbackText.text = "Player Turn";
 
@@ -132,7 +130,7 @@ public class PieceMover : MonoBehaviour
             Debug.Log($"{piece.name} is frozen and cannot move.");
             return;
         }
-
+        AudioController.Instance.Play("PieceTap");
         int currentIndex = piece.GetCurrentTileIndex();
         if (currentIndex == -1) return;
 
@@ -444,7 +442,7 @@ public class PieceMover : MonoBehaviour
             transform.localPosition = new Vector3(0, VlocalY, 0);
             yield return new WaitForSeconds(0.3f);
 
-            //GameManager.Instance.CheckForWinCondition();
+            GameManager.Instance.CheckForWinCondition();
 
             lastMoveWasRethrow = (lastStickValue == 1 || lastStickValue == 3);
             lastStickValue = 0;
@@ -501,7 +499,7 @@ public class PieceMover : MonoBehaviour
                 moveInProgress = false;
                 yield break;
             }
-
+            AudioController.Instance.Play("PieceSwap");
             opponent.transform.SetParent(previousTile);
             opponent.transform.localPosition = new Vector3(0, opponent.transform.localPosition.y, 0);
         }
