@@ -44,6 +44,9 @@ public class PieceMover : MonoBehaviour
 
     public static bool playerScrollsDisabled = false;
     public static bool aiScrollsDisabled = false;
+    
+    public static bool sandsOfEsnaPlayer = false;
+    public static bool sandsOfEsnaAI = false;
 
     private ScrollManager scrollManager;
     [HideInInspector] public bool isProtected = false;
@@ -81,6 +84,8 @@ public class PieceMover : MonoBehaviour
             skipButton = GameObject.FindWithTag("SkipButton");
         scrollManager = GameObject.FindObjectOfType<ScrollManager>();
         turnFeedbackText.text = "Player Turn";
+        sandsOfEsnaPlayer = false;
+        sandsOfEsnaAI = false;
 
 
         UpdateThrowButtonState();
@@ -218,19 +223,25 @@ public class PieceMover : MonoBehaviour
             lastStickValue = 0;
             moveInProgress = false;
             currentTurn = TurnType.Player;
-
+            Instance?.ShowTemporaryTurnMessage("Player Turn");
             StickThrower stickThrower = GameObject.FindObjectOfType<StickThrower>();
-            if (stickThrower != null)
+            if (sandsOfEsnaPlayer)
             {
-                stickThrower.UpdateThrowButtonState();
-                stickThrower.ShowStickVisuals();
+                stickThrower.throwButton.gameObject.SetActive(false);
+                stickThrower.AutoThrowWithOptions();
             }
             else
             {
-                Debug.LogError("StickThrower not found when trying to enable throw button.");
+                if (stickThrower != null)
+                {
+                    stickThrower.UpdateThrowButtonState();
+                    stickThrower.ShowStickVisuals();
+                }
+                else
+                {
+                    Debug.LogError("StickThrower not found when trying to enable throw button.");
+                }
             }
-
-            Instance?.ShowTemporaryTurnMessage("Player Turn");
 
             // Decrease freeze counters
             foreach (var piece in GameObject.FindObjectsOfType<PieceMover>())
@@ -264,7 +275,7 @@ public class PieceMover : MonoBehaviour
             currentTurn = TurnType.AI;
 
             Instance?.ShowTemporaryTurnMessage("AI Turn");
-            AiMover.StartStickThrow();
+            AiMover.StartAITurn();
 
             // Decrease freeze counters
             foreach (var piece in GameObject.FindObjectsOfType<PieceMover>())
@@ -452,6 +463,11 @@ public class PieceMover : MonoBehaviour
                 currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
 
             ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+            if (currentTurn == TurnType.Player && sandsOfEsnaPlayer)
+            {
+                StickThrower.Instance.throwButton.gameObject.SetActive(false);
+                StickThrower.Instance.AutoThrowWithOptions();
+            }
             UpdateThrowButtonState();
 
             if (isAI && anippeGraceUsed_AI) anippeGraceActive_AI = false;
@@ -640,6 +656,11 @@ public class PieceMover : MonoBehaviour
         }
 
         ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+        if (currentTurn == TurnType.Player && sandsOfEsnaPlayer)
+        {
+            StickThrower.Instance.throwButton.gameObject.SetActive(false);
+            StickThrower.Instance.AutoThrowWithOptions();
+        }
         UpdateThrowButtonState();
 
         if (isAI && anippeGraceUsed_AI) anippeGraceActive_AI = false;
@@ -693,7 +714,15 @@ public class PieceMover : MonoBehaviour
     {
         if (throwButton != null)
         {
-            throwButton.SetActive(currentTurn == TurnType.Player);
+            if (sandsOfEsnaPlayer == false)
+            {
+                throwButton.SetActive(currentTurn == TurnType.Player);
+            }
+            else
+            {
+                throwButton.SetActive(false);
+            }
+
             skipButton.SetActive(currentTurn != TurnType.Player);
         }
 

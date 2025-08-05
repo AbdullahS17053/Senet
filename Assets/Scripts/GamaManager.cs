@@ -167,6 +167,7 @@ public class GameManager : MonoBehaviour
     {
         int playerCount = 0;
         int aiCount = 0;
+        
 
         PieceMover[] allPieces = FindObjectsOfType<PieceMover>();
         foreach (var piece in allPieces)
@@ -174,7 +175,34 @@ public class GameManager : MonoBehaviour
             if (piece.isAI) aiCount++;
             else playerCount++;
         }
-        if (playerCount == 1)
+        if (PieceMover.currentTurn == TurnType.Player)
+        {
+            playerCount--;
+            if (playerCount == 0)
+            {
+                Debug.Log("Player Wins!");
+                if (winPanel != null)
+                {
+                    winPanel.SetActive(true);
+                    Invoke(nameof(SetupRewardScrolls), 2f);
+                    stickThrower.SetActive(false);
+                }
+            }
+        }
+        else
+        {
+            aiCount--;
+            if (aiCount == 0)
+            {
+                Debug.Log("AI Wins!");
+                if (losePanel != null)
+                {
+                    losePanel.SetActive(true);
+                    stickThrower.SetActive(false);
+                }
+            }
+        }
+        /*if (playerCount == 1)
         {
             Debug.Log("Player Wins!");
             if (winPanel != null)
@@ -192,7 +220,7 @@ public class GameManager : MonoBehaviour
                 losePanel.SetActive(true);
                 stickThrower.SetActive(false);
             }
-        }
+        }*/
     }
 
     private bool HasSelectedThreeScrolls()
@@ -235,6 +263,11 @@ public class GameManager : MonoBehaviour
                 rewardScrollButtons[count].gameObject.SetActive(true);
                 count++;
             }
+        }
+
+        if (count == 0)
+        {
+            SceneManager.LoadScene(1);
         }
 
         // If fewer than 3 locked scrolls exist, hide extra buttons

@@ -293,12 +293,16 @@ public class ScrollManager : MonoBehaviour
         if (PieceMover.lastMoveWasRethrow)
         {
             PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+            if (PieceMover.sandsOfEsnaPlayer)
+            {
+                StickThrower.Instance.AutoThrowWithOptions();
+            }
         }
         else
         {
             PieceMover.currentTurn = TurnType.AI;
             PieceMover.ResetTurn();
-            AiMover.StartStickThrow();
+            AiMover.StartAITurn();
         }
 
         PieceMover.lastMoveWasRethrow = false;

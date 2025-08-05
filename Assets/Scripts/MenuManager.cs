@@ -16,27 +16,27 @@ public class MenuManager : MonoBehaviour
 
     private void Awake()
     {
-        bool isFirstTime = PlayerPrefs.GetInt(FirstTimeKey, 0) == 0;
-        if (isFirstTime)
-        {
-            welcomePanel.SetActive(true);
-            PlayerPrefs.SetInt(FirstTimeKey, 1);
-            PlayerPrefs.Save();
-        }
-        else
-        {
-            welcomePanel.SetActive(false);
-        }
+        bool isFirstTime = PlayerPrefs.GetInt(FirstTimeKey, 0) == 1;
+        welcomePanel.SetActive(isFirstTime);
     }
 
     public void DiscoverBtn()
     {
-        StartCoroutine(PlayTapEffect(() => { welcomePanel.SetActive(false); }));
+        StartCoroutine(PlayTapEffect(() => { Application.OpenURL("https://ancientbloods.co.uk"); }));
     }
 
     public void RemindMeBtn()
     {
         StartCoroutine(PlayTapEffect(() => { welcomePanel.SetActive(false); }));
+    }
+    public void PermanentlyCloseWelcomePanel()
+    {
+        StartCoroutine(PlayTapEffect(() =>
+        {
+            welcomePanel.SetActive(false);
+            PlayerPrefs.SetInt(FirstTimeKey, 0);
+            PlayerPrefs.Save();
+        }));
     }
     public IEnumerator PlayTapEffect(System.Action onComplete)
     {

@@ -118,10 +118,17 @@ public class AiMover : MonoBehaviour
 
     public static void StartAITurn()
     {
-        StartStickThrow();
+        if (PieceMover.sandsOfEsnaAI == true)
+        {
+            StickThrower.Instance.AutoThrowWithOptions();
+        }
+        else
+        {
+            StartStickThrow();
+        }
     }
 
-    private IEnumerator ExecuteAiTurn()
+    public IEnumerator ExecuteAiTurn()
     {
         aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI && p.frozenTurnsRemaining == 0);
         

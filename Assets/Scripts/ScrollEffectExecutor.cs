@@ -79,6 +79,9 @@ public class ScrollEffectExecutor : MonoBehaviour
             case "Echo of the Twin":
                 StartCoroutine(EchoOfTheTwinEffect(isAI));
                 break;
+            case "Sands of Esna":
+                StartCoroutine(SandsOfEsnaEffect(isAI));
+                break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
                 break;
@@ -126,12 +129,13 @@ public class ScrollEffectExecutor : MonoBehaviour
 
             if (PieceMover.lastMoveWasRethrow)
             {
-                AiMover.StartStickThrow(); // Give AI another turn
+                AiMover.StartAITurn(); // Give AI another turn
             }
             else
             {
                 PieceMover.currentTurn = TurnType.Player;
                 PieceMover.Instance?.ShowTemporaryTurnMessage("Player Turn");
+                StickThrower.Instance.AutoThrowWithOptions();
                 PieceMover.Instance?.Invoke("UpdateThrowButtonState", 0.1f);
             }
         }
@@ -257,6 +261,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                     {
                         selected = tapped;
                         AudioController.Instance.Play("PieceTap");
+                        StickThrower.Instance.AutoThrowWithOptions();
                     }
                 }
             }
@@ -315,6 +320,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                     {
                         AudioController.Instance.Play("PieceTap");
                         selectedTile = hit.transform;
+                        StickThrower.Instance.AutoThrowWithOptions();
                         break;
                     }
                 }
@@ -986,6 +992,25 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         yield return null;
     }
+    private IEnumerator SandsOfEsnaEffect(bool isAI)
+    {
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Sands of Esna");
+
+        if (isAI)
+        {
+            PieceMover.sandsOfEsnaAI = true;
+            Debug.Log("AI");
+        }
+        else
+        {
+            PieceMover.sandsOfEsnaPlayer = true;
+            //Destroy(StickThrower.Instance.throwButton);
+            Debug.Log("Player");
+        }
+
+        yield return new WaitForSeconds(0.5f);
+    }
+
 
     private Coroutine messageRoutine;
 
