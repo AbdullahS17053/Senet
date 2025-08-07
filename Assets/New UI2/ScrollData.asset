@@ -39,21 +39,21 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7f1da0be5946cb642841010da7b7e295, type: 3}
   - {fileID: 21300000, guid: d94fad2eb40992c4d9240ba767cc1229, type: 3}
   - {fileID: 21300000, guid: b4ccc0118f78b194e960eb45130ce1f3, type: 3}
-  - {fileID: 21300000, guid: a6426fd7cb9594d40b55d1f2786f1a2c, type: 3}
+  - {fileID: 21300000, guid: 01facc9a15c24a348833c2583dffe054, type: 3}
   - {fileID: 21300000, guid: 34799ec7311b44e4dbfc1155f93dc0fa, type: 3}
-  - {fileID: 21300000, guid: f849c350110c352419322ac5d763b123, type: 3}
+  - {fileID: 21300000, guid: 33d0da021e989c6409c59e9620de2760, type: 3}
   - {fileID: 21300000, guid: 502c4c4ee78bd46448ca17154d070a6f, type: 3}
   - {fileID: 21300000, guid: 28d06bbcb4a702e45889b86e6e474794, type: 3}
   - {fileID: 21300000, guid: e28c6efe461ed364ab951682da07e749, type: 3}
   - {fileID: 21300000, guid: eefb546d5f0e5084fb8efdd854a1bc05, type: 3}
-  - {fileID: 21300000, guid: dd6da05154fe5f847a5393147ec4702a, type: 3}
-  - {fileID: 21300000, guid: d9b883ddcaf961b4c8722de701a83b49, type: 3}
-  - {fileID: 21300000, guid: 227fce9f9192ce84f8f455168d44e5d6, type: 3}
-  - {fileID: 21300000, guid: 96b14a77d7fc56647bf17523d46cd6b9, type: 3}
+  - {fileID: 21300000, guid: 836a964eb8feeb044910e978de5792f6, type: 3}
+  - {fileID: 21300000, guid: 541ccc4a5465ca04da7ca22eaca6f10f, type: 3}
+  - {fileID: 21300000, guid: f03ee2033af40654c8cdcccbfe3efaaf, type: 3}
+  - {fileID: 21300000, guid: 4d506df6c3feb3846827e827c4174f44, type: 3}
   - {fileID: 21300000, guid: 78954f19e8c19074c98f7a95b91023b3, type: 3}
   - {fileID: 21300000, guid: dc2ba880eb10655469cbbae850625144, type: 3}
-  - {fileID: 21300000, guid: 246fe28da2695cb46a839dbc941813a6, type: 3}
-  - {fileID: 21300000, guid: 3a7a2d63894b47f48807a2e2f818aa79, type: 3}
+  - {fileID: 21300000, guid: a4474069b06dd244e92748c827b06feb, type: 3}
+  - {fileID: 21300000, guid: c73c48a77a0f6464fa4634589bf836f5, type: 3}
   scrollNames:
   - "Earthbound\u2019s Step"
   - Sylvan Shield

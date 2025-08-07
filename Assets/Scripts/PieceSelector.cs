@@ -26,6 +26,8 @@ public class PieceSelector : MonoBehaviour
 
         if (puppetImages.Length > 0)
             puppetImage.sprite = puppetImages[Random.Range(0, puppetImages.Length)];
+
+        PieceMover.currentTurn = TurnType.Player;
     }
 
     private void Start()
@@ -38,6 +40,7 @@ public class PieceSelector : MonoBehaviour
             StartCoroutine(gameManager.PlayTapEffect(() => SelectPiecesByName("AI"))));
 
         selectionPanel.SetActive(true);
+        scrolls.SetActive(true);
     }
 
     void SelectPiecesByName(string selectedNamePrefix)

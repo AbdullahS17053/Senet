@@ -20,7 +20,6 @@ public class MenuManager : MonoBehaviour
         welcomePanel.SetActive(isFirstTime);
         AudioController.Instance.PlayMusic("MainMenu");
         AudioController.Instance.StopMusic("GamePlay");
-        PlayerPrefs.DeleteAll();
     }
 
     public void DiscoverBtn()

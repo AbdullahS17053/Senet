@@ -135,7 +135,6 @@ public class ScrollEffectExecutor : MonoBehaviour
             {
                 PieceMover.currentTurn = TurnType.Player;
                 PieceMover.Instance?.ShowTemporaryTurnMessage("Player Turn");
-                StickThrower.Instance.AutoThrowWithOptions();
                 PieceMover.Instance?.Invoke("UpdateThrowButtonState", 0.1f);
             }
         }
@@ -261,7 +260,6 @@ public class ScrollEffectExecutor : MonoBehaviour
                     {
                         selected = tapped;
                         AudioController.Instance.PlaySound("PieceTap");
-                        StickThrower.Instance.AutoThrowWithOptions();
                     }
                 }
             }
@@ -320,7 +318,6 @@ public class ScrollEffectExecutor : MonoBehaviour
                     {
                         AudioController.Instance.PlaySound("PieceTap");
                         selectedTile = hit.transform;
-                        StickThrower.Instance.AutoThrowWithOptions();
                         break;
                     }
                 }

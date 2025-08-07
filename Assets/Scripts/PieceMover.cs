@@ -86,8 +86,7 @@ public class PieceMover : MonoBehaviour
         turnFeedbackText.text = "Player Turn";
         sandsOfEsnaPlayer = false;
         sandsOfEsnaAI = false;
-
-
+        skipButton.SetActive(false);
         UpdateThrowButtonState();
     }
 

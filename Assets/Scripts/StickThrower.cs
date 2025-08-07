@@ -32,6 +32,7 @@ public class StickThrower : MonoBehaviour
     private int randomThrowValue;
     public static bool obsidianCapNextMove_Player = false;
     public static bool obsidianCapNextMove_AI = false;
+    private bool canThrow;
 
     public static StickThrower Instance;
 
@@ -40,7 +41,6 @@ public class StickThrower : MonoBehaviour
         if(Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -48,15 +48,22 @@ public class StickThrower : MonoBehaviour
         }
         AudioController.Instance.StopMusic("MainMenu");
         AudioController.Instance.PlayMusic("GamePlay");
+        skipButton.gameObject.SetActive(false);
+        PieceMover.lastMoveWasRethrow = true;
+        PieceMover.lastStickValue = 0;
     }
-
-
+    
+    
     void Start()
     {
+        canThrow = true;
+        throwButton.gameObject.SetActive(true);
         throwButton.onClick.AddListener(() => StartCoroutine(ThrowSticksRoutine()));
         skipButton.onClick.AddListener(OnSkipPressed); // NEW
+        skipButton.gameObject.SetActive(false);
 
         PieceMover.highlightMaterial = highlightMaterial;
+        PieceMover.currentTurn = TurnType.Player;
         ResetUI();
         UpdateThrowButtonState();
     }
@@ -245,7 +252,7 @@ public class StickThrower : MonoBehaviour
     {
         if (PieceMover.currentTurn == TurnType.Player)
         {
-            bool canThrow = PieceMover.lastStickValue == 0 && !PieceMover.moveInProgress;
+            canThrow = PieceMover.lastStickValue == 0 && !PieceMover.moveInProgress;
             if (!PieceMover.sandsOfEsnaPlayer)
             {
                 throwButton.gameObject.SetActive(canThrow);
