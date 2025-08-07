@@ -141,7 +141,7 @@ public class Inventory : MonoBehaviour
         bool isSelected = PlayerPrefs.GetInt($"scroll_{currentIndex}_selected", 0) == 1;
 
         if (!isUnlocked) return;
-        AudioController.Instance.Play("ButtonTap");
+        AudioController.Instance.PlaySound("ButtonTap");
 
         if (isSelected)
         {

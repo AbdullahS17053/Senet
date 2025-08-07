@@ -15,12 +15,28 @@ public class AudioController : MonoBehaviour
         [HideInInspector] public AudioSource source;
     }
 
-    public Sound[] sounds;
-    private float globalVolume = 1f;
+    [System.Serializable]
+    public class Music
+    {
+        public string name;
+        public AudioClip clip;
+        [Range(0f, 1f)] public float baseVolume = 1f;
+        public bool loop = true;
+        [HideInInspector] public AudioSource source;
+    }
 
-    private Slider volumeSlider;
+    public Sound[] sounds;
+    public Music[] musics;
+
+    private float globalSoundVolume = 1f;
+    private float globalMusicVolume = 1f;
+
+    private Slider soundSlider;
+    private Slider musicSlider;
+
     private const string FirstTimeKey = "HasPlayedBefore";
-    private const string VolumeKey = "GlobalVolume";
+    private const string SoundVolumeKey = "GlobalSoundVolume";
+    private const string MusicVolumeKey = "GlobalMusicVolume";
 
     private void Awake()
     {
@@ -36,24 +52,36 @@ public class AudioController : MonoBehaviour
             return;
         }
 
-        InitializeVolume();
+        InitializeVolumes();
         SetupSounds();
+        SetupMusics();
     }
 
     private void Start()
     {
-        TryFindSlider(); // Initial attempt to find the slider
+        TryFindSliders();
     }
 
-    private void InitializeVolume()
+    private void Update()
+    {
+        ApplyVolumes();
+
+        // If sliders not found yet, keep trying
+        if (soundSlider == null || musicSlider == null)
+            TryFindSliders();
+    }
+
+    private void InitializeVolumes()
     {
         if (!PlayerPrefs.HasKey(FirstTimeKey))
         {
-            PlayerPrefs.SetFloat(VolumeKey, 1f);
+            PlayerPrefs.SetFloat(SoundVolumeKey, 1f);
+            PlayerPrefs.SetFloat(MusicVolumeKey, 1f);
             PlayerPrefs.SetInt(FirstTimeKey, 1);
         }
 
-        globalVolume = PlayerPrefs.GetFloat(VolumeKey, 1f);
+        globalSoundVolume = PlayerPrefs.GetFloat(SoundVolumeKey, 1f);
+        globalMusicVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
     }
 
     private void SetupSounds()
@@ -65,50 +93,74 @@ public class AudioController : MonoBehaviour
             s.source.loop = s.loop;
             s.source.playOnAwake = false;
         }
-
-        ApplyVolume();
     }
 
-    private void Update()
+    private void SetupMusics()
     {
-        ApplyVolume();
-
-        // If the slider hasn't been assigned yet, keep trying
-        if (volumeSlider == null)
-            TryFindSlider();
-    }
-
-    private void TryFindSlider()
-    {
-        GameObject sliderObj = GameObject.FindGameObjectWithTag("VolumeSlider");
-        if (sliderObj != null)
+        foreach (Music m in musics)
         {
-            volumeSlider = sliderObj.GetComponent<Slider>();
-            if (volumeSlider != null)
-            {
-                volumeSlider.value = globalVolume;
-                volumeSlider.onValueChanged.AddListener(SetGlobalVolume);
-            }
+            m.source = gameObject.AddComponent<AudioSource>();
+            m.source.clip = m.clip;
+            m.source.loop = m.loop;
+            m.source.playOnAwake = false;
         }
     }
 
-    private void ApplyVolume()
+    private void ApplyVolumes()
     {
         foreach (Sound s in sounds)
         {
             if (s.source != null)
-                s.source.volume = s.baseVolume * globalVolume;
+                s.source.volume = s.baseVolume * globalSoundVolume;
+        }
+
+        foreach (Music m in musics)
+        {
+            if (m.source != null)
+                m.source.volume = m.baseVolume * globalMusicVolume;
         }
     }
 
-    public void SetGlobalVolume(float value)
+    private void TryFindSliders()
     {
-        globalVolume = Mathf.Clamp01(value);
-        PlayerPrefs.SetFloat(VolumeKey, globalVolume);
+        if (soundSlider == null)
+        {
+            GameObject soundSliderObj = GameObject.FindGameObjectWithTag("SoundSlider");
+            if (soundSliderObj != null)
+            {
+                soundSlider = soundSliderObj.GetComponent<Slider>();
+                soundSlider.value = globalSoundVolume;
+                soundSlider.onValueChanged.AddListener(SetSoundVolume);
+            }
+        }
+
+        if (musicSlider == null)
+        {
+            GameObject musicSliderObj = GameObject.FindGameObjectWithTag("MusicSlider");
+            if (musicSliderObj != null)
+            {
+                musicSlider = musicSliderObj.GetComponent<Slider>();
+                musicSlider.value = globalMusicVolume;
+                musicSlider.onValueChanged.AddListener(SetMusicVolume);
+            }
+        }
+    }
+
+    public void SetSoundVolume(float value)
+    {
+        globalSoundVolume = Mathf.Clamp01(value);
+        PlayerPrefs.SetFloat(SoundVolumeKey, globalSoundVolume);
         PlayerPrefs.Save();
     }
 
-    public void Play(string name)
+    public void SetMusicVolume(float value)
+    {
+        globalMusicVolume = Mathf.Clamp01(value);
+        PlayerPrefs.SetFloat(MusicVolumeKey, globalMusicVolume);
+        PlayerPrefs.Save();
+    }
+
+    public void PlaySound(string name)
     {
         Sound s = System.Array.Find(sounds, sound => sound.name == name);
         if (s != null && s.source != null)
@@ -117,12 +169,30 @@ public class AudioController : MonoBehaviour
         }
     }
 
-    public void Stop(string name)
+    public void StopSound(string name)
     {
         Sound s = System.Array.Find(sounds, sound => sound.name == name);
         if (s != null && s.source != null)
         {
             s.source.Stop();
+        }
+    }
+
+    public void PlayMusic(string name)
+    {
+        Music m = System.Array.Find(musics, music => music.name == name);
+        if (m != null && m.source != null)
+        {
+            m.source.Play();
+        }
+    }
+
+    public void StopMusic(string name)
+    {
+        Music m = System.Array.Find(musics, music => music.name == name);
+        if (m != null && m.source != null)
+        {
+            m.source.Stop();
         }
     }
 }

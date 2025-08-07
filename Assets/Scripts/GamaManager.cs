@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
     }
     public void PlayBtn()
     {
-        AudioController.Instance.Play("ButtonTap");
+        AudioController.Instance.PlaySound("ButtonTap");
         StartCoroutine(PlayTapEffect(() =>
         {
             if (HasSelectedThreeScrolls())
@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator PlayTapEffect(System.Action onComplete)
     {
-        AudioController.Instance.Play("ButtonTap");
+        AudioController.Instance.PlaySound("ButtonTap");
         GameObject clicked = EventSystem.current.currentSelectedGameObject;
         if (clicked == null)
         {

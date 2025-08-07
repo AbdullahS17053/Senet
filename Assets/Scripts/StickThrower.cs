@@ -46,6 +46,8 @@ public class StickThrower : MonoBehaviour
         {
             Destroy(gameObject); // Prevent duplicates
         }
+        AudioController.Instance.StopMusic("MainMenu");
+        AudioController.Instance.PlayMusic("GamePlay");
     }
 
 
@@ -75,7 +77,7 @@ public class StickThrower : MonoBehaviour
         throwButton.gameObject.SetActive(false);
         skipButton.gameObject.SetActive(false);
 
-        AudioController.Instance.Play("StickThrow");
+        AudioController.Instance.PlaySound("StickThrow");
 
         int faceUpCount = Random.Range(0, 5);
         int rolledValue = (faceUpCount == 0) ? 5 : faceUpCount;
@@ -158,7 +160,7 @@ public class StickThrower : MonoBehaviour
 
     public IEnumerator ThrowSticksRoutine()
     {
-        AudioController.Instance.Play("StickThrow");
+        AudioController.Instance.PlaySound("StickThrow");
         throwButton.gameObject.SetActive(false);
         skipButton.gameObject.SetActive(true); // Show skip after throwing
 
@@ -269,7 +271,7 @@ public class StickThrower : MonoBehaviour
     {
         Debug.Log("Skip pressed — passing turn.");
         //PieceMover.PassTurnImmediately();
-        AudioController.Instance.Play("ButtonTap");
+        AudioController.Instance.PlaySound("ButtonTap");
         PieceMover.ResetTurn();
         PieceMover.currentTurn = TurnType.AI;
         UpdateThrowButtonState();

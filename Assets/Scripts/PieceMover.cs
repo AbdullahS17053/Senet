@@ -135,16 +135,16 @@ public class PieceMover : MonoBehaviour
             Debug.Log($"{piece.name} is frozen and cannot move.");
             return;
         }
-        AudioController.Instance.Play("PieceTap");
+        AudioController.Instance.PlaySound("PieceTap");
         int currentIndex = piece.GetCurrentTileIndex();
         if (currentIndex == -1) return;
 
         int targetIndex = currentIndex + lastStickValue;
 
-        // ✅ Prevent anything beyond 31
+        //Prevent anything beyond 31
         if (targetIndex > totalTiles) return;
 
-        // ✅ Special case: move directly to tile 30 (last tile), no highlight
+        //Special case: move directly to tile 30 (last tile), no highlight
         if (targetIndex == totalTiles)
         {
             selectedPiece = piece;
@@ -515,7 +515,7 @@ public class PieceMover : MonoBehaviour
                 moveInProgress = false;
                 yield break;
             }
-            AudioController.Instance.Play("PieceSwap");
+            AudioController.Instance.PlaySound("PieceSwap");
             opponent.transform.SetParent(previousTile);
             opponent.transform.localPosition = new Vector3(0, opponent.transform.localPosition.y, 0);
         }

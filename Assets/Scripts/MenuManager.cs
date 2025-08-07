@@ -18,6 +18,9 @@ public class MenuManager : MonoBehaviour
     {
         bool isFirstTime = PlayerPrefs.GetInt(FirstTimeKey, 0) == 1;
         welcomePanel.SetActive(isFirstTime);
+        AudioController.Instance.PlayMusic("MainMenu");
+        AudioController.Instance.StopMusic("GamePlay");
+        PlayerPrefs.DeleteAll();
     }
 
     public void DiscoverBtn()
@@ -40,6 +43,7 @@ public class MenuManager : MonoBehaviour
     }
     public IEnumerator PlayTapEffect(System.Action onComplete)
     {
+        AudioController.Instance.PlaySound("ButtonTap");
         GameObject clicked = EventSystem.current.currentSelectedGameObject;
         if (clicked == null)
         {
