@@ -105,9 +105,15 @@ public class AiMover : MonoBehaviour
             Debug.Log("AI has no valid moves. Passing turn...");
             PieceMover.PassTurnImmediately();
             stickThrower.ShowStickVisuals();
-            PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player
-                ? "Player Turn"
-                : "AI Turn");
+            if (PieceMover.Instance != null && PieceMover.Instance.gameObject != null)
+            {
+                PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+            }
+            else
+            {
+                Debug.LogWarning("[AI] Tried to show turn message, but PieceMover.Instance is null or destroyed.");
+            }
+
             yield break;
         }
 
@@ -259,4 +265,12 @@ public class AiMover : MonoBehaviour
         extraScrollUsed = false;
         Debug.Log($"[AI] Granted extra scroll index: {scrollIndex}");
     }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
 }

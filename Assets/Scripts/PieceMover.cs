@@ -222,7 +222,16 @@ public class PieceMover : MonoBehaviour
             lastStickValue = 0;
             moveInProgress = false;
             currentTurn = TurnType.Player;
-            Instance?.ShowTemporaryTurnMessage("Player Turn");
+            if (Instance != null && Instance.gameObject != null)
+            {
+                Instance.ShowTemporaryTurnMessage("Player Turn");
+                StickThrower.Instance.ShowStickVisuals();
+            }
+            else
+            {
+                Debug.LogWarning("No valid PieceMover.Instance found for Player.");
+            }
+
             StickThrower stickThrower = GameObject.FindObjectOfType<StickThrower>();
             if (sandsOfEsnaPlayer)
             {
@@ -273,8 +282,18 @@ public class PieceMover : MonoBehaviour
             moveInProgress = false;
             currentTurn = TurnType.AI;
 
-            Instance?.ShowTemporaryTurnMessage("AI Turn");
-            AiMover.StartAITurn();
+            if (Instance != null && Instance.gameObject != null)
+            {
+                Instance.ShowTemporaryTurnMessage("AI Turn");
+                AiMover.StartAITurn();
+                StickThrower.Instance.ShowStickVisuals();
+            }
+            else
+            {
+                Debug.LogWarning("No valid PieceMover.Instance found for AI.");
+            }
+
+            
 
             // Decrease freeze counters
             foreach (var piece in GameObject.FindObjectsOfType<PieceMover>())
@@ -745,6 +764,14 @@ public class PieceMover : MonoBehaviour
     {
         return FindObjectsOfType<PieceMover>().FirstOrDefault(p => p.GetCurrentTile() == tile);
     }
+    void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
 
     private Coroutine turnMessageRoutine;
 
