@@ -10,7 +10,6 @@ public class PieceSelector : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private GameObject selectionPanel;
     [SerializeField] private Image bgImage;
-    [SerializeField] private Image puppetImage;
     [SerializeField] private GameObject scrolls;
 
     [Header("Image Arrays")]
@@ -23,9 +22,6 @@ public class PieceSelector : MonoBehaviour
     {
         if (bgImages.Length > 0)
             bgImage.sprite = bgImages[Random.Range(0, bgImages.Length)];
-
-        if (puppetImages.Length > 0)
-            puppetImage.sprite = puppetImages[Random.Range(0, puppetImages.Length)];
 
         PieceMover.currentTurn = TurnType.Player;
     }

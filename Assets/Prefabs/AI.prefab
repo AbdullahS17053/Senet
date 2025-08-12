@@ -108,6 +108,8 @@ MonoBehaviour:
   isProtected: 0
   originalMaterial: {fileID: 0}
   turnFeedbackText: {fileID: 0}
+  frozenTurnsRemaining: 0
+  perspectiveY: 0.00009254226
 --- !u!65 &4852346877322456463
 BoxCollider:
   m_ObjectHideFlags: 0

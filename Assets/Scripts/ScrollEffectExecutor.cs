@@ -198,7 +198,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             shieldMat.color = Color.magenta;
             rend.material = shieldMat;
 
-            StartCoroutine(RemoveProtectionNextTurn(!isAI, selected));
+            //StartCoroutine(RemoveProtectionNextTurn(!isAI, selected));
         }
     }
 
@@ -263,7 +263,6 @@ public class ScrollEffectExecutor : MonoBehaviour
                     }
                 }
             }
-
             yield return null;
         }
 

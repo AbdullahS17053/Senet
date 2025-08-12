@@ -502,7 +502,6 @@ public class PieceMover : MonoBehaviour
             Destroy(gameObject);
             yield break;
         }
-
         float moveSpeed = 5f;
         float localY = transform.localPosition.y;
 
