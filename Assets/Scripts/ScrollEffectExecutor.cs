@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.Serialization;
 
 public class ScrollEffectExecutor : MonoBehaviour
 {
     public static ScrollEffectExecutor Instance;
-    public Transform senusretMarkedTile; // The tile marked by Senusret Path
+    [FormerlySerializedAs("senusretMarkedTile")] public Transform senusretMarkedTile1; // The tile marked by Senusret Path
+    public Transform senusretMarkedTile2;
     [SerializeField] private Material selectedTileMaterial;
     [SerializeField] private Text scrollFeedbackText;
 
@@ -197,7 +199,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             Material shieldMat = new Material(selected.originalMaterial);
             shieldMat.color = Color.magenta;
             rend.material = shieldMat;
-
+            HandleTurn();
             //StartCoroutine(RemoveProtectionNextTurn(!isAI, selected));
         }
     }
@@ -247,7 +249,6 @@ public class ScrollEffectExecutor : MonoBehaviour
                 rend.material = highlightClone;
             }
         }
-
         while (selected == null)
         {
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
@@ -273,11 +274,8 @@ public class ScrollEffectExecutor : MonoBehaviour
             if (rend != null)
                 rend.material = kvp.Value;
         }
-
         callback?.Invoke(selected);
     }
-
-
     private IEnumerator SelectTileByTouch(List<Transform> candidates, System.Action<Transform> callback)
     {
         Transform selectedTile = null;
@@ -386,8 +384,16 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         //Set and visually mark the tile AFTER selection
-        senusretMarkedTile = chosenTile;
+        if (senusretMarkedTile1 == null)
+        {
+            senusretMarkedTile1 = chosenTile;
+        }
+        else
+        {
+            senusretMarkedTile2 = chosenTile;
+        }
         chosenTile.GetComponent<TileMarker>().senusretTile = true;
+
         if (chosenTile != null)
         {
             Renderer rend = chosenTile.GetComponent<Renderer>();
@@ -399,6 +405,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
             Debug.Log("Senusret Path marked at tile: " + chosenTile.name);
         }
+        HandleTurn();
 
     }
 
@@ -555,6 +562,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.5f);
+        HandleTurn();
     }
 
     private IEnumerator VaultOfShadowsEffect(bool isAI)
@@ -836,6 +844,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.5f);
+        HandleTurn();
     }
 
     private IEnumerator MenasGraspEffect(bool isAI)
@@ -917,6 +926,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             Debug.Log($"Moved {selected.name} back to tile {destinationTile.name}");
 
             yield return new WaitForSeconds(0.3f);
+            HandleTurn();
         }
     }
     private IEnumerator BindingOfAegisEffect(bool isAI)
@@ -962,6 +972,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.5f);
+        HandleTurn();
     }
 
     private IEnumerator EchoOfTheTwinEffect(bool isAI)
@@ -1007,6 +1018,25 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
+    void HandleTurn()
+    {
+        // Handle turn or rethrow
+        if (PieceMover.lastMoveWasRethrow)
+        {
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+        }
+        else
+        {
+            PieceMover.currentTurn = TurnType.AI;
+            PieceMover.ResetTurn();
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+            AiMover.StartStickThrow();
+        }
+
+        PieceMover.lastMoveWasRethrow = false;
+        ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+        
+    }
 
     private Coroutine messageRoutine;
 

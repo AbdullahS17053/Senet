@@ -137,9 +137,8 @@ public class AiMover : MonoBehaviour
     public IEnumerator ExecuteAiTurn()
     {
         aiPieces = System.Array.FindAll(FindObjectsOfType<PieceMover>(), p => p.isAI && p.frozenTurnsRemaining == 0);
-        
-        List<(PieceMover piece, Transform target, int targetIndex)> validMoves = new();
 
+        List<(PieceMover piece, Transform target, int targetIndex)> validMoves = new();
         foreach (var piece in aiPieces)
         {
             int currentIndex = piece.GetCurrentTileIndex();
@@ -149,9 +148,7 @@ public class AiMover : MonoBehaviour
             if (proposedIndex > 30) continue;
 
             if (PieceMover.IsValidMove(piece, proposedIndex, out Transform validatedTarget))
-            {
                 validMoves.Add((piece, validatedTarget, proposedIndex));
-            }
         }
 
         if (validMoves.Count == 0)
@@ -161,52 +158,74 @@ public class AiMover : MonoBehaviour
             yield break;
         }
 
-        // 1️⃣ Prioritize trigger tiles
-        foreach (var move in validMoves)
+        Transform senusret1 = ScrollEffectExecutor.Instance?.senusretMarkedTile1;
+        Transform senusret2 = ScrollEffectExecutor.Instance?.senusretMarkedTile2;
+
+        var nonSenusretMoves = validMoves
+            .Where(m => m.target != senusret1 && m.target != senusret2)
+            .ToList();
+        var senusretMoves = validMoves
+            .Where(m => m.target == senusret1 || m.target == senusret2)
+            .ToList();
+
+        // Try normal moves first, fallback to Senusret moves
+        if (!TryMakePriorityMove(nonSenusretMoves))
+            TryMakePriorityMove(senusretMoves);
+
+        yield break;
+    }
+
+    private bool TryMakePriorityMove(List<(PieceMover piece, Transform target, int targetIndex)> moves)
+    {
+        if (moves.Count == 0) return false;
+
+        // 1️⃣ Trigger tiles
+        foreach (var move in moves)
         {
-            TileMarker marker = move.target.GetComponent<TileMarker>();
+            var marker = move.target.GetComponent<TileMarker>();
             if (marker != null && marker.isTriggerTile)
             {
                 Debug.Log("[AI] Moving to trigger tile.");
-                yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
-                yield break;
+                move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+                return true;
             }
         }
 
-
-        // 2️⃣ Prioritize move to last (virtual) tile
-        foreach (var move in validMoves)
+        // 2️⃣ Last tile
+        foreach (var move in moves)
         {
             if (move.targetIndex == 30)
             {
                 Debug.Log("[AI] Moving to virtual last tile.");
-                yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
-                yield break;
+                move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+                return true;
             }
         }
 
-        // 3️⃣ Prioritize swapping with player piece
-        foreach (var move in validMoves)
+        // 3️⃣ Swap with player
+        foreach (var move in moves)
         {
-            PieceMover occupyingPiece = PieceMover.GetPieceOnTile(move.target);
+            var occupyingPiece = PieceMover.GetPieceOnTile(move.target);
             if (occupyingPiece != null && !occupyingPiece.isAI)
             {
                 Debug.Log("[AI] Swapping with player piece.");
-                yield return move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
-                yield break;
+                move.piece.StartCoroutine(move.piece.MoveToTile(move.target));
+                return true;
             }
         }
 
-        // 4️⃣ Move the one closest to the end
-        var furthestMove = validMoves.OrderByDescending(m => m.targetIndex).First();
+        // 4️⃣ Furthest move
+        var furthestMove = moves.OrderByDescending(m => m.targetIndex).First();
         Debug.Log("[AI] Moving piece closest to end.");
-        yield return furthestMove.piece.StartCoroutine(furthestMove.piece.MoveToTile(furthestMove.target));
+        furthestMove.piece.StartCoroutine(furthestMove.piece.MoveToTile(furthestMove.target));
+        return true;
     }
+
 
 
     public void UseRandomAiScroll()
     {
-        // 🚫 Check if AI scrolls are blocked
+        // Check if AI scrolls are blocked
         if (PieceMover.aiScrollsDisabled)
         {
             Debug.Log("[AI] Scrolls are disabled by Dominion of Kamo.");

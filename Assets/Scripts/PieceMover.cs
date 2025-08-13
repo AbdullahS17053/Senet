@@ -546,8 +546,8 @@ public class PieceMover : MonoBehaviour
         selectedPiece = null;
 
         // Check Senusret logic
-        if (ScrollEffectExecutor.Instance.senusretMarkedTile != null &&
-            targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile)
+        if (targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile1 ||
+            targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile2)
         {
             bool skipSenusret = hasPermanentGrace
                                 || (isAI && anippeGraceActive_AI && !anippeGraceUsed_AI)
@@ -612,7 +612,8 @@ public class PieceMover : MonoBehaviour
             bool skipEffect = false;
 
             // Skip only Skyspark or Senusret with Grace
-            if ((tileMarker.isSkysparkTile || targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile) &&
+            if ((tileMarker.isSkysparkTile || targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile1 ||
+                 targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile2) &&
                 ((isAI && anippeGraceActive_AI && !anippeGraceUsed_AI) ||
                  (!isAI && anippeGraceActive_Player && !anippeGraceUsed_Player)))
             {

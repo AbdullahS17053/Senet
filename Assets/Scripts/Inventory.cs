@@ -72,7 +72,7 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < scrollData.scrollSprites.Length; i++)
         {
-            bool isUnlocked = i < 3; // Only first 3 unlocked
+            bool isUnlocked = i < 20; // Only first 3 unlocked
             PlayerPrefs.SetInt($"scroll_{i}_unlocked", isUnlocked ? 1 : 0);
 
             // Select first 3 from unlocked scrolls only

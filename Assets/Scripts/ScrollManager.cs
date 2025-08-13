@@ -207,7 +207,13 @@ public class ScrollManager : MonoBehaviour
             SetScrollsInteractable(false);
         }
 
-        if (scrollData.scrollEffectKeys[scrollIndex] == "Earthbound’s Step")
+        if (scrollData.scrollEffectKeys[scrollIndex] == "Earthbound’s Step" ||
+            scrollData.scrollEffectKeys[scrollIndex] == "Sylvan Shield" ||
+            scrollData.scrollEffectKeys[scrollIndex] == "Anippe’s Grace" ||
+            scrollData.scrollEffectKeys[scrollIndex] == "Mirror of Merneith" ||
+            scrollData.scrollEffectKeys[scrollIndex] == "Mena’s Grasp" ||
+            scrollData.scrollEffectKeys[scrollIndex] == "Binding of Aegis" ||
+            scrollData.scrollEffectKeys[scrollIndex] == "Senusret Path")
         {
             return;
         }
