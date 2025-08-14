@@ -107,6 +107,11 @@ public class Inventory : MonoBehaviour
         {
             PlayerPrefs.SetInt($"selected_scroll_{i}", -1);
         }
+        for (int i = 0; i < scrollButtons.Length; i++)
+        {
+            bool isSelected = PlayerPrefs.GetInt($"scroll_{i}_selected", 0) == 1;
+            scrollButtons[i].GetComponent<Image>().color = isSelected ? Color.green : Color.white;
+        }
 
         PlayerPrefs.Save();
     }

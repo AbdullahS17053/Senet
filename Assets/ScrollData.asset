@@ -52,7 +52,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4d506df6c3feb3846827e827c4174f44, type: 3}
   - {fileID: 21300000, guid: 78954f19e8c19074c98f7a95b91023b3, type: 3}
   - {fileID: 21300000, guid: dc2ba880eb10655469cbbae850625144, type: 3}
-  - {fileID: 21300000, guid: a4474069b06dd244e92748c827b06feb, type: 3}
+  - {fileID: 21300000, guid: 246fe28da2695cb46a839dbc941813a6, type: 3}
   - {fileID: 21300000, guid: c73c48a77a0f6464fa4634589bf836f5, type: 3}
   scrollNames:
   - "Earthbound\u2019s Step"

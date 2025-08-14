@@ -10,7 +10,9 @@ public class StickThrower : MonoBehaviour
     [Header("UI References")]
     [SerializeField] public Button throwButton;
     [SerializeField] public Button skipButton;
-    [SerializeField] Text stickNumberText;
+    //[SerializeField] Text stickNumberText;
+    [SerializeField] private Image stickNumberImage;
+    [SerializeField] private Sprite defaultSprite;
 
     [Header("Stick References")]
     [SerializeField] List<Stick> stickObjects;
@@ -64,6 +66,7 @@ public class StickThrower : MonoBehaviour
 
         PieceMover.highlightMaterial = highlightMaterial;
         PieceMover.currentTurn = TurnType.Player;
+        stickNumberImage.sprite = defaultSprite;
         ResetUI();
         UpdateThrowButtonState();
     }
@@ -79,7 +82,8 @@ public class StickThrower : MonoBehaviour
 
     private IEnumerator AutoThrowWithOptionsRoutine(bool isAI)
     {
-        stickNumberText.text = "";
+        stickNumberImage.sprite = defaultSprite;
+        //stickNumberText.text = "";
         stickVisualParent.SetActive(true);
         throwButton.gameObject.SetActive(false);
         skipButton.gameObject.SetActive(false);
@@ -144,11 +148,17 @@ public class StickThrower : MonoBehaviour
         Debug.Log("Selected stick value: " + value);
         PieceMover.lastStickValue = value;
         optionsParent.SetActive(false);
-        stickNumberText.text = value.ToString();
-    
-        if (!PieceMover.HasAnyValidMove(false))
+        //stickNumberText.text = value.ToString();
+        stickNumberImage.sprite = numberImages[value - 1].sprite;
+
+        if (!PieceMover.HasAnyValidMove(false) && PieceMover.currentTurn == TurnType.Player)
         {
             Debug.Log("No valid move — passing turn.");
+            PieceMover.PassTurnImmediately();
+        }
+        else if(!PieceMover.HasAnyValidMove(true) && PieceMover.currentTurn == TurnType.AI)
+        {
+            Debug.Log("AI has no valid move — passing turn.");
             PieceMover.PassTurnImmediately();
         }
         else
@@ -160,6 +170,8 @@ public class StickThrower : MonoBehaviour
                 StartCoroutine(AiMover.Instance.ExecuteAiTurn());
             }
         }
+
+
 
         StartCoroutine(HideStickVisualsAfterDelay());
     }
@@ -223,7 +235,8 @@ public class StickThrower : MonoBehaviour
         }
 
         PieceMover.lastStickValue = finalValue;
-        stickNumberText.text = finalValue.ToString();
+        //stickNumberText.text = finalValue.ToString();
+        stickNumberImage.sprite = numberImages[finalValue - 1].sprite;
 
 
 // Apply Horus Retreat penalty
@@ -268,7 +281,7 @@ public class StickThrower : MonoBehaviour
 
     public void ResetUI()
     {
-        stickNumberText.text = "";
+        //stickNumberText.text = "";
         throwButton.interactable = true;
         throwButton.gameObject.SetActive(true);
         skipButton.gameObject.SetActive(false); // Hide on reset
@@ -286,7 +299,7 @@ public class StickThrower : MonoBehaviour
         if (PieceMover.Instance != null)
         {
             PieceMover.Instance.ShowTemporaryTurnMessage(
-                PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn"
+                PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent"
             );
         }
 

@@ -83,7 +83,7 @@ public class PieceMover : MonoBehaviour
         if (skipButton == null)
             skipButton = GameObject.FindWithTag("SkipButton");
         scrollManager = GameObject.FindObjectOfType<ScrollManager>();
-        turnFeedbackText.text = "Player Turn";
+        turnFeedbackText.text = "Player";
         sandsOfEsnaPlayer = false;
         sandsOfEsnaAI = false;
         skipButton.SetActive(false);
@@ -224,7 +224,7 @@ public class PieceMover : MonoBehaviour
             currentTurn = TurnType.Player;
             if (Instance != null && Instance.gameObject != null)
             {
-                Instance.ShowTemporaryTurnMessage("Player Turn");
+                Instance.ShowTemporaryTurnMessage("Player");
                 StickThrower.Instance.ShowStickVisuals();
             }
             else
@@ -284,7 +284,7 @@ public class PieceMover : MonoBehaviour
 
             if (Instance != null && Instance.gameObject != null)
             {
-                Instance.ShowTemporaryTurnMessage("AI Turn");
+                Instance.ShowTemporaryTurnMessage("Opponent");
                 AiMover.StartAITurn();
                 StickThrower.Instance.ShowStickVisuals();
             }
@@ -469,6 +469,29 @@ public class PieceMover : MonoBehaviour
 
             transform.SetParent(finalTile);
             transform.localPosition = new Vector3(0, VlocalY, 0);
+            // ✅ POP-UP ANIMATION
+            Vector3 originalScale = transform.localScale;
+            Vector3 popScale = originalScale * 1.3f; // 30% bigger
+            float popDuration = 0.15f;
+            float t = 0f;
+            AudioController.Instance.PlaySound("Win");
+
+            // Scale up
+            while (t < popDuration)
+            {
+                t += Time.deltaTime;
+                transform.localScale = Vector3.Lerp(originalScale, popScale, t / popDuration);
+                yield return null;
+            }
+
+            // Scale back
+            t = 0f;
+            while (t < popDuration)
+            {
+                t += Time.deltaTime;
+                transform.localScale = Vector3.Lerp(popScale, originalScale, t / popDuration);
+                yield return null;
+            }
             yield return new WaitForSeconds(0.3f);
 
             GameManager.Instance.CheckForWinCondition();
@@ -480,7 +503,7 @@ public class PieceMover : MonoBehaviour
             if (!lastMoveWasRethrow)
                 currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
 
-            ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+            ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player" : "Opponent");
             if (currentTurn == TurnType.Player && sandsOfEsnaPlayer)
             {
                 StickThrower.Instance.throwButton.gameObject.SetActive(false);
@@ -673,7 +696,7 @@ public class PieceMover : MonoBehaviour
             }
         }
 
-        ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+        ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player" : "Opponent");
         if (currentTurn == TurnType.Player && sandsOfEsnaPlayer)
         {
             StickThrower.Instance.throwButton.gameObject.SetActive(false);
@@ -764,13 +787,14 @@ public class PieceMover : MonoBehaviour
     {
         return FindObjectsOfType<PieceMover>().FirstOrDefault(p => p.GetCurrentTile() == tile);
     }
-    void OnDestroy()
+    private void OnDestroy()
     {
         if (Instance == this)
         {
-            Instance = null;
+            Instance = FindObjectOfType<PieceMover>();
         }
     }
+
 
 
     private Coroutine turnMessageRoutine;

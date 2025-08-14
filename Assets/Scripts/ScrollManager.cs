@@ -313,8 +313,8 @@ public class ScrollManager : MonoBehaviour
 
         PieceMover.lastMoveWasRethrow = false;
         PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player
-            ? "Player Turn"
-            : "AI Turn");
+            ? "Player"
+            : "Opponent");
         FindAnyObjectByType<StickThrower>().GetComponent<StickThrower>().ShowStickVisuals();
     }
 

@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class ScrollEffectExecutor : MonoBehaviour
 {
@@ -20,7 +22,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     public void ExecuteEffect(string effectKey, bool isAI)
     {
-        ShowTemporaryMessage($"{(isAI ? "AI" : "Player")} used {effectKey}");
+        ShowTemporaryMessage($"{(isAI ? "Opponent" : "Player")} used {effectKey}");
 
         switch (effectKey)
         {
@@ -558,7 +560,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             }
 
             Debug.Log($"[{(isAI ? "AI" : "Player")}] permanently protected: {selected.name}");
-            ShowTemporaryMessage($"{(isAI ? "AI" : "You")} protected {selected.name} permanently!");
+            ShowTemporaryMessage($"{(isAI ? "Opponent" : "You")} protected {selected.name} permanently!");
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -775,6 +777,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         GameObject newPiece = Instantiate(pieceToClone.gameObject, spawnTile.position, Quaternion.identity);
         newPiece.name = pieceToClone.name.Replace("(Clone)", "") + "_Reinforced";
         newPiece.transform.SetParent(spawnTile);
+        newPiece.transform.localRotation = Quaternion.identity;
         newPiece.transform.localPosition = new Vector3(0, pieceToClone.transform.localPosition.y, 0);
         newPiece.transform.localScale = pieceToClone.transform.localScale;
 
@@ -1002,17 +1005,24 @@ public class ScrollEffectExecutor : MonoBehaviour
     private IEnumerator SandsOfEsnaEffect(bool isAI)
     {
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Sands of Esna");
+        PieceMover[] allPieces = FindObjectsOfType<PieceMover>();
 
         if (isAI)
         {
-            PieceMover.sandsOfEsnaAI = true;
-            Debug.Log("AI");
+            foreach (var piece in allPieces)
+            {
+                PieceMover.sandsOfEsnaAI = true;
+                Debug.Log("AI");
+            }
         }
         else
         {
-            PieceMover.sandsOfEsnaPlayer = true;
-            //Destroy(StickThrower.Instance.throwButton);
-            Debug.Log("Player");
+            foreach (var piece in allPieces)
+            {
+                PieceMover.sandsOfEsnaPlayer = true;
+                //Destroy(StickThrower.Instance.throwButton);
+                Debug.Log("Player");
+            }
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -1034,7 +1044,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         PieceMover.lastMoveWasRethrow = false;
-        ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player Turn" : "AI Turn");
+        ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
         
     }
 

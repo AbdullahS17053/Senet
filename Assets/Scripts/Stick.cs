@@ -4,6 +4,7 @@ public class Stick : MonoBehaviour
 {
     private bool isFlipping = false;
     private bool shouldBeFaceUp = false; // Desired state after flip
+    
 
     /// <summary>
     /// Called by StickThrower to prepare final orientation.
@@ -28,13 +29,14 @@ public class Stick : MonoBehaviour
     {
         isFlipping = false;
 
-        float xRotation = shouldBeFaceUp ? 0f : 180f; // Face-up = 0, Face-down = 180
+        // X-axis face-up/down rotation in local space
+        float xRotation = shouldBeFaceUp ? 0f : 180f;
 
-        // Optionally add slight random Y/Z variation for realism
-        float randomY = Random.Range(-10f, 10f);
-        float randomZ = Random.Range(-10f, 10f);
+        // Optional: tiny random tilt for realism
+        float randomY = Random.Range(-5f, 5f);
+        float randomZ = Random.Range(-5f, 5f);
 
-        transform.eulerAngles = new Vector3(xRotation, randomY, randomZ);
+        transform.localRotation = Quaternion.Euler(xRotation, 90, 0);
     }
 
     /// <summary>
@@ -42,7 +44,7 @@ public class Stick : MonoBehaviour
     /// </summary>
     public bool IsFaceUp()
     {
-        float x = transform.eulerAngles.x;
+        float x = transform.localEulerAngles.x;
         return Mathf.Approximately(x % 360f, 0f);
     }
 
@@ -50,7 +52,8 @@ public class Stick : MonoBehaviour
     {
         if (isFlipping)
         {
-            transform.Rotate(Vector3.right * 720f * Time.deltaTime); // Fast flip on X-axis
+            // Rotate only on local X axis
+            transform.Rotate(Vector3.right * 720f * Time.deltaTime, Space.Self);
         }
     }
 }
