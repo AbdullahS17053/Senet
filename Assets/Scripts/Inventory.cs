@@ -23,6 +23,8 @@ public class Inventory : MonoBehaviour
     [SerializeField] private Sprite lockedSpriteTier2; // For scrolls 10–14
     [SerializeField] private Sprite lockedSpriteTier3; // For scrolls 15–19
 
+    [Header("Debug Options")]
+    [SerializeField] private bool unlockAllScrolls = false;
 
     private const int maxSelectableScrolls = 3;
     private List<int> selectedScrollIndices = new List<int>();
@@ -36,12 +38,19 @@ public class Inventory : MonoBehaviour
             PlayerPrefs.SetInt("scrolls_initialized", 1);
             PlayerPrefs.Save();
         }
+
+        // Check if unlock all scrolls is enabled
+        // if (unlockAllScrolls)
+        // {
+        //     UnlockAllScrolls();
+        // }
+
         LoadSelectedScrolls();
 
         for (int i = 0; i < scrollButtons.Length; i++)
         {
             int capturedIndex = i;
-            bool isUnlocked = PlayerPrefs.GetInt($"scroll_{i}_unlocked", 0) == 1;
+            bool isUnlocked = PlayerPrefs.GetInt($"scroll_{i}_unlocked", 0) == 1 || unlockAllScrolls;
 
             Image btnImage = scrollButtons[i].GetComponent<Image>();
 
@@ -64,6 +73,15 @@ public class Inventory : MonoBehaviour
         if (index < 10) return lockedSpriteTier1;
         if (index < 15) return lockedSpriteTier2;
         return lockedSpriteTier3;
+    }
+
+    private void UnlockAllScrolls()
+    {
+        for (int i = 0; i < scrollData.scrollSprites.Length; i++)
+        {
+            PlayerPrefs.SetInt($"scroll_{i}_unlocked", 1);
+        }
+        PlayerPrefs.Save();
     }
 
 
@@ -118,7 +136,7 @@ public class Inventory : MonoBehaviour
 
     private void OnScrollButtonClicked(int index)
     {
-        bool isUnlocked = PlayerPrefs.GetInt($"scroll_{index}_unlocked", 0) == 1;
+        bool isUnlocked = PlayerPrefs.GetInt($"scroll_{index}_unlocked", 0) == 1 || unlockAllScrolls;
         if (!isUnlocked)
             return;
 
@@ -142,7 +160,7 @@ public class Inventory : MonoBehaviour
     {
         if (currentIndex < 0 || currentIndex >= scrollData.scrollSprites.Length) return;
 
-        bool isUnlocked = PlayerPrefs.GetInt($"scroll_{currentIndex}_unlocked", 0) == 1;
+        bool isUnlocked = PlayerPrefs.GetInt($"scroll_{currentIndex}_unlocked", 0) == 1 || unlockAllScrolls;
         bool isSelected = PlayerPrefs.GetInt($"scroll_{currentIndex}_selected", 0) == 1;
 
         if (!isUnlocked) return;

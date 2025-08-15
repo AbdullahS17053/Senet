@@ -71,7 +71,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             case "Dominion of Kamo":
                 DominionOfKamoEffect(isAI);
                 break;
-            case "Mirror of Merneith":
+            case "Phantom's Claim":
                 StartCoroutine(MirrorOfMerneithEffect(isAI));
                 break;
             case "Mena’s Grasp":
@@ -807,7 +807,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     private IEnumerator MirrorOfMerneithEffect(bool isAI)
     {
-        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Mirror of Merneith");
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Phantom's Claim");
 
         List<PieceMover> candidates = new List<PieceMover>();
         PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
@@ -843,7 +843,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             // Optional visual/sound effect before destroy
             yield return new WaitForSeconds(0.2f);
             Destroy(selected.gameObject);
-            Debug.Log($"[{(isAI ? "AI" : "Player")}] piece removed by Mirror of Merneith.");
+            Debug.Log($"[{(isAI ? "AI" : "Player")}] piece removed by Phantom's Claim.");
         }
 
         yield return new WaitForSeconds(0.5f);
