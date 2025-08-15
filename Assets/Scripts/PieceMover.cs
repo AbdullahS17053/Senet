@@ -10,7 +10,7 @@ public class PieceMover : MonoBehaviour
 {
     public GameObject throwButton;
     public GameObject skipButton;
-    private float moveSpeed = 0.0025f;
+    private float moveSpeed = 0.01f;
     [HideInInspector] public bool hasPermanentGrace = false;
 
     private static Transform boardTransform;
@@ -471,7 +471,7 @@ public class PieceMover : MonoBehaviour
         if (currentIndex + lastStickValue == totalTiles||currentIndex==totalTiles - 1)
         {
             Transform finalTile = boardTransform.GetChild(totalTiles - 1);
-            float VmoveSpeed = 0.0025f;
+            float VmoveSpeed = moveSpeed;
             transform.SetParent(finalTile);
             float VlocalY = transform.localPosition.y;
 
