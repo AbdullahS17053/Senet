@@ -104,7 +104,7 @@ public class AiMover : MonoBehaviour
         if (!PieceMover.HasValidMoveForAI())
         {
             Debug.Log("AI has no valid moves. Passing turn...");
-            PieceMover.PassTurnImmediately();
+            yield return StartCoroutine(PieceMover.Instance.PassTurnImmediately());
             stickThrower.ShowStickVisuals();
             if (PieceMover.Instance != null && PieceMover.Instance.gameObject != null)
             {
@@ -155,7 +155,7 @@ public class AiMover : MonoBehaviour
         if (validMoves.Count == 0)
         {
             Debug.Log("AI has no valid moves. Passing turn...");
-            PieceMover.PassTurnImmediately();
+            yield return StartCoroutine(PieceMover.Instance.PassTurnImmediately());
             yield break;
         }
 

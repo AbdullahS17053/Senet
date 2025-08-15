@@ -713,7 +713,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Smooth move to new tile
-        float moveSpeed = 0.0025f;
+        float moveSpeed = 0.02f;
         float localY = target.transform.localPosition.y;
         target.transform.SetParent(destination);
         Vector3 targetPos = new Vector3(0, localY, 0);

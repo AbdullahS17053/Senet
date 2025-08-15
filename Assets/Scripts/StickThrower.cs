@@ -35,7 +35,7 @@ public class StickThrower : MonoBehaviour
     public static bool obsidianCapNextMove_Player = false;
     public static bool obsidianCapNextMove_AI = false;
     private bool canThrow;
-
+   
     public static StickThrower Instance;
 
     private void Awake()
@@ -71,7 +71,7 @@ public class StickThrower : MonoBehaviour
         UpdateThrowButtonState();
     }
 
-    void Update()
+    private void Update()
     {
         UpdateThrowButtonState();
     }
@@ -154,12 +154,12 @@ public class StickThrower : MonoBehaviour
         if (!PieceMover.HasAnyValidMove(false) && PieceMover.currentTurn == TurnType.Player)
         {
             Debug.Log("No valid move — passing turn.");
-            PieceMover.PassTurnImmediately();
+            StartCoroutine(PieceMover.Instance.PassTurnImmediately());
         }
         else if(!PieceMover.HasAnyValidMove(true) && PieceMover.currentTurn == TurnType.AI)
         {
             Debug.Log("AI has no valid move — passing turn.");
-            PieceMover.PassTurnImmediately();
+            StartCoroutine(PieceMover.Instance.PassTurnImmediately());
         }
         else
         {
@@ -255,7 +255,7 @@ public class StickThrower : MonoBehaviour
         if (!PieceMover.HasAnyValidMove(false))
         {
             Debug.Log("No valid move — passing turn.");
-            PieceMover.PassTurnImmediately();
+            yield return StartCoroutine(PieceMover.Instance.PassTurnImmediately());
         }
 
         StartCoroutine(HideStickVisualsAfterDelay());
@@ -263,6 +263,7 @@ public class StickThrower : MonoBehaviour
 
     public void UpdateThrowButtonState()
     {
+
         if (PieceMover.currentTurn == TurnType.Player)
         {
             canThrow = PieceMover.lastStickValue == 0 && !PieceMover.moveInProgress;

@@ -108,8 +108,9 @@ MonoBehaviour:
   isProtected: 0
   originalMaterial: {fileID: 0}
   turnFeedbackText: {fileID: 0}
+  defaultMaterial: {fileID: 2100000, guid: c4fcab089dcadd7409732ae0e66ef349, type: 2}
+  goldenMaterial: {fileID: 2100000, guid: c26988f5f026f884ca251ca49a67849f, type: 2}
   frozenTurnsRemaining: 0
-  perspectiveY: 0.00009254226
 --- !u!65 &4852346877322456463
 BoxCollider:
   m_ObjectHideFlags: 0

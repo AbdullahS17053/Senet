@@ -10,7 +10,7 @@ public class PieceMover : MonoBehaviour
 {
     public GameObject throwButton;
     public GameObject skipButton;
-    private float moveSpeed = 0.00125f;
+    private float moveSpeed = 0.02f;  //0.00125f;
     [HideInInspector] public bool hasPermanentGrace = false;
 
     private static Transform boardTransform;
@@ -55,6 +55,8 @@ public class PieceMover : MonoBehaviour
     [HideInInspector] public Material originalMaterial;
 
     [SerializeField] private TextMeshProUGUI turnFeedbackText;
+    [SerializeField] Material defaultMaterial;
+    [SerializeField] private Material goldenMaterial;
 
     [HideInInspector] public int frozenTurnsRemaining = 0;
     public bool IsFrozen() => frozenTurnsRemaining > 0;
@@ -210,19 +212,21 @@ public class PieceMover : MonoBehaviour
 
 
 
-    public static void PassTurnImmediately()
+    public IEnumerator PassTurnImmediately()
     {
         if (currentTurn == TurnType.AI)
         {
             if (HasValidMoveForAI())
             {
                 Debug.Log("[AI] Still has valid moves. Not passing turn.");
-                return;
+                yield break;
             }
 
             Debug.Log("Passing turn from AI → Player");
             lastStickValue = 0;
             moveInProgress = false;
+            ShowTemporaryTurnMessage("No Valid Moves for Opponent");
+            yield return new WaitForSeconds(2f);
             currentTurn = TurnType.Player;
             if (Instance != null && Instance.gameObject != null)
             {
@@ -244,7 +248,7 @@ public class PieceMover : MonoBehaviour
             {
                 if (stickThrower != null)
                 {
-                    stickThrower.UpdateThrowButtonState();
+                    //stickThrower.UpdateThrowButtonState();
                     stickThrower.ShowStickVisuals();
                 }
                 else
@@ -276,12 +280,14 @@ public class PieceMover : MonoBehaviour
             if (HasValidMoveForPlayer())
             {
                 Debug.Log("[Player] Still has valid moves. Not passing turn.");
-                return;
+                yield break;
             }
 
             Debug.Log("Passing turn from Player → AI");
             lastStickValue = 0;
             moveInProgress = false;
+            ShowTemporaryTurnMessage("No Valid Moves for Player");
+            yield return new WaitForSeconds(2f);
             currentTurn = TurnType.AI;
 
             if (Instance != null && Instance.gameObject != null)
@@ -334,6 +340,11 @@ public class PieceMover : MonoBehaviour
     public static bool IsValidMove(PieceMover piece, int targetIndex, out Transform targetTile)
     {
         targetTile = null;
+        Renderer rend = piece.GetComponent<Renderer>();
+        if (rend != null)
+        {
+            rend.material.color = Color.white;
+        }
 
         //Reject if targetIndex is greater than 30 (virtual max)
         if (targetIndex > totalTiles) return false;
@@ -371,6 +382,11 @@ public class PieceMover : MonoBehaviour
         if (targetIndex == totalTiles)
         {
             targetTile = boardTransform.GetChild(totalTiles - 1); // Tile 30 (index 29)
+            // Change piece color to gold
+            if (rend != null)
+            {
+                rend.material.color = Color.gold;
+            }
             return true;
         }
 
@@ -779,6 +795,7 @@ public class PieceMover : MonoBehaviour
 
     void UpdateThrowButtonState()
     {
+        /*
         if (throwButton != null)
         {
             if (sandsOfEsnaPlayer == false)
@@ -789,7 +806,6 @@ public class PieceMover : MonoBehaviour
             {
                 throwButton.SetActive(false);
             }
-
             skipButton.SetActive(currentTurn != TurnType.Player);
         }
 
@@ -798,7 +814,7 @@ public class PieceMover : MonoBehaviour
         if (stickThrower != null)
         {
             stickThrower.ShowStickVisuals();
-        }
+        }*/
     }
 
     public Transform GetCurrentTile()
