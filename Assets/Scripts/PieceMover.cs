@@ -10,6 +10,7 @@ public class PieceMover : MonoBehaviour
 {
     public GameObject throwButton;
     public GameObject skipButton;
+    private float moveSpeed = 0.0025f;
     [HideInInspector] public bool hasPermanentGrace = false;
 
     private static Transform boardTransform;
@@ -457,30 +458,31 @@ public class PieceMover : MonoBehaviour
         if (currentIndex + lastStickValue == totalTiles)
         {
             Transform finalTile = boardTransform.GetChild(totalTiles - 1);
-            float VmoveSpeed = 5f;
+            float VmoveSpeed = 0.0025f;
+            transform.SetParent(finalTile);
             float VlocalY = transform.localPosition.y;
-            float fixedY = finalTile.position.y + VlocalY;
-            Vector3 end = new Vector3(finalTile.position.x, fixedY, finalTile.position.z);
 
-            while (Vector3.Distance(transform.position, end) > 0.01f)
+            Vector3 end = new Vector3(0, VlocalY, 0);
+
+            while (Vector3.Distance(transform.localPosition, end) > 0)
             {
-                transform.position = Vector3.MoveTowards(transform.position, end, VmoveSpeed * Time.deltaTime);
+                transform.localPosition = Vector3.MoveTowards(transform.localPosition, end, VmoveSpeed * Time.fixedDeltaTime);
                 yield return null;
             }
 
-            transform.SetParent(finalTile);
+            
             transform.localPosition = new Vector3(0, VlocalY, 0);
             // ✅ POP-UP ANIMATION
             Vector3 originalScale = transform.localScale;
             Vector3 popScale = originalScale * 1.3f; // 30% bigger
-            float popDuration = 0.15f;
+            float popDuration = 0.5f;
             float t = 0f;
             AudioController.Instance.PlaySound("Win");
 
             // Scale up
             while (t < popDuration)
             {
-                t += Time.deltaTime;
+                t += Time.fixedDeltaTime;
                 transform.localScale = Vector3.Lerp(originalScale, popScale, t / popDuration);
                 yield return null;
             }
@@ -489,7 +491,7 @@ public class PieceMover : MonoBehaviour
             t = 0f;
             while (t < popDuration)
             {
-                t += Time.deltaTime;
+                t += Time.fixedDeltaTime;
                 transform.localScale = Vector3.Lerp(popScale, originalScale, t / popDuration);
                 yield return null;
             }
@@ -526,7 +528,7 @@ public class PieceMover : MonoBehaviour
             Destroy(gameObject);
             yield break;
         }
-        float moveSpeed = 0.02f;
+        
         float localY = transform.localPosition.y;
 
         for (int i = currentIndex + 1; i <= targetIndex; i++)

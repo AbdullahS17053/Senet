@@ -704,19 +704,18 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Smooth move to new tile
-        float moveSpeed = 6f;
+        float moveSpeed = 0.0025f;
         float localY = target.transform.localPosition.y;
-        Vector3 targetPos =
-            new Vector3(destination.position.x, destination.position.y + localY, destination.position.z);
+        target.transform.SetParent(destination);
+        Vector3 targetPos = new Vector3(0, localY, 0);
 
-        while (Vector3.Distance(target.transform.position, targetPos) > 0.01f)
+        while (Vector3.Distance(target.transform.localPosition, targetPos) > 0)
         {
-            target.transform.position =
-                Vector3.MoveTowards(target.transform.position, targetPos, moveSpeed * Time.deltaTime);
+            target.transform.localPosition = Vector3.MoveTowards(target.transform.localPosition, targetPos, moveSpeed * Time.fixedDeltaTime);
             yield return null;
         }
 
-        target.transform.SetParent(destination);
+        
         target.transform.localPosition = new Vector3(0, localY, 0);
 
         Debug.Log($"{target.name} was sent to tile: {destination.name} by Grasp of the Scarab.");
