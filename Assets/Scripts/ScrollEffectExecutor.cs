@@ -108,7 +108,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                 int currentIndex = piece.GetCurrentTileIndex();
                 int nextIndex = currentIndex + 1;
 
-                if (nextIndex < 30)
+                if (nextIndex < 31)
                 {
                     Transform dummy;
                     if (PieceMover.IsValidMove(piece, nextIndex, out dummy))
@@ -140,7 +140,7 @@ public class ScrollEffectExecutor : MonoBehaviour
             else
             {
                 PieceMover.currentTurn = TurnType.Player;
-                PieceMover.Instance?.ShowTemporaryTurnMessage("Player Turn");
+                PieceMover.Instance?.ShowTemporaryTurnMessage("Player");
                 PieceMover.Instance?.Invoke("UpdateThrowButtonState", 0.1f);
             }
         }
@@ -152,8 +152,17 @@ public class ScrollEffectExecutor : MonoBehaviour
             if (chosen != null)
             {
                 int nextIndex = chosen.GetCurrentTileIndex() + 1;
-                Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
-                yield return chosen.StartCoroutine(chosen.MoveToTile(targetTile));
+                if (nextIndex < 30)
+                {
+                    Transform targetTile = GameObject.Find("Board").transform.GetChild(nextIndex);
+                    yield return chosen.StartCoroutine(chosen.MoveToTile(targetTile));
+                }
+                else
+                {
+                    Transform targetTile1 = GameObject.Find("Board").transform.GetChild(nextIndex - 1);
+                    yield return chosen.StartCoroutine(chosen.MoveToTile(targetTile1));
+                }
+                
             }
         }
 

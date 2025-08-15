@@ -73,6 +73,7 @@ public class AiMover : MonoBehaviour
         if (PieceMover.currentTurn != TurnType.AI)
         {
             Debug.LogWarning("[AI] Turn changed before stick throw (post-delay) — skipping.");
+            PieceMover.Instance.ShowTemporaryTurnMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
             yield break;
         }
 
@@ -278,12 +279,6 @@ public class AiMover : MonoBehaviour
             yield return new WaitForSeconds(2f); // Delay before executing
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
         }
-    }
-
-    private IEnumerator DelayAndExecute(string effectKey)
-    {
-        yield return new WaitForSeconds(3f);
-        ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
     }
     public void GrantExtraScroll(int scrollIndex)
     {

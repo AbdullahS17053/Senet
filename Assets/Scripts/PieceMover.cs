@@ -316,6 +316,19 @@ public class PieceMover : MonoBehaviour
         }
     }
 
+    public IEnumerator ShowPassTurnUpdates()
+    {
+        if (currentTurn == TurnType.AI)
+        {
+            ShowTemporaryTurnMessage("No Valid Moves for Opponent");
+        }
+        else
+        {
+            ShowTemporaryTurnMessage("No Valid Moves for Player");
+        }
+
+        yield return new WaitForSeconds(2f);
+    }
 
     public static bool IsValidMove(PieceMover piece, int targetIndex, out Transform targetTile)
     {
@@ -454,7 +467,7 @@ public class PieceMover : MonoBehaviour
             yield break;
         }
 
-        if (currentIndex + lastStickValue == totalTiles)
+        if (currentIndex + lastStickValue == totalTiles||currentIndex==totalTiles - 1)
         {
             Transform finalTile = boardTransform.GetChild(totalTiles - 1);
             float VmoveSpeed = 5f;
@@ -518,9 +531,15 @@ public class PieceMover : MonoBehaviour
             if (currentTurn == TurnType.AI)
             {
                 if (lastMoveWasRethrow)
+                {
+                    ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "" : "Re-roll for Opponent");
+                    yield return new WaitForSeconds(1f);
                     AiMover.StartStickThrow();
+                }
                 else
-                    AiMover.StartAITurn();
+                {
+                    AiMover.StartAITurn();  
+                }
             }
 
             Destroy(gameObject);
@@ -709,12 +728,15 @@ public class PieceMover : MonoBehaviour
         if (isAI && anippeGraceUsed_AI) anippeGraceActive_AI = false;
         else if (!isAI && anippeGraceUsed_Player) anippeGraceActive_Player = false;
 
-        if (currentTurn == TurnType.AI)
+        if (lastMoveWasRethrow)
         {
-            if (lastMoveWasRethrow)
-                AiMover.StartStickThrow();
-            else
-                AiMover.StartAITurn();
+            ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "" : "Re-roll for Opponent");
+            yield return new WaitForSeconds(1f);
+            AiMover.StartStickThrow();
+        }
+        else
+        {
+            AiMover.StartAITurn();  
         }
     }
 
