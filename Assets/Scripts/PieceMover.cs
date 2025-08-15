@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 
 public enum TurnType { Player, AI }
@@ -52,7 +53,7 @@ public class PieceMover : MonoBehaviour
     [HideInInspector] public bool isProtected = false;
     [HideInInspector] public Material originalMaterial;
 
-    [SerializeField] private UnityEngine.UI.Text turnFeedbackText;
+    [SerializeField] private TextMeshProUGUI turnFeedbackText;
 
     [HideInInspector] public int frozenTurnsRemaining = 0;
     public bool IsFrozen() => frozenTurnsRemaining > 0;
@@ -86,7 +87,7 @@ public class PieceMover : MonoBehaviour
         turnFeedbackText.text = "Player";
         sandsOfEsnaPlayer = false;
         sandsOfEsnaAI = false;
-        skipButton.SetActive(false);
+        //skipButton.SetActive(false);
         UpdateThrowButtonState();
     }
 
@@ -569,7 +570,7 @@ public class PieceMover : MonoBehaviour
         highlightedTile = null;
         selectedPiece = null;
 
-        // Check Senusret logic
+        // Check House of Waters logic
         if (targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile1 ||
             targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile2)
         {
@@ -583,11 +584,11 @@ public class PieceMover : MonoBehaviour
                 if (isAI) anippeGraceUsed_AI = true;
                 else anippeGraceUsed_Player = true;
 
-                Debug.Log($"[Anippe’s Grace] {(isAI ? "AI" : "Player")} skipped Senusret Path effect.");
+                Debug.Log($"[Anippe’s Grace] {(isAI ? "AI" : "Player")} skipped House of Waters effect.");
             }
             else
             {
-                Debug.Log($"{name} landed on Senusret Path! Sending back...");
+                Debug.Log($"{name} landed on House of Waters! Sending back...");
 
                 Transform board = targetTile.parent;
                 Transform fallbackTile = null;
@@ -635,7 +636,7 @@ public class PieceMover : MonoBehaviour
         {
             bool skipEffect = false;
 
-            // Skip only Skyspark or Senusret with Grace
+            // Skip only House of Beauty or House of Waters with Grace
             if ((tileMarker.isSkysparkTile || targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile1 ||
                  targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile2) &&
                 ((isAI && anippeGraceActive_AI && !anippeGraceUsed_AI) ||
@@ -646,7 +647,7 @@ public class PieceMover : MonoBehaviour
 
                 skipEffect = true;
                 Debug.Log(
-                    $"[Anippe’s Grace] Skipped effect on {(tileMarker.isSkysparkTile ? "Skyspark" : "Senusret")} tile.");
+                    $"[Anippe’s Grace] Skipped effect on {(tileMarker.isSkysparkTile ? "House of Beauty" : "House of Waters")} tile.");
             }
 
             if (!skipEffect)

@@ -387,7 +387,7 @@ PrefabInstance:
     - target: {fileID: 6279620120162430032, guid: d255bd4b5a655d94a9909b31c5b173af, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1129,7 +1129,7 @@ PrefabInstance:
     - target: {fileID: 6279620120162430032, guid: d255bd4b5a655d94a9909b31c5b173af, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1566,7 +1566,7 @@ PrefabInstance:
     - target: {fileID: 9115661384353680645, guid: d70d69a7da2a40d40a3632ff984ab7d1, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2406,7 +2406,7 @@ PrefabInstance:
     - target: {fileID: 6279620120162430032, guid: d255bd4b5a655d94a9909b31c5b173af, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3123,7 +3123,7 @@ PrefabInstance:
     - target: {fileID: 9115661384353680645, guid: d70d69a7da2a40d40a3632ff984ab7d1, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3597,7 +3597,7 @@ PrefabInstance:
     - target: {fileID: 9115661384353680645, guid: d70d69a7da2a40d40a3632ff984ab7d1, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4584,7 +4584,7 @@ MonoBehaviour:
   senusretMarkedTile1: {fileID: 0}
   senusretMarkedTile2: {fileID: 0}
   selectedTileMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
-  scrollFeedbackText: {fileID: 0}
+  scrollFeedbackText: {fileID: 1906722341}
 --- !u!4 &1072253752
 Transform:
   m_ObjectHideFlags: 0
@@ -6223,7 +6223,7 @@ PrefabInstance:
     - target: {fileID: 9115661384353680645, guid: d70d69a7da2a40d40a3632ff984ab7d1, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6422,7 +6422,7 @@ PrefabInstance:
     - target: {fileID: 9115661384353680645, guid: d70d69a7da2a40d40a3632ff984ab7d1, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7212,7 +7212,7 @@ PrefabInstance:
     - target: {fileID: 6279620120162430032, guid: d255bd4b5a655d94a9909b31c5b173af, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8924,7 +8924,7 @@ PrefabInstance:
     - target: {fileID: 6279620120162430032, guid: d255bd4b5a655d94a9909b31c5b173af, type: 3}
       propertyPath: turnFeedbackText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1906722341}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

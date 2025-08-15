@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -13,7 +14,7 @@ public class ScrollEffectExecutor : MonoBehaviour
     [FormerlySerializedAs("senusretMarkedTile")] public Transform senusretMarkedTile1; // The tile marked by Senusret Path
     public Transform senusretMarkedTile2;
     [SerializeField] private Material selectedTileMaterial;
-    [SerializeField] private Text scrollFeedbackText;
+    [SerializeField] private TextMeshProUGUI scrollFeedbackText;
 
 
 
@@ -32,11 +33,11 @@ public class ScrollEffectExecutor : MonoBehaviour
             case "Sylvan Shield":
                 StartCoroutine(SylvanShieldEffect(isAI));
                 break;
-            case "Senusret Path":
-                StartCoroutine(SenusretPathEffect(isAI));
+            case "House of Waters":
+                StartCoroutine(HouseofWatersEffect(isAI));
                 break;
-            case "Skyspark Swap":
-                StartCoroutine(SkysparkSwapEffect());
+            case "House of Beauty":
+                StartCoroutine(HouseofBeautyEffect());
                 break;
             case "Gift of Jahi":
                 StartCoroutine(GiftOfJahiEffect(isAI));
@@ -65,14 +66,14 @@ public class ScrollEffectExecutor : MonoBehaviour
             case "Path of Aaru":
                 StartCoroutine(PathOfAaruEffect(isAI));
                 break;
-            case "Apep’s Trick":
-                StartCoroutine(ApepsTrickEffect(isAI));
+            case "Apep’s Rebirth":
+                StartCoroutine(ApepsRebirthEffect(isAI));
                 break;
             case "Dominion of Kamo":
                 DominionOfKamoEffect(isAI);
                 break;
             case "Phantom's Claim":
-                StartCoroutine(MirrorOfMerneithEffect(isAI));
+                StartCoroutine(PhantomsClaimEffect(isAI));
                 break;
             case "Mena’s Grasp":
                 StartCoroutine(MenasGraspEffect(isAI));
@@ -90,6 +91,7 @@ public class ScrollEffectExecutor : MonoBehaviour
                 Debug.LogWarning("No effect found for key: " + effectKey);
                 break;
         }
+        
     }
 
     private IEnumerator EarthboundsStepEffect(bool isAI)
@@ -354,9 +356,9 @@ public class ScrollEffectExecutor : MonoBehaviour
 
 
 
-    private IEnumerator SenusretPathEffect(bool isAI)
+    private IEnumerator HouseofWatersEffect(bool isAI)
     {
-        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Senusret Path");
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating House of Waters");
 
         List<Transform> boardTiles = new List<Transform>();
         Transform board = GameObject.Find("Board").transform;
@@ -405,15 +407,15 @@ public class ScrollEffectExecutor : MonoBehaviour
                 rend.material.color = Color.magenta;
             }
 
-            Debug.Log("Senusret Path marked at tile: " + chosenTile.name);
+            Debug.Log("House of Waters marked at tile: " + chosenTile.name);
         }
         HandleTurn();
 
     }
 
-    private IEnumerator SkysparkSwapEffect()
+    private IEnumerator HouseofBeautyEffect()
     {
-        Debug.Log("[Skyspark Swap] Activating square 26 as Skyspark Swap.");
+        Debug.Log("[House of Beauty] Activating square 26 as House of Beauty.");
 
         Transform board = GameObject.Find("Board").transform;
         Transform tile26 = board.GetChild(25); // Index 25 = tile 26
@@ -732,9 +734,9 @@ public class ScrollEffectExecutor : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
-    private IEnumerator ApepsTrickEffect(bool isAI)
+    private IEnumerator ApepsRebirthEffect(bool isAI)
     {
-        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Apep’s Trick — summons opponent’s piece!");
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activated Apep’s Rebirth — summons opponent’s piece!");
 
         // Count opponent's existing pieces
         PieceMover[] allPieces = FindObjectsOfType<PieceMover>();
@@ -786,7 +788,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         newPieceMover.originalMaterial = pieceToClone.originalMaterial;
         newPieceMover.isProtected = false;
 
-        Debug.Log($"[Apep’s Trick] Summoned a new {(isAI ? "Player" : "AI")} piece at tile: {spawnTile.name}");
+        Debug.Log($"[Apep’s Rebirth] Summoned a new {(isAI ? "Player" : "AI")} piece at tile: {spawnTile.name}");
 
         yield return new WaitForSeconds(0.5f);
     }
@@ -805,7 +807,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
     }
 
-    private IEnumerator MirrorOfMerneithEffect(bool isAI)
+    private IEnumerator PhantomsClaimEffect(bool isAI)
     {
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Phantom's Claim");
 

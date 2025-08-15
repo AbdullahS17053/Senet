@@ -57,8 +57,8 @@ MonoBehaviour:
   scrollNames:
   - "Earthbound\u2019s Step"
   - Sylvan Shield
-  - Senusret Path
-  - Skyspark Swap
+  - House of Waters
+  - House of Beauty
   - Gift of Jahi
   - "Obsidian\u2019s Burden"
   - Horus Retreat
@@ -68,7 +68,7 @@ MonoBehaviour:
   - Oath of Isfet
   - Grasp of the Scarab
   - Path of Aaru
-  - "Apep\u2019s Trick"
+  - "Apep\u2019s Rebirth"
   - Dominion of Kamo
   - Phantom's Claim
   - "Mena\u2019s Grasp"
@@ -78,8 +78,8 @@ MonoBehaviour:
   scrollEffectKeys:
   - "Earthbound\u2019s Step"
   - Sylvan Shield
-  - Senusret Path
-  - Skyspark Swap
+  - House of Waters
+  - House of Beauty
   - Gift of Jahi
   - "Obsidian\u2019s Burden"
   - Horus Retreat
@@ -89,7 +89,7 @@ MonoBehaviour:
   - Oath of Isfet
   - Grasp of the Scarab
   - Path of Aaru
-  - "Apep\u2019s Trick"
+  - "Apep\u2019s Rebirth"
   - Dominion of Kamo
   - Phantom's Claim
   - "Mena\u2019s Grasp"
