@@ -808,7 +808,7 @@ public class PieceMover : MonoBehaviour
             StopCoroutine(turnMessageRoutine);
 
         turnFeedbackText.text = message;
-        turnMessageRoutine = StartCoroutine(ClearTurnMessageAfterDelay(message, duration));
+        //turnMessageRoutine = StartCoroutine(ClearTurnMessageAfterDelay(message, duration));
     }
 
     private IEnumerator ClearTurnMessageAfterDelay(string message, float delay)
