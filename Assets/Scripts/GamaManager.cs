@@ -43,6 +43,9 @@ public class GameManager : MonoBehaviour
 
     public void Awake()
     {
+        // Enable V-Sync
+        QualitySettings.vSyncCount = 1;
+        
         if (Instance == null)
             Instance = this;
         else

@@ -525,21 +525,22 @@ public class PieceMover : MonoBehaviour
             Destroy(gameObject);
             yield break;
         }
-        float moveSpeed = 5f;
+        float moveSpeed = 0.01f;
         float localY = transform.localPosition.y;
 
         for (int i = currentIndex + 1; i <= targetIndex; i++)
         {
             Transform nextTile = boardTransform.GetChild(i);
-            Vector3 end = new Vector3(nextTile.position.x, nextTile.position.y + localY, nextTile.position.z);
+            transform.SetParent(nextTile);
+            Vector3 end = new Vector3(0, localY, 0);
 
-            while (Vector3.Distance(transform.position, end) > 0.01f)
+            while (Vector3.Distance(transform.localPosition, end) > 0)
             {
-                transform.position = Vector3.MoveTowards(transform.position, end, moveSpeed * Time.deltaTime);
+                transform.localPosition = Vector3.MoveTowards(transform.localPosition, end, moveSpeed * Time.deltaTime);
                 yield return null;
             }
 
-            transform.SetParent(nextTile);
+            
             transform.localPosition = new Vector3(0, localY, 0);
         }
 
