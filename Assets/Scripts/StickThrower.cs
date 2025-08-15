@@ -334,8 +334,8 @@ public class StickThrower : MonoBehaviour
 
     public void HideStickVisuals()
     {
-        if (stickVisualParent != null)
-            stickVisualParent.SetActive(false);
+        /*if (stickVisualParent != null)
+            stickVisualParent.SetActive(false);*/
     }
     private IEnumerator HideStickVisualsAfterDelay()
     {

@@ -223,13 +223,13 @@ public class AiMover : MonoBehaviour
 
 
 
-    public void UseRandomAiScroll()
+    public IEnumerator UseRandomAiScroll()
     {
         // Check if AI scrolls are blocked
         if (PieceMover.aiScrollsDisabled)
         {
             Debug.Log("[AI] Scrolls are disabled by Dominion of Kamo.");
-            return;
+            yield break;
         }
 
         List<int> availableScrollSlots = new List<int>();
@@ -262,7 +262,7 @@ public class AiMover : MonoBehaviour
         else
         {
             Debug.Log("AI has no scrolls left to use.");
-            return;
+            yield break;
         }
 
         if (scrollIndexToUse >= 0 && scrollData != null && scrollIndexToUse < scrollData.scrollEffectKeys.Length)
@@ -274,10 +274,17 @@ public class AiMover : MonoBehaviour
             if (sm != null && effectKey != "Vault of Shadows" && effectKey != "Echo of the Twin")
                 sm.lastScrollEffectKey_AI = effectKey;
 
+            ScrollEffectExecutor.Instance.ShowTemporaryMessage($"Opponent using {effectKey}");
+            yield return new WaitForSeconds(2f); // Delay before executing
             ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
         }
     }
 
+    private IEnumerator DelayAndExecute(string effectKey)
+    {
+        yield return new WaitForSeconds(3f);
+        ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
+    }
     public void GrantExtraScroll(int scrollIndex)
     {
         extraScrollIndex = scrollIndex;

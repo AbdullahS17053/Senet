@@ -1052,7 +1052,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     private Coroutine messageRoutine;
 
-    private void ShowTemporaryMessage(string message, float duration = 2f)
+    public void ShowTemporaryMessage(string message, float duration = 3f)
     {
         if (messageRoutine != null)
             StopCoroutine(messageRoutine);

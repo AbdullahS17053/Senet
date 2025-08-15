@@ -526,7 +526,7 @@ public class PieceMover : MonoBehaviour
             Destroy(gameObject);
             yield break;
         }
-        float moveSpeed = 0.01f;
+        float moveSpeed = 0.02f;
         float localY = transform.localPosition.y;
 
         for (int i = currentIndex + 1; i <= targetIndex; i++)
@@ -537,7 +537,7 @@ public class PieceMover : MonoBehaviour
 
             while (Vector3.Distance(transform.localPosition, end) > 0)
             {
-                transform.localPosition = Vector3.MoveTowards(transform.localPosition, end, moveSpeed * Time.deltaTime);
+                transform.localPosition = Vector3.MoveTowards(transform.localPosition, end, moveSpeed * Time.fixedDeltaTime);
                 yield return null;
             }
 
@@ -654,7 +654,7 @@ public class PieceMover : MonoBehaviour
             {
                 if (isAI)
                 {
-                    AiMover.Instance.UseRandomAiScroll();
+                    yield return StartCoroutine(AiMover.Instance.UseRandomAiScroll());
                     yield return new WaitForSeconds(1f);
                 }
                 else
