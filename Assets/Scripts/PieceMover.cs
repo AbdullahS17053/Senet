@@ -10,7 +10,7 @@ public class PieceMover : MonoBehaviour
 {
     public GameObject throwButton;
     public GameObject skipButton;
-    private float moveSpeed = 0.01f;
+    private float moveSpeed = 0.00125f;
     [HideInInspector] public bool hasPermanentGrace = false;
 
     private static Transform boardTransform;
