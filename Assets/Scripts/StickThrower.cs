@@ -181,7 +181,8 @@ public class StickThrower : MonoBehaviour
     {
         AudioController.Instance.PlaySound("StickThrow");
         throwButton.gameObject.SetActive(false);
-        skipButton.gameObject.SetActive(true); // Show skip after throwing
+        if(PieceMover.currentTurn == TurnType.Player)
+            skipButton.gameObject.SetActive(true); // Show skip after throwing
 
         // Step 1: Random number of face-up sticks (0–4)
         int faceUpCount = Random.Range(0, 5);
@@ -263,7 +264,7 @@ public class StickThrower : MonoBehaviour
 
     public void UpdateThrowButtonState()
     {
-
+        Debug.Log($"[UpdateThrowButtonState] Current turn: {PieceMover.currentTurn}, Last stick value: {PieceMover.lastStickValue}, Move in progress: {PieceMover.moveInProgress}");
         if (PieceMover.currentTurn == TurnType.Player)
         {
             canThrow = PieceMover.lastStickValue == 0 && !PieceMover.moveInProgress;

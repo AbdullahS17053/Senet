@@ -746,6 +746,7 @@ public class PieceMover : MonoBehaviour
         {
             // Switch turn between Player and AI
             currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
+            StickThrower.Instance.UpdateThrowButtonState();
 
             // Reset Path of Aaru flags after turn ends
             pathOfAaruActive_Player = false;
