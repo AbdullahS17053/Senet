@@ -251,7 +251,6 @@ public class GameManager : MonoBehaviour
 
     private void SetupRewardScrolls()
     {
-        rewardsPanel.SetActive(true);
 
         int count = 0;
         for (int i = 0; i < scrollData.scrollSprites.Length && count < 3; i++)
@@ -272,11 +271,15 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene(1);
         }
-
-        // If fewer than 3 locked scrolls exist, hide extra buttons
-        for (int i = count; i < rewardScrollButtons.Length; i++)
+        else
         {
-            rewardScrollButtons[i].gameObject.SetActive(false);
+            rewardsPanel.SetActive(true);
+
+            // If fewer than 3 locked scrolls exist, hide extra buttons
+            for (int i = count; i < rewardScrollButtons.Length; i++)
+            {
+                rewardScrollButtons[i].gameObject.SetActive(false);
+            }
         }
     }
 

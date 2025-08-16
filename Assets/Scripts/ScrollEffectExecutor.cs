@@ -848,16 +848,19 @@ public class ScrollEffectExecutor : MonoBehaviour
             yield return StartCoroutine(SelectPieceByTouch(candidates, result => selected = result));
         }
 
+        
         if (selected != null)
         {
             // Optional visual/sound effect before destroy
             yield return new WaitForSeconds(0.2f);
             Destroy(selected.gameObject);
             Debug.Log($"[{(isAI ? "AI" : "Player")}] piece removed by Phantom's Claim.");
+            
         }
 
         yield return new WaitForSeconds(0.5f);
         HandleTurn();
+        
     }
 
     private IEnumerator MenasGraspEffect(bool isAI)
@@ -1054,7 +1057,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         PieceMover.lastMoveWasRethrow = false;
-        ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
+        //ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
         
     }
 

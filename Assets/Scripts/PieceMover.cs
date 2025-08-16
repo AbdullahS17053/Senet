@@ -186,6 +186,45 @@ public class PieceMover : MonoBehaviour
                 continue;
 
             int targetIndex = currentIndex + lastStickValue;
+            // --- Only highlight pieces for the side whose turn it is ---
+            bool isPlayersTurn = currentTurn == TurnType.Player;
+            bool isAITurn = currentTurn == TurnType.AI;
+
+            bool canHighlight =
+                (isPlayersTurn && !piece.isAI) ||
+                (isAITurn && piece.isAI);
+
+            if (canHighlight)
+            {
+                Renderer rend = piece.GetComponent<Renderer>();
+                if (rend == null)
+                    rend = piece.GetComponentInChildren<Renderer>();
+
+                if (targetIndex == totalTiles)
+                {
+                    if (rend != null && piece.goldenMaterial != null)
+                    {
+                        rend.material.color = Color.white;
+                        rend.material = piece.goldenMaterial;
+                    }
+                }
+                else
+                {
+                    if (rend != null && piece.defaultMaterial != null)
+                    {
+                        rend.material = piece.defaultMaterial;
+
+                        if (piece.isProtected)
+                        {
+                            rend.material.color = Color.magenta;
+                        }
+                        if (piece.hasPermanentGrace)
+                        {
+                            rend.material.color = Color.black;
+                        }
+                    }
+                }
+            }
             if (targetIndex > totalTiles)
                 continue;
 
@@ -340,11 +379,6 @@ public class PieceMover : MonoBehaviour
     public static bool IsValidMove(PieceMover piece, int targetIndex, out Transform targetTile)
     {
         targetTile = null;
-        Renderer rend = piece.GetComponent<Renderer>();
-        if (rend != null)
-        {
-            rend.material.color = Color.white;
-        }
 
         //Reject if targetIndex is greater than 30 (virtual max)
         if (targetIndex > totalTiles) return false;
@@ -382,11 +416,6 @@ public class PieceMover : MonoBehaviour
         if (targetIndex == totalTiles)
         {
             targetTile = boardTransform.GetChild(totalTiles - 1); // Tile 30 (index 29)
-            // Change piece color to gold
-            if (rend != null)
-            {
-                rend.material.color = Color.gold;
-            }
             return true;
         }
 
@@ -550,13 +579,19 @@ public class PieceMover : MonoBehaviour
             {
                 if (lastMoveWasRethrow)
                 {
-                    ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "" : "Re-roll for Opponent");
+                    ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Re-roll for Player" : "Re-roll for Opponent");
                     yield return new WaitForSeconds(1f);
-                    AiMover.StartStickThrow();
+                    if (currentTurn == TurnType.AI)
+                    {
+                        AiMover.StartStickThrow();
+                    }
                 }
                 else
                 {
-                    AiMover.StartAITurn();  
+                    if (currentTurn == TurnType.AI)
+                    {
+                        AiMover.StartAITurn();
+                    }
                 }
             }
 
@@ -748,13 +783,19 @@ public class PieceMover : MonoBehaviour
 
         if (lastMoveWasRethrow)
         {
-            ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "" : "Re-roll for Opponent");
+            ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Re-roll for Player" : "Re-roll for Opponent");
             yield return new WaitForSeconds(1f);
-            AiMover.StartStickThrow();
+            if (currentTurn == TurnType.AI)
+            {
+                AiMover.StartStickThrow();
+            }
         }
         else
         {
-            AiMover.StartAITurn();  
+            if (currentTurn == TurnType.AI)
+            {
+                AiMover.StartAITurn();
+            }
         }
     }
 

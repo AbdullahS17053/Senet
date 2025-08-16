@@ -125,11 +125,11 @@ public class AiMover : MonoBehaviour
 
     public static void StartAITurn()
     {
-        if (PieceMover.sandsOfEsnaAI)
+        if (PieceMover.sandsOfEsnaAI && PieceMover.currentTurn == TurnType.AI)
         {
             StickThrower.Instance.AutoThrowWithOptions();
         }
-        else
+        else if (PieceMover.currentTurn == TurnType.AI)
         {
             StartStickThrow();
         }
