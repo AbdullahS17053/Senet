@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -16,7 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject teachingsPanel;
     [SerializeField] GameObject toolsPanel;
 
-    [SerializeField] private Text feedbackText;
+    [SerializeField] private TextMeshProUGUI feedbackText;
 
     [Header("Reward System")] [SerializeField]
     private GameObject rewardsPanel;

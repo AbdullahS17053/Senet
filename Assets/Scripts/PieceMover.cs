@@ -573,7 +573,7 @@ public class PieceMover : MonoBehaviour
                 StickThrower.Instance.throwButton.gameObject.SetActive(false);
                 StickThrower.Instance.AutoThrowWithOptions();
             }
-            UpdateThrowButtonState();
+            //UpdateThrowButtonState();
 
             if (isAI && anippeGraceUsed_AI) anippeGraceActive_AI = false;
             else if (!isAI && anippeGraceUsed_Player) anippeGraceActive_Player = false;
@@ -803,7 +803,7 @@ public class PieceMover : MonoBehaviour
             StickThrower.Instance.throwButton.gameObject.SetActive(false);
             StickThrower.Instance.AutoThrowWithOptions();
         }
-        UpdateThrowButtonState();
+        //UpdateThrowButtonState();
 
         if (isAI && anippeGraceUsed_AI) anippeGraceActive_AI = false;
         else if (!isAI && anippeGraceUsed_Player) anippeGraceActive_Player = false;
@@ -815,7 +815,7 @@ public class PieceMover : MonoBehaviour
             yield return new WaitForSeconds(1f);
             if (currentTurn == TurnType.AI)
             {
-                AiMover.StartStickThrow();
+                AiMover.StartAITurn();
             }
         }
         else
@@ -864,7 +864,6 @@ public class PieceMover : MonoBehaviour
 
     void UpdateThrowButtonState()
     {
-        /*
         if (throwButton != null)
         {
             if (sandsOfEsnaPlayer == false)
@@ -883,7 +882,7 @@ public class PieceMover : MonoBehaviour
         if (stickThrower != null)
         {
             stickThrower.ShowStickVisuals();
-        }*/
+        }
     }
 
     public Transform GetCurrentTile()

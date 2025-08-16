@@ -1044,25 +1044,25 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     void HandleTurn()
     {
-        if (PieceMover.currentTurn == TurnType.AI)
+        // Handle turn or rethrow
+        if (PieceMover.lastMoveWasRethrow && !PieceMover.sandsOfEsnaPlayer)
         {
-            // Handle turn or rethrow
-            if (PieceMover.lastMoveWasRethrow)
-            {
-                PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
-            }
-            else
-            {
-                PieceMover.currentTurn = TurnType.AI;
-                PieceMover.ResetTurn();
-                PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
-                AiMover.StartStickThrow();
-            }
-
-            PieceMover.lastMoveWasRethrow = false;
-            //ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
         }
-        
+        else if (PieceMover.lastMoveWasRethrow && PieceMover.sandsOfEsnaPlayer)
+        {
+            StickThrower.Instance.AutoThrowWithOptions();
+        }
+        else
+        {
+            PieceMover.currentTurn = TurnType.AI;
+            PieceMover.ResetTurn();
+            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+            AiMover.StartAITurn();
+        }
+
+        PieceMover.lastMoveWasRethrow = false;
+        //ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
         
     }
 

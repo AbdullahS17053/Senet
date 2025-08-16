@@ -282,7 +282,7 @@ public class ScrollManager : MonoBehaviour
             if (selectedScrollIndices[i] == scrollIndex && usedScrollFlags[i])
             {
                 usedScrollFlags[i] = false;
-                scrollButtons[i].interactable = true;
+                //scrollButtons[i].interactable = true;
                 if (usedScrollHistory.Contains(scrollIndex))
                     usedScrollHistory.Remove(scrollIndex);
                 Debug.Log($"Scroll {scrollIndex} has been restored!");
@@ -413,8 +413,6 @@ public class ScrollManager : MonoBehaviour
                 extraScrollButtonImage.sprite = scrollData.scrollSprites[randomScroll];
                 extraScrollButtonImage.preserveAspect = true;
             }
-
-            extraScrollButton.interactable = true;
             extraScrollButton.gameObject.SetActive(true);
         }
     }
