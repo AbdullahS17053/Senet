@@ -297,6 +297,7 @@ public class StickThrower : MonoBehaviour
         PieceMover.ResetTurn();
         PieceMover.currentTurn = TurnType.AI;
         UpdateThrowButtonState();
+        ResetStickRotations();
 
         if (PieceMover.Instance != null)
         {
@@ -326,6 +327,14 @@ public class StickThrower : MonoBehaviour
             int temp = list[i];
             list[i] = list[rnd];
             list[rnd] = temp;
+        }
+    }
+    public void ResetStickRotations()
+    {
+        foreach (Stick stick in stickObjects)
+        {
+            if (stick != null)
+                stick.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
     }
     public void ShowStickVisuals()

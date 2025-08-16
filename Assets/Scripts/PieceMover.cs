@@ -204,15 +204,15 @@ public class PieceMover : MonoBehaviour
                 {
                     if (rend != null && piece.goldenMaterial != null)
                     {
-                        rend.material.color = Color.white;
-                        rend.material = piece.goldenMaterial;
+                        //rend.material.color = Color.white;
+                        rend.sharedMaterial = piece.goldenMaterial;
                     }
                 }
                 else
                 {
                     if (rend != null && piece.defaultMaterial != null)
                     {
-                        rend.material = piece.defaultMaterial;
+                        rend.sharedMaterial = piece.defaultMaterial;
 
                         if (piece.isProtected)
                         {
@@ -562,7 +562,10 @@ public class PieceMover : MonoBehaviour
             moveInProgress = false;
 
             if (!lastMoveWasRethrow)
+            {
                 currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
+                StickThrower.Instance.ResetStickRotations();
+            }
 
             ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Player" : "Opponent");
             if (currentTurn == TurnType.Player && sandsOfEsnaPlayer)
@@ -580,6 +583,7 @@ public class PieceMover : MonoBehaviour
                 if (lastMoveWasRethrow)
                 {
                     ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Re-roll for Player" : "Re-roll for Opponent");
+                    StickThrower.Instance.ResetStickRotations();
                     yield return new WaitForSeconds(1f);
                     if (currentTurn == TurnType.AI)
                     {
@@ -604,6 +608,20 @@ public class PieceMover : MonoBehaviour
         for (int i = currentIndex + 1; i <= targetIndex; i++)
         {
             Transform nextTile = boardTransform.GetChild(i);
+            // 🔹 Check for any piece already on this tile
+            PieceMover existingPiece = nextTile.GetComponentInChildren<PieceMover>();
+            Renderer existingRenderer = null;
+
+            if (existingPiece != null && existingPiece != this)
+            {
+                existingRenderer = existingPiece.GetComponent<Renderer>();
+                if (existingRenderer != null)
+                {
+                    Color c = existingRenderer.material.color;
+                    c.a = 150f / 255f; // alpha 150
+                    existingRenderer.material.color = c;
+                }
+            }
             transform.SetParent(nextTile);
             Vector3 end = new Vector3(0, localY, 0);
 
@@ -615,6 +633,13 @@ public class PieceMover : MonoBehaviour
 
             
             transform.localPosition = new Vector3(0, localY, 0);
+            // 🔹 Reset alpha of existing piece (if any)
+            if (existingRenderer != null)
+            {
+                Color c = existingRenderer.material.color;
+                c.a = 1f; // back to full (255)
+                existingRenderer.material.color = c;
+            }
         }
 
         // Check for opponent to send back
@@ -747,6 +772,7 @@ public class PieceMover : MonoBehaviour
             // Switch turn between Player and AI
             currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
             StickThrower.Instance.UpdateThrowButtonState();
+            StickThrower.Instance.ResetStickRotations();
 
             // Reset Path of Aaru flags after turn ends
             pathOfAaruActive_Player = false;
@@ -785,6 +811,7 @@ public class PieceMover : MonoBehaviour
         if (lastMoveWasRethrow)
         {
             ShowTemporaryTurnMessage(currentTurn == TurnType.Player ? "Re-roll for Player" : "Re-roll for Opponent");
+            StickThrower.Instance.ResetStickRotations();
             yield return new WaitForSeconds(1f);
             if (currentTurn == TurnType.AI)
             {

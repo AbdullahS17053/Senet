@@ -989,6 +989,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         HandleTurn();
+        
     }
 
     private IEnumerator EchoOfTheTwinEffect(bool isAI)
@@ -1043,21 +1044,25 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     void HandleTurn()
     {
-        // Handle turn or rethrow
-        if (PieceMover.lastMoveWasRethrow)
+        if (PieceMover.currentTurn == TurnType.AI)
         {
-            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
-        }
-        else
-        {
-            PieceMover.currentTurn = TurnType.AI;
-            PieceMover.ResetTurn();
-            PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
-            AiMover.StartStickThrow();
-        }
+            // Handle turn or rethrow
+            if (PieceMover.lastMoveWasRethrow)
+            {
+                PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+            }
+            else
+            {
+                PieceMover.currentTurn = TurnType.AI;
+                PieceMover.ResetTurn();
+                PieceMover.Instance.Invoke("UpdateThrowButtonState", 0.1f);
+                AiMover.StartStickThrow();
+            }
 
-        PieceMover.lastMoveWasRethrow = false;
-        //ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
+            PieceMover.lastMoveWasRethrow = false;
+            //ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
+        }
+        
         
     }
 
