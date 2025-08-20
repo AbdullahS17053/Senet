@@ -1,10 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject welcomePanel;
+    [SerializeField] private List<GameObject> objectsToDisableOnFirstTime = new List<GameObject>();
 
     private const string FirstTimeKey = "HasPlayedBefore";
     
@@ -18,8 +20,27 @@ public class MenuManager : MonoBehaviour
     {
         bool isFirstTime = PlayerPrefs.GetInt(FirstTimeKey, 0) == 1;
         welcomePanel.SetActive(isFirstTime);
+        if (isFirstTime)
+        {
+            SetObjectsActive(false);
+        }
+        else
+        {
+            SetObjectsActive(true);
+        }
         AudioController.Instance.PlayMusic("MainMenu");
         AudioController.Instance.StopMusic("GamePlay");
+    }
+
+    private void SetObjectsActive(bool active)
+    {
+        foreach (GameObject obj in objectsToDisableOnFirstTime)
+        {
+            if (obj != null)
+            {
+                obj.SetActive(active);
+            }
+        }
     }
 
     public void DiscoverBtn()

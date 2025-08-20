@@ -262,11 +262,29 @@ public class ScrollEffectExecutor : MonoBehaviour
                 rend.material = highlightClone;
             }
         }
+        
         while (selected == null)
         {
+            // Handle both touch input (mobile) and mouse input (PC)
+            bool inputDetected = false;
+            Vector3 inputPosition = Vector3.zero;
+
+            // Mobile touch input
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                inputDetected = true;
+                inputPosition = Input.GetTouch(0).position;
+            }
+            // PC mouse input
+            else if (Input.GetMouseButtonDown(0))
+            {
+                inputDetected = true;
+                inputPosition = Input.mousePosition;
+            }
+
+            if (inputDetected)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(inputPosition);
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
                     PieceMover tapped = hit.collider.GetComponent<PieceMover>();
@@ -289,6 +307,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
         callback?.Invoke(selected);
     }
+
     private IEnumerator SelectTileByTouch(List<Transform> candidates, System.Action<Transform> callback)
     {
         Transform selectedTile = null;
@@ -307,12 +326,29 @@ public class ScrollEffectExecutor : MonoBehaviour
             }
         }
 
-        // Wait for user touch selection
+        // Wait for user touch/click selection
         while (selectedTile == null)
         {
+            // Handle both touch input (mobile) and mouse input (PC)
+            bool inputDetected = false;
+            Vector3 inputPosition = Vector3.zero;
+
+            // Mobile touch input
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                inputDetected = true;
+                inputPosition = Input.GetTouch(0).position;
+            }
+            // PC mouse input
+            else if (Input.GetMouseButtonDown(0))
+            {
+                inputDetected = true;
+                inputPosition = Input.mousePosition;
+            }
+
+            if (inputDetected)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(inputPosition);
                 RaycastHit[] hits = Physics.RaycastAll(ray);
 
                 foreach (RaycastHit hit in hits)
