@@ -100,10 +100,26 @@ public class PieceMover : MonoBehaviour
         if (currentTurn != TurnType.Player || moveInProgress || lastStickValue <= 0)
             return;
 
+        // Handle both touch input (mobile) and mouse input (PC)
+        bool inputDetected = false;
+        Vector3 inputPosition = Vector3.zero;
+
+        // Mobile touch input
         if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
         {
-            Touch touch = Input.touches[0];
-            Ray ray = mainCamera.ScreenPointToRay(touch.position);
+            inputDetected = true;
+            inputPosition = Input.touches[0].position;
+        }
+        // PC mouse input
+        else if (Input.GetMouseButtonDown(0))
+        {
+            inputDetected = true;
+            inputPosition = Input.mousePosition;
+        }
+
+        if (inputDetected)
+        {
+            Ray ray = mainCamera.ScreenPointToRay(inputPosition);
             RaycastHit[] hits = Physics.RaycastAll(ray);
             System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
@@ -126,7 +142,6 @@ public class PieceMover : MonoBehaviour
                     break;
                 }
             }
-
         }
     }
 
@@ -205,7 +220,7 @@ public class PieceMover : MonoBehaviour
                     if (rend != null && piece.goldenMaterial != null)
                     {
                         //rend.material.color = Color.white;
-                        rend.sharedMaterial = piece.goldenMaterial;
+                        //rend.sharedMaterial = piece.goldenMaterial;
                     }
                 }
                 else

@@ -865,20 +865,28 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     private IEnumerator MenasGraspEffect(bool isAI)
     {
-        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Mena’s Grasp");
+        Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Mena's Grasp");
 
-        List<PieceMover> targets = new List<PieceMover>();
+        List<PieceMover> validTargets = new List<PieceMover>();
         PieceMover[] allPieces = GameObject.FindObjectsOfType<PieceMover>();
 
+        // Filter pieces that can move back at least 3 spaces
         foreach (var piece in allPieces)
         {
             if (piece.isAI != isAI)
-                targets.Add(piece);
+            {
+                int currentIndex = piece.GetCurrentTileIndex();
+                if (currentIndex >= 3) // Must have at least 3 spaces to move back
+                {
+                    validTargets.Add(piece);
+                }
+            }
         }
 
-        if (targets.Count == 0)
+        if (validTargets.Count == 0)
         {
-            Debug.LogWarning("No opponent pieces to affect.");
+            Debug.LogWarning("No opponent pieces can move back 3 spaces.");
+            ShowTemporaryMessage("No valid targets for Mena's Grasp");
             yield break;
         }
 
@@ -886,60 +894,54 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         if (isAI)
         {
-            selected = targets.OrderByDescending(p => p.GetCurrentTileIndex()).FirstOrDefault();
+            selected = validTargets.OrderByDescending(p => p.GetCurrentTileIndex()).FirstOrDefault();
             yield return new WaitForSeconds(0.5f);
         }
         else
         {
-            yield return StartCoroutine(SelectPieceByTouch(targets, result => selected = result));
+            yield return StartCoroutine(SelectPieceByTouch(validTargets, result => selected = result));
         }
 
         if (selected != null)
         {
             int currentIndex = selected.GetCurrentTileIndex();
             int targetIndex = currentIndex - 3;
-
-            if (targetIndex < 0)
-            {
-                Debug.Log("Mena’s Grasp has no effect — too close to start.");
-                yield break;
-            }
-
             Transform board = GameObject.Find("Board").transform;
             Transform destinationTile = board.GetChild(targetIndex);
 
-            bool occupied = allPieces.Any(p => p != selected && p.GetCurrentTileIndex() == targetIndex);
+            // Check if target tile is occupied
+            PieceMover occupyingPiece = allPieces.FirstOrDefault(p => p != selected && p.GetCurrentTileIndex() == targetIndex);
 
-            if (occupied)
+            if (occupyingPiece != null)
             {
-                Debug.Log("Original backward tile occupied. Searching next free tile...");
-                int boardSize = board.childCount;
-                bool found = false;
+                // Swap the two pieces
+                Debug.Log($"Target tile occupied by {occupyingPiece.name}. Swapping pieces...");
+                
+                Transform originalTile = selected.transform.parent;
+                Vector3 selectedLocalPos = selected.transform.localPosition;
+                Vector3 occupyingLocalPos = occupyingPiece.transform.localPosition;
 
-                for (int i = targetIndex + 1; i < boardSize; i++)
-                {
-                    bool tileTaken = allPieces.Any(p => p != selected && p.GetCurrentTileIndex() == i);
-                    if (!tileTaken)
-                    {
-                        destinationTile = board.GetChild(i);
-                        found = true;
-                        break;
-                    }
-                }
+                // Move selected piece to target tile
+                selected.transform.SetParent(destinationTile);
+                selected.transform.localPosition = new Vector3(0f, selectedLocalPos.y, 0f);
 
-                if (!found)
-                {
-                    Debug.Log("No empty tile found after target. Cannot move.");
-                    yield break;
-                }
+                // Move occupying piece to selected piece's original tile
+                occupyingPiece.transform.SetParent(originalTile);
+                occupyingPiece.transform.localPosition = new Vector3(0f, occupyingLocalPos.y, 0f);
+
+                Debug.Log($"Swapped {selected.name} and {occupyingPiece.name}");
+                ShowTemporaryMessage($"Mena's Grasp swapped {selected.name} and {occupyingPiece.name}");
             }
+            else
+            {
+                // Target tile is empty, just move the piece
+                selected.transform.SetParent(destinationTile);
+                Vector3 localPos = selected.transform.localPosition;
+                selected.transform.localPosition = new Vector3(0f, localPos.y, 0f);
 
-            // Move the piece instantly
-            selected.transform.SetParent(destinationTile);
-            Vector3 localPos = selected.transform.localPosition;
-            selected.transform.localPosition = new Vector3(0f, localPos.y, 0f);
-
-            Debug.Log($"Moved {selected.name} back to tile {destinationTile.name}");
+                Debug.Log($"Moved {selected.name} back 3 spaces to tile {destinationTile.name}");
+                ShowTemporaryMessage($"Mena's Grasp moved {selected.name} back 3 spaces");
+            }
 
             yield return new WaitForSeconds(0.3f);
             HandleTurn();
