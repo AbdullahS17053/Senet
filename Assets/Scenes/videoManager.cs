@@ -22,15 +22,21 @@ public class videoManager : MonoBehaviour
         // Check if this is the first time loading the game scene
         bool hasSeenVideo = PlayerPrefs.GetInt(FirstVideoKey, 0) == 1;
         
-        if (!hasSeenVideo)
-        {
-            PlayIntroVideo();
-        }
-        else
-        {
-            // Skip video setup entirely
+        #if UNITY_WEBGL && !UNITY_EDITOR
+            // Skip video entirely for WebGL builds
+            Debug.Log("WebGL build detected - skipping intro video");
             OnVideoEnd();
-        }
+        #else
+            // Normal video behavior for other platforms
+            if (!hasSeenVideo)
+            {
+                PlayIntroVideo();
+            }
+            else
+            {
+                OnVideoEnd();
+            }
+        #endif
     }
 
     private void PlayIntroVideo()
