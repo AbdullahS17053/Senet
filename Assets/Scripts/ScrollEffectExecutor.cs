@@ -11,8 +11,8 @@ using Random = UnityEngine.Random;
 public class ScrollEffectExecutor : MonoBehaviour
 {
     public static ScrollEffectExecutor Instance;
-    [FormerlySerializedAs("senusretMarkedTile")] public Transform senusretMarkedTile1; // The tile marked by Senusret Path
-    public Transform senusretMarkedTile2;
+    [FormerlySerializedAs("senusretMarkedTile1")] [FormerlySerializedAs("senusretMarkedTile")] public Transform houseOfWatersTile1; // The tile marked by Senusret Path
+    [FormerlySerializedAs("senusretMarkedTile2")] public Transform houseOfWatersTile2;
     [SerializeField] private Material selectedTileMaterial;
     [SerializeField] private TextMeshProUGUI scrollFeedbackText;
 
@@ -374,7 +374,14 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         for (int i = 16; i < board.childCount; i++) // only tiles > 15
         {
-            boardTiles.Add(board.GetChild(i));
+            Transform candidate = board.GetChild(i);
+            TileMarker marker = candidate.GetComponent<TileMarker>();
+
+            // Exclude trigger tiles
+            if (marker != null && marker.isTriggerTile)
+                continue;
+
+            boardTiles.Add(candidate);
         }
 
         if (boardTiles.Count == 0)
@@ -397,13 +404,13 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         //Set and visually mark the tile AFTER selection
-        if (senusretMarkedTile1 == null)
+        if (houseOfWatersTile1 == null)
         {
-            senusretMarkedTile1 = chosenTile;
+            houseOfWatersTile1 = chosenTile;
         }
         else
         {
-            senusretMarkedTile2 = chosenTile;
+            houseOfWatersTile2 = chosenTile;
         }
         chosenTile.GetComponent<TileMarker>().senusretTile = true;
 
@@ -412,7 +419,6 @@ public class ScrollEffectExecutor : MonoBehaviour
             Renderer rend = chosenTile.GetComponent<Renderer>();
             if (rend != null)
             {
-                // You can use a serialized "senusretMarkedMaterial" here instead of .color directly if needed
                 rend.material.color = Color.magenta;
             }
 

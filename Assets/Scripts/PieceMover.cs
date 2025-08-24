@@ -683,8 +683,8 @@ public class PieceMover : MonoBehaviour
         selectedPiece = null;
 
         // Check House of Waters logic
-        if (targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile1 ||
-            targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile2)
+        if (targetTile == ScrollEffectExecutor.Instance.houseOfWatersTile1 ||
+            targetTile == ScrollEffectExecutor.Instance.houseOfWatersTile2)
         {
             bool skipSenusret = hasPermanentGrace
                                 || (isAI && anippeGraceActive_AI && !anippeGraceUsed_AI)
@@ -708,11 +708,19 @@ public class PieceMover : MonoBehaviour
                 for (int i = 15; i >= 0; i--)
                 {
                     Transform candidate = board.GetChild(i);
-                    if (candidate.childCount == 0)
-                    {
-                        fallbackTile = candidate;
-                        break;
-                    }
+
+                    // Skip if tile already has a piece
+                    if (candidate.childCount > 0)
+                        continue;
+
+                    // Skip if tile is a trigger tile
+                    TileMarker marker = candidate.GetComponent<TileMarker>();
+                    if (marker != null && marker.isTriggerTile)
+                        continue;
+
+                    // Found a valid fallback tile
+                    fallbackTile = candidate;
+                    break;
                 }
 
                 if (fallbackTile != null)
@@ -749,8 +757,8 @@ public class PieceMover : MonoBehaviour
             bool skipEffect = false;
 
             // Skip only House of Beauty or House of Waters with Grace
-            if ((tileMarker.isSkysparkTile || targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile1 ||
-                 targetTile == ScrollEffectExecutor.Instance.senusretMarkedTile2) &&
+            if ((tileMarker.isSkysparkTile || targetTile == ScrollEffectExecutor.Instance.houseOfWatersTile1 ||
+                 targetTile == ScrollEffectExecutor.Instance.houseOfWatersTile2) &&
                 ((isAI && anippeGraceActive_AI && !anippeGraceUsed_AI) ||
                  (!isAI && anippeGraceActive_Player && !anippeGraceUsed_Player)))
             {
