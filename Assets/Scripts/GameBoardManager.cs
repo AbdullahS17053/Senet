@@ -20,7 +20,6 @@ public class GameBoardManager : MonoBehaviour
 
     void HandleSwipeRotation()
     {
-#if UNITY_EDITOR
         // For mouse (Editor)
         if (Input.GetMouseButtonDown(0))
         {
@@ -45,7 +44,7 @@ public class GameBoardManager : MonoBehaviour
         {
             isSwiping = false;
         }
-#else
+
     // For touch (Mobile)
     if (Input.touchCount > 0)
     {
@@ -74,6 +73,6 @@ public class GameBoardManager : MonoBehaviour
             isSwiping = false;
         }
     }
-#endif
+
     }
 }

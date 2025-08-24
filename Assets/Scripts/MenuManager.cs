@@ -27,6 +27,16 @@ public class MenuManager : MonoBehaviour
         StartCoroutine(PlayTapEffect(() => { Application.OpenURL("https://ancientbloods.co.uk"); }));
     }
 
+    public void PrivacyBtn()
+    {
+        StartCoroutine(PlayTapEffect(() => { Application.OpenURL("https://ancientbloods.co.uk/privacy-policy/"); }));
+    }
+
+    public void SupportBtn()
+    {
+        StartCoroutine(PlayTapEffect(() => { Application.OpenURL("https://ancientbloods.co.uk/support/"); }));
+    }
+
     public void RemindMeBtn()
     {
         StartCoroutine(PlayTapEffect(() => { welcomePanel.SetActive(false); }));
