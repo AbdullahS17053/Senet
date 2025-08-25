@@ -264,7 +264,7 @@ public class StickThrower : MonoBehaviour
 
     public void UpdateThrowButtonState()
     {
-        Debug.Log($"[UpdateThrowButtonState] Current turn: {PieceMover.currentTurn}, Last stick value: {PieceMover.lastStickValue}, Move in progress: {PieceMover.moveInProgress}");
+        //Debug.Log($"[UpdateThrowButtonState] Current turn: {PieceMover.currentTurn}, Last stick value: {PieceMover.lastStickValue}, Move in progress: {PieceMover.moveInProgress}");
         if (PieceMover.currentTurn == TurnType.Player)
         {
             canThrow = PieceMover.lastStickValue == 0 && !PieceMover.moveInProgress;
