@@ -277,7 +277,10 @@ public class AiMover : MonoBehaviour
 
             ScrollEffectExecutor.Instance.ShowTemporaryMessage($"Opponent using {effectKey}");
             yield return new WaitForSeconds(2f); // Delay before executing
-            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
+            yield return ScrollEffectExecutor.Instance.StartCoroutine(
+                ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true)
+            );
+
         }
     }
     public void GrantExtraScroll(int scrollIndex)

@@ -21,78 +21,78 @@ public class ScrollEffectExecutor : MonoBehaviour
 
     private void Awake() => Instance = this;
 
-    public void ExecuteEffect(string effectKey, bool isAI)
+    public IEnumerator ExecuteEffect(string effectKey, bool isAI)
     {
         ShowTemporaryMessage($"{(isAI ? "Opponent" : "Player")} used {effectKey}");
 
         switch (effectKey)
         {
             case "Earthbound’s Step":
-                StartCoroutine(EarthboundsStepEffect(isAI));
+                yield return StartCoroutine(EarthboundsStepEffect(isAI));
                 break;
             case "Sylvan Shield":
-                StartCoroutine(SylvanShieldEffect(isAI));
+                yield return StartCoroutine(SylvanShieldEffect(isAI));
                 break;
             case "House of Waters":
-                StartCoroutine(HouseofWatersEffect(isAI));
+                yield return StartCoroutine(HouseofWatersEffect(isAI));
                 break;
             case "House of Beauty":
-                StartCoroutine(HouseofBeautyEffect());
+                yield return StartCoroutine(HouseofBeautyEffect());
                 break;
             case "Gift of Jahi":
-                StartCoroutine(GiftOfJahiEffect(isAI));
+                yield return StartCoroutine(GiftOfJahiEffect(isAI));
                 break;
             case "Obsidian’s Burden":
-                StartCoroutine(ObsidianBurdenEffect(isAI));
+                yield return StartCoroutine(ObsidianBurdenEffect(isAI));
                 break;
             case "Horus Retreat":
-                StartCoroutine(HorusRetreatEffect(isAI));
+                yield return StartCoroutine(HorusRetreatEffect(isAI));
                 break;
             case "Anippe’s Grace":
-                StartCoroutine(AnippesGraceEffect(isAI));
+                yield return StartCoroutine(AnippesGraceEffect(isAI));
                 break;
             case "Vault of Shadows":
-                StartCoroutine(VaultOfShadowsEffect(isAI));
+                yield return StartCoroutine(VaultOfShadowsEffect(isAI));
                 break;
             case "Heka’s Blessing":
-                StartCoroutine(HekasBlessingEffect(isAI));
+                yield return StartCoroutine(HekasBlessingEffect(isAI));
                 break;
             case "Oath of Isfet":
-                StartCoroutine(OathOfIsfetEffect(isAI));
+                yield return StartCoroutine(OathOfIsfetEffect(isAI));
                 break;
             case "Grasp of the Scarab":
-                StartCoroutine(GraspOfTheScarabEffect(isAI));
+                yield return StartCoroutine(GraspOfTheScarabEffect(isAI));
                 break;
             case "Path of Aaru":
-                StartCoroutine(PathOfAaruEffect(isAI));
+                yield return StartCoroutine(PathOfAaruEffect(isAI));
                 break;
             case "Apep’s Rebirth":
-                StartCoroutine(ApepsRebirthEffect(isAI));
+                yield return StartCoroutine(ApepsRebirthEffect(isAI));
                 break;
             case "Dominion of Kamo":
-                DominionOfKamoEffect(isAI);
+                DominionOfKamoEffect(isAI); // not a coroutine
                 break;
             case "Phantom's Claim":
-                StartCoroutine(PhantomsClaimEffect(isAI));
+                yield return StartCoroutine(PhantomsClaimEffect(isAI));
                 break;
             case "Mena’s Grasp":
-                StartCoroutine(MenasGraspEffect(isAI));
+                yield return StartCoroutine(MenasGraspEffect(isAI));
                 break;
             case "Binding of Aegis":
-                StartCoroutine(BindingOfAegisEffect(isAI));
+                yield return StartCoroutine(BindingOfAegisEffect(isAI));
                 break;
             case "Echo of the Twin":
-                StartCoroutine(EchoOfTheTwinEffect(isAI));
+                yield return StartCoroutine(EchoOfTheTwinEffect(isAI));
                 break;
             case "Sands of Esna":
-                StartCoroutine(SandsOfEsnaEffect(isAI));
+                yield return StartCoroutine(SandsOfEsnaEffect(isAI));
                 break;
             default:
                 Debug.LogWarning("No effect found for key: " + effectKey);
                 break;
         }
-        
     }
+
 
     private IEnumerator EarthboundsStepEffect(bool isAI)
     {
@@ -642,7 +642,7 @@ public class ScrollEffectExecutor : MonoBehaviour
 
         Debug.Log($"[{(isAI ? "AI" : "Player")}] Vault of Shadows repeating: {lastKey}");
         yield return new WaitForSeconds(0.5f); // Optional delay
-        ExecuteEffect(lastKey, isAI); // Repeats the last scroll!
+        yield return ExecuteEffect(lastKey, isAI); // Repeats the last scroll!
     }
 
     private IEnumerator HekasBlessingEffect(bool isAI)
@@ -1050,7 +1050,8 @@ public class ScrollEffectExecutor : MonoBehaviour
             ShowTemporaryMessage($"{(isAI ? "AI" : "Player")} echoed {lastUsedKey}");
 
             // Echo the last scroll effect
-            ExecuteEffect(lastUsedKey, isAI);
+            yield return ExecuteEffect(lastUsedKey, isAI);
+
         }
         else
         {
@@ -1106,7 +1107,7 @@ public class ScrollEffectExecutor : MonoBehaviour
         }
 
         PieceMover.lastMoveWasRethrow = false;
-        //ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
+        ShowTemporaryMessage(PieceMover.currentTurn == TurnType.Player ? "Player" : "Opponent");
         
     }
 
