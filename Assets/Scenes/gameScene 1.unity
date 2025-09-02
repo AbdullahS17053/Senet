@@ -4712,8 +4712,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04c98fa2180bd15418279ecac813384c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  senusretMarkedTile1: {fileID: 0}
-  senusretMarkedTile2: {fileID: 0}
+  houseOfWatersTile1: {fileID: 0}
+  houseOfWatersTile2: {fileID: 0}
   selectedTileMaterial: {fileID: 2100000, guid: d23001356c32cbf459d232632f3eb669, type: 2}
   scrollFeedbackText: {fileID: 1906722341}
 --- !u!4 &1072253752
@@ -6155,18 +6155,14 @@ MonoBehaviour:
   bgImage: {fileID: 4743753}
   scrolls: {fileID: 325405025}
   bgImages:
-  - {fileID: 21300000, guid: 4ee07065e2b72f74d8bc5054587fe430, type: 3}
-  - {fileID: 21300000, guid: 4ca6e7e028b41a848a9bee821fd54bef, type: 3}
-  - {fileID: 21300000, guid: feb56eed8229d6f4a8f86a9edb5731d4, type: 3}
-  - {fileID: 21300000, guid: 9d0f74ce12332ac489300e444bfc2af6, type: 3}
-  - {fileID: 21300000, guid: 53bff378915b6a54c90a375da1c11dfc, type: 3}
-  - {fileID: 21300000, guid: 79e01fd2038db1b42a79b740e3de3249, type: 3}
-  - {fileID: 21300000, guid: 4cfc5fc39d7ff1b43ad4e4432ea4e9c5, type: 3}
-  - {fileID: 21300000, guid: 24809719a3be8fb40b9f4cb83e964bba, type: 3}
-  - {fileID: 21300000, guid: 51a17c3e9ad66d24287a9c3f4027ae30, type: 3}
-  - {fileID: 21300000, guid: d133545b62fba134ebbba39f80c94215, type: 3}
-  - {fileID: 21300000, guid: abb259cf8d86e4b4ab34553b42880426, type: 3}
-  - {fileID: 21300000, guid: 5deaa329e7019884db234d31a61bf1cf, type: 3}
+  - {fileID: 21300000, guid: 39bb429554c5cdc4aae3acce92c5da93, type: 3}
+  - {fileID: 21300000, guid: 128d425e65ec0ac468e68b6cc64685cc, type: 3}
+  - {fileID: 21300000, guid: e190fe05f6408d74d9c972ad4e99edec, type: 3}
+  - {fileID: 21300000, guid: 97b8f1d94678ce7459a0ba8f2ef4e29a, type: 3}
+  - {fileID: 21300000, guid: ac2ca09293e287c4299e07ceb6df5a14, type: 3}
+  - {fileID: 21300000, guid: 9b36c226c7100d449aac43d44eb360f2, type: 3}
+  - {fileID: 21300000, guid: 631376c34ab9e5648b577e2a217d6616, type: 3}
+  - {fileID: 21300000, guid: d15634b5b5e8e474aa68fd437557e2c7, type: 3}
   puppetImages:
   - {fileID: 21300000, guid: 72ec62c201af5a94fa04631320d4c68b, type: 3}
   - {fileID: 21300000, guid: e86b2d12f0181894dbe22903bd3b270e, type: 3}
