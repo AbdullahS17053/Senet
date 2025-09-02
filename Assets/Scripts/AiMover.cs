@@ -159,8 +159,8 @@ public class AiMover : MonoBehaviour
             yield break;
         }
 
-        Transform senusret1 = ScrollEffectExecutor.Instance?.senusretMarkedTile1;
-        Transform senusret2 = ScrollEffectExecutor.Instance?.senusretMarkedTile2;
+        Transform senusret1 = ScrollEffectExecutor.Instance?.houseOfWatersTile1;
+        Transform senusret2 = ScrollEffectExecutor.Instance?.houseOfWatersTile2;
 
         var nonSenusretMoves = validMoves
             .Where(m => m.target != senusret1 && m.target != senusret2)
@@ -277,7 +277,10 @@ public class AiMover : MonoBehaviour
 
             ScrollEffectExecutor.Instance.ShowTemporaryMessage($"Opponent using {effectKey}");
             yield return new WaitForSeconds(2f); // Delay before executing
-            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true);
+            yield return ScrollEffectExecutor.Instance.StartCoroutine(
+                ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, true)
+            );
+
         }
     }
     public void GrantExtraScroll(int scrollIndex)
