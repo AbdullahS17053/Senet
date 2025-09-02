@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -176,6 +177,12 @@ public class ScrollManager : MonoBehaviour
     private void OnScrollUsed(int scrollSlotIndex)
     {
         int scrollIndex = selectedScrollIndices[scrollSlotIndex];
+        StartCoroutine(WaitForScroll(scrollSlotIndex));
+    }
+
+    private IEnumerator WaitForScroll(int scrollSlotIndex)
+    {
+        int scrollIndex = selectedScrollIndices[scrollSlotIndex];
         Debug.Log($"Scroll {scrollIndex} used!");
 
         if (!usedScrollHistory.Contains(selectedScrollIndices[scrollSlotIndex]))
@@ -194,8 +201,14 @@ public class ScrollManager : MonoBehaviour
             {
                 lastScrollEffectKey_Player = effectKey;
             }
+            if (scrollPanel != null)
+            {
+                scrollPanel.SetActive(false);
+                cancelButton.SetActive(false);
+                SetScrollsInteractable(false);
+            }
 
-            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = Player
+            yield return ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false); // false = Player
 
         }
 
@@ -213,9 +226,9 @@ public class ScrollManager : MonoBehaviour
             scrollData.scrollEffectKeys[scrollIndex] == "Mirror of Merneith" ||
             scrollData.scrollEffectKeys[scrollIndex] == "Mena’s Grasp" ||
             scrollData.scrollEffectKeys[scrollIndex] == "Binding of Aegis" ||
-            scrollData.scrollEffectKeys[scrollIndex] == "Senusret Path")
+            scrollData.scrollEffectKeys[scrollIndex] == "House of Waters")
         {
-            return;
+            yield break;
         }
 
         // Handle turn or rethrow
@@ -357,7 +370,10 @@ public class ScrollManager : MonoBehaviour
         }
 
 
-        ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false);
+        ScrollEffectExecutor.Instance.StartCoroutine(
+            ScrollEffectExecutor.Instance.ExecuteEffect(effectKey, false)
+        );
+
 
         if (scrollPanel != null)
             scrollPanel.SetActive(false);
