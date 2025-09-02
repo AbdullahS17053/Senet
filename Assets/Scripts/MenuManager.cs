@@ -89,4 +89,23 @@ public class MenuManager : MonoBehaviour
 
         onComplete?.Invoke();
     }
+
+    public void TikTokBtn()
+    {
+        Application.OpenURL("https://www.tiktok.com/@01aspects");
+    }
+    public void FbBtn()
+    {
+        Application.OpenURL("https://www.facebook.com/profile.php?id=61573024288861");
+    }
+    public void DiscordBtn()
+    {
+        Application.OpenURL("https://discord.gg/UsRv9GpA");
+    }
+
+    public void ShadowGameBtn()
+    {
+        Application.OpenURL("https://ancientbloods.co.uk/shadowgame/");
+    }
+
 }
