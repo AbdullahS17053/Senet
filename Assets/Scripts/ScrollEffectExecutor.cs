@@ -1064,28 +1064,23 @@ public class ScrollEffectExecutor : MonoBehaviour
     private IEnumerator SandsOfEsnaEffect(bool isAI)
     {
         Debug.Log($"[{(isAI ? "AI" : "Player")}] activating Sands of Esna");
-        PieceMover[] allPieces = FindObjectsOfType<PieceMover>();
 
         if (isAI)
         {
-            foreach (var piece in allPieces)
-            {
-                PieceMover.sandsOfEsnaAI = true;
-                Debug.Log("AI");
-            }
+            PieceMover.sandsOfEsnaAI = true;
+            Debug.Log("AI");
+            yield return StickThrower.Instance.AutoThrowWithOptionsRoutine(true);
         }
         else
         {
-            foreach (var piece in allPieces)
-            {
-                PieceMover.sandsOfEsnaPlayer = true;
-                //Destroy(StickThrower.Instance.throwButton);
-                Debug.Log("Player");
-            }
+            PieceMover.sandsOfEsnaPlayer = true;
+            yield return StickThrower.Instance.AutoThrowWithOptionsRoutine(false);
+            Debug.Log("Player");
         }
 
         yield return new WaitForSeconds(0.5f);
     }
+
 
     void HandleTurn()
     {

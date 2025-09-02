@@ -793,6 +793,8 @@ public class PieceMover : MonoBehaviour
         if (!lastMoveWasRethrow)
         {
             // Switch turn between Player and AI
+            sandsOfEsnaPlayer = false;
+            sandsOfEsnaAI = false;
             currentTurn = (currentTurn == TurnType.Player) ? TurnType.AI : TurnType.Player;
             StickThrower.Instance.UpdateThrowButtonState();
             StickThrower.Instance.ResetStickRotations();

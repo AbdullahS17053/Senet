@@ -80,7 +80,7 @@ public class StickThrower : MonoBehaviour
         StartCoroutine(AutoThrowWithOptionsRoutine(PieceMover.currentTurn == TurnType.AI));
     }
 
-    private IEnumerator AutoThrowWithOptionsRoutine(bool isAI)
+    public IEnumerator AutoThrowWithOptionsRoutine(bool isAI)
     {
         stickNumberImage.sprite = defaultSprite;
         //stickNumberText.text = "";

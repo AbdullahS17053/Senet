@@ -226,7 +226,8 @@ public class ScrollManager : MonoBehaviour
             scrollData.scrollEffectKeys[scrollIndex] == "Mirror of Merneith" ||
             scrollData.scrollEffectKeys[scrollIndex] == "Mena’s Grasp" ||
             scrollData.scrollEffectKeys[scrollIndex] == "Binding of Aegis" ||
-            scrollData.scrollEffectKeys[scrollIndex] == "House of Waters")
+            scrollData.scrollEffectKeys[scrollIndex] == "House of Waters" ||
+            scrollData.scrollEffectKeys[scrollIndex] == "Sands of Esna")
         {
             yield break;
         }
