@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1053832974055",
+    "project_id": "senari-17d2a",
+    "storage_bucket": "senari-17d2a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053832974055:android:d04da4dd69eee63d8e9c42",
+        "android_client_info": {
+          "package_name": "com.AncientBloods.Senari"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXspqH20v_XD7UhaaU0VqVgrBGIU_nm84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
